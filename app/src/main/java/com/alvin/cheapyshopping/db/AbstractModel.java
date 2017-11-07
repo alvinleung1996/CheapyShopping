@@ -67,8 +67,7 @@ public abstract class AbstractModel<SELF extends AbstractModel<SELF>> {
             );
             List<M> products = new ArrayList<>(cursor.getCount());
             while (cursor.moveToNext()) {
-                M model = this.newModelInstance(context);
-                model.readFromCursor(cursor);
+                M model = this.getByCursor(context, cursor);
                 products.add(model);
             }
             return products;
