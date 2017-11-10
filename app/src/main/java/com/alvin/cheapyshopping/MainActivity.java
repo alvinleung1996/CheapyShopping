@@ -34,8 +34,6 @@ public class MainActivity extends AppCompatActivity {
     private ActionBarDrawerToggle mToggle;
     Toolbar mToolbar;
     FloatingActionButton fab_plus;
-    Animation FabRClockwise, FabRanticlockwise;
-    boolean isOpen = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
