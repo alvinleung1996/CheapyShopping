@@ -3,6 +3,7 @@ package com.alvin.cheapyshopping;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -14,6 +15,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -30,6 +33,9 @@ public class MainActivity extends AppCompatActivity {
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
     Toolbar mToolbar;
+    FloatingActionButton fab_plus;
+    Animation FabRClockwise, FabRanticlockwise;
+    boolean isOpen = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +103,16 @@ public class MainActivity extends AppCompatActivity {
         //To show the icons in navigation panel properly
         NavigationView mNavigationView = (NavigationView) findViewById(R.id.mNavigationView);
         mNavigationView.setItemIconTintList(null);
+
+        //Floating action buttons
+        fab_plus = (FloatingActionButton)findViewById(R.id.fab_plus);
+        fab_plus.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(view.getContext(), AddPriceActivity.class);
+                MainActivity.this.startActivity(intent);
+            }
+        });
 
     }
 
