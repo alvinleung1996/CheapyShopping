@@ -2,6 +2,8 @@ package com.alvin.cheapyshopping;
 
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         shoppingList.addProduct(products.get(0));
+
 
         StoreModel store0 = new StoreModel(this);
         store0.location = "HKU";
@@ -64,6 +70,14 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.this.startActivity(intent);
             }
         });
+
+
+        //Navigation Drawer
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
+        mToggle = new ActionBarDrawerToggle(this, mDrawerLayout,R.string.drawer_open,R.string.drawer_close);
+        mDrawerLayout.addDrawerListener(mToggle);
+        mToggle.syncState();
+
 
     }
 
