@@ -2,13 +2,20 @@ package com.alvin.cheapyshopping;
 
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
+import android.support.design.widget.NavigationView;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.alvin.cheapyshopping.db.DatabaseHelper;
 import com.alvin.cheapyshopping.db.models.ProductModel;
@@ -22,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mToggle;
+    Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,12 +80,23 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
+
+
+        //Tool Bar
+        mToolbar = (Toolbar)findViewById(R.id.toolbar);
+        mToolbar.setTitle("Home");
+        mToolbar.setTitleTextColor(Color.WHITE);
+        setSupportActionBar(mToolbar);
+
         //Navigation Drawer
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawerLayout);
         mToggle = new ActionBarDrawerToggle(this, mDrawerLayout,R.string.drawer_open,R.string.drawer_close);
         mDrawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();
-
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        //To show the icons in navigation panel properly
+        NavigationView mNavigationView = (NavigationView) findViewById(R.id.mNavigationView);
+        mNavigationView.setItemIconTintList(null);
 
     }
 
@@ -88,5 +107,28 @@ public class MainActivity extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.toolbar_menu, menu);
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int res_id = item.getItemId();
+        if(res_id == R.id.toolbar_refresh)
+        {
+            Toast.makeText(getApplicationContext(), "Page will be refreshed", Toast.LENGTH_LONG).show();
+        }
+
+        if(mToggle.onOptionsItemSelected(item)){
+            return true;
+        }
+        return true;
     }
 }

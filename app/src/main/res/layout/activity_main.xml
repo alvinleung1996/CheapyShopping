@@ -8,9 +8,16 @@
     android:id="@+id/drawerLayout"
     tools:context="com.alvin.cheapyshopping.MainActivity">
 
+
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+
+        <include
+            layout="@layout/tool_bar"
+            />
+
         <Button
             android:id="@+id/button_new_price"
             android:layout_width="wrap_content"
@@ -19,7 +26,7 @@
             android:layout_marginTop="8dp"
             android:text="New Price"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/toolbar" />
 
         <FrameLayout
             android:id="@+id/fragment_container"
@@ -38,7 +45,7 @@
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:background="@color/colorAccent"
-            app:layout_constraintTop_toBottomOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/toolbar">
         </android.support.v7.widget.RecyclerView>
     </android.support.constraint.ConstraintLayout>
 
