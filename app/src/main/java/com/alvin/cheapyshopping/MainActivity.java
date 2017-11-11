@@ -98,9 +98,6 @@ public class MainActivity extends AppCompatActivity {
         mDrawerLayout.addDrawerListener(mToggle);
         mToggle.syncState();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        //To show the icons in navigation panel properly
-        NavigationView mNavigationView = (NavigationView) findViewById(R.id.mNavigationView);
-        mNavigationView.setItemIconTintList(null);
 
         //Floating action buttons
         fab_plus = (FloatingActionButton)findViewById(R.id.fab_plus);
