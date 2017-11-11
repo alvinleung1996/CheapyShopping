@@ -36,7 +36,7 @@ class AbstractStoreModel<SELF extends AbstractStoreModel<SELF>> extends Abstract
 
     public static final String COLUMN_STORE_ID = "store_id";
     public static final String COLUMN_LOCATION = "location";
-    public static final String COLUMN_NAME = "price";
+    public static final String COLUMN_NAME = "name";
 
 
     public static abstract class AbstractManager<M extends AbstractStoreModel<M>> extends AbstractModel.AbstractManager<M> {
