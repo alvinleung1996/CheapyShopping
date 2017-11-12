@@ -85,15 +85,6 @@ public class MainActivity extends AppCompatActivity {
                     .add(R.id.fragment_container, ShoppingListFragment.newInstance())
                     .commit();
 
-            /*//Create new fragment and transaction
-            FragmentManager fm = getFragmentManager();
-            FragmentTransaction ft = fm.beginTransaction();
-
-            PopularProductsFragment fragment_popular_product = new PopularProductsFragment();
-            ft.add(R.id.fragment_container_popular_products, fragment_popular_product);
-            ft.commit();
-
-            */
             this.getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_container_popular_products, PopularProductsFragment.newInstance())
                     .commit();
