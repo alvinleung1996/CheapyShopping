@@ -1,5 +1,7 @@
 package com.alvin.cheapyshopping;
 
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
@@ -10,6 +12,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.alvin.cheapyshopping.db.DatabaseHelper;
@@ -31,10 +35,26 @@ public class PopularProductsFragment extends Fragment {
 
         public static class PopularProductViewHolder extends AbstractViewHolder{
             private TextView mPopularProductPrice;
+            private TextView mPopularProductName;
+            private ImageView mPopularProductImg;
+            private long mProductID; // For passing into the Product Activity
             private PopularProductViewHolder (View v){
                 super(v);
                 mPopularProductPrice = v.findViewById(R.id.popular_products_price);
+                mPopularProductName = v.findViewById(R.id.popular_products_name);
+                mPopularProductImg = v.findViewById(R.id.popular_products_img);
+                itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Context context = view.getContext();
+                        Intent intent = new Intent(view.getContext(), ProductActivity.class);
+                        intent.putExtra("mProduct", mProductID);
+                        context.startActivity(intent);
+                    }
+                });
             }
+
+
         }
 
         private PopularProductAdapter(List<ProductModel> listItems) {
@@ -58,7 +78,9 @@ public class PopularProductsFragment extends Fragment {
         @Override
         public void onBindViewHolder(AbstractViewHolder holder, int position) {
             PopularProductViewHolder h = (PopularProductViewHolder) holder;
-            //h.mPopularProductPrice.setText(this.listItems.get(position));
+            h.mPopularProductName.setText(this.listItems.get(position).name);
+            h.mProductID = this.listItems.get(position).productId;
+
         }
     }// End of recycler view
 
@@ -74,7 +96,7 @@ public class PopularProductsFragment extends Fragment {
 
 
     private RecyclerView mProductList;
-
+    private AdapterView.OnItemClickListener mClickListener;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -113,14 +135,16 @@ public class PopularProductsFragment extends Fragment {
                 null,
                 null
         );
+
+        // Set product model for each RecycleView Item
         if (cursor.moveToFirst()){
             do{
                 items.add(new ProductModel(this.getContext()).manager.getByCursor(this.getContext(),cursor));
             }while(cursor.moveToNext());
         }
         cursor.close();
-
         mProductList.setAdapter(new PopularProductAdapter(items));
 
     }
+
 }
