@@ -1,5 +1,7 @@
 package com.alvin.cheapyshopping;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
@@ -56,6 +58,16 @@ public class MainActivity extends AppCompatActivity {
         }
 
         shoppingList.addProduct(products.get(0));
+        shoppingList.addProduct(products.get(1));
+        shoppingList.addProduct(products.get(2));
+        shoppingList.addProduct(products.get(3));
+        shoppingList.addProduct(products.get(4));
+        shoppingList.addProduct(products.get(5));
+        shoppingList.addProduct(products.get(6));
+        shoppingList.addProduct(products.get(7));
+        shoppingList.addProduct(products.get(8));
+        shoppingList.addProduct(products.get(9));
+
 
 
         StoreModel store0 = new StoreModel(this);
@@ -68,22 +80,33 @@ public class MainActivity extends AppCompatActivity {
         store1.name = "Hall 1";
         store1.saveOrThrow();
 
-        if (savedInstanceState == null) {
+        if (savedInstanceState == null) { //Prevent adding fragment twice
             this.getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, ShoppingListFragment.newInstance())
                     .commit();
+
+            /*//Create new fragment and transaction
+            FragmentManager fm = getFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+
+            PopularProductsFragment fragment_popular_product = new PopularProductsFragment();
+            ft.add(R.id.fragment_container_popular_products, fragment_popular_product);
+            ft.commit();
+
+            */
+            this.getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container_popular_products, PopularProductsFragment.newInstance())
+                    .commit();
         }
 
-        Button newPriceButton = this.findViewById(R.id.button_new_price);
+        /*Button newPriceButton = this.findViewById(R.id.button_new_price);
         newPriceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(view.getContext(), AddPriceActivity.class);
                 MainActivity.this.startActivity(intent);
             }
-        });
-
-
+        });*/
 
 
         //Tool Bar

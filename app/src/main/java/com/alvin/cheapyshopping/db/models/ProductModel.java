@@ -31,6 +31,7 @@ abstract class AbstractProductModel<SELF extends AbstractProductModel<SELF>> ext
 
     public static final String COLUMN_PRODUCT_ID = "product_id";
     public static final String COLUMN_NAME = "name";
+    public static final String COLUMN_POPULAR = "popular";
 
     public static abstract class AbstractManager<M extends AbstractProductModel<M>> extends AbstractModel.AbstractManager<M> {
 
@@ -49,7 +50,8 @@ abstract class AbstractProductModel<SELF extends AbstractProductModel<SELF>> ext
             db.execSQL(
                     "CREATE TABLE " + this.getTableName() + " (" +
                             COLUMN_PRODUCT_ID + " INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE," +
-                            COLUMN_NAME + " TEXT NOT NULL" +
+                            COLUMN_NAME + " TEXT NOT NULL," +
+                            COLUMN_POPULAR + " INTEGER DEFAULT 1" +
                     ")"
             );
         }
@@ -83,6 +85,7 @@ abstract class AbstractProductModel<SELF extends AbstractProductModel<SELF>> ext
 
     public long productId;
     public String name;
+    public int popular;
 
 
     @Override

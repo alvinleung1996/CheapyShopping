@@ -57,9 +57,11 @@ public class ShoppingListFragment extends Fragment {
 
         public static class ProductViewHolder extends AbstractViewHolder {
             private TextView mProductNameTextView;
+            private TextView mProductID;
             private ProductViewHolder(View v) {
                 super(v);
                 this.mProductNameTextView = v.findViewById(R.id.text_product_name);
+                this.mProductID = v.findViewById(R.id.text_product_id);
             }
         }
 
@@ -95,7 +97,8 @@ public class ShoppingListFragment extends Fragment {
 
             } else if (holder instanceof ProductViewHolder) {
                 ProductViewHolder h = (ProductViewHolder) holder;
-                h.mProductNameTextView.setText(this.listItems.get(position).product.name);
+                h.mProductNameTextView.setText(this.listItems.get(position).product.name); // Set product name in Textview
+                h.mProductID.setText(String.valueOf(this.listItems.get(position).product.productId)); // Set productID in Textview
             }
         }
 
@@ -139,6 +142,7 @@ public class ShoppingListFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         this.mProductList.setLayoutManager(new LinearLayoutManager(this.getContext()));
+
 
         ShoppingListModel shoppingList = ShoppingListModel.manager.getLatestShoppingList(this.getContext());
         List<ProductModel> products = shoppingList.getProducts();

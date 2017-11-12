@@ -6,8 +6,8 @@
 
     <Button
         android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:text="MY SHOPPING LIST"
+        android:layout_height="22dp"
+        android:text="POPULAR PRODUCTS"
         android:textColor="@color/white"
         android:id="@+id/main_shopping_list_name"
         android:gravity="center"
@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginTop="25dp"
-        android:id="@+id/list_products">
+        android:id="@+id/popular_products">
 
     </android.support.v7.widget.RecyclerView>
 
