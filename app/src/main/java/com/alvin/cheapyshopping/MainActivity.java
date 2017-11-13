@@ -23,6 +23,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.alvin.cheapyshopping.db.DatabaseHelper;
+import com.alvin.cheapyshopping.db.models.PriceModel;
 import com.alvin.cheapyshopping.db.models.ProductModel;
 import com.alvin.cheapyshopping.db.models.ShoppingListModel;
 import com.alvin.cheapyshopping.db.models.StoreModel;
@@ -64,9 +65,6 @@ public class MainActivity extends AppCompatActivity {
         shoppingList.addProduct(products.get(4));
         shoppingList.addProduct(products.get(5));
         shoppingList.addProduct(products.get(6));
-        shoppingList.addProduct(products.get(7));
-        shoppingList.addProduct(products.get(8));
-        shoppingList.addProduct(products.get(9));
 
 
 

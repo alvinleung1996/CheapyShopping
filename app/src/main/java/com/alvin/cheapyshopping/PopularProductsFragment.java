@@ -43,12 +43,13 @@ public class PopularProductsFragment extends Fragment {
                 mPopularProductPrice = v.findViewById(R.id.popular_products_price);
                 mPopularProductName = v.findViewById(R.id.popular_products_name);
                 mPopularProductImg = v.findViewById(R.id.popular_products_img);
+                // Go to product activity
                 itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         Context context = view.getContext();
                         Intent intent = new Intent(view.getContext(), ProductActivity.class);
-                        intent.putExtra("mProduct", mProductID);
+                        intent.putExtra("mProductID", mProductID);
                         context.startActivity(intent);
                     }
                 });

@@ -1,5 +1,7 @@
 package com.alvin.cheapyshopping;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.alvin.cheapyshopping.db.models.PriceModel;
 import com.alvin.cheapyshopping.db.models.ProductModel;
 import com.alvin.cheapyshopping.db.models.ShoppingListModel;
 import com.alvin.cheapyshopping.db.models.StoreModel;
@@ -57,11 +60,24 @@ public class ShoppingListFragment extends Fragment {
 
         public static class ProductViewHolder extends AbstractViewHolder {
             private TextView mProductNameTextView;
-            private TextView mProductID;
+            private TextView mProductIDTextView;
+            private TextView mProductBestPriceTextView;
+            private long mProductID; // For passing into the Product Activity
             private ProductViewHolder(View v) {
                 super(v);
                 this.mProductNameTextView = v.findViewById(R.id.text_product_name);
-                this.mProductID = v.findViewById(R.id.text_product_id);
+                this.mProductIDTextView = v.findViewById(R.id.text_product_id);
+                this.mProductBestPriceTextView = v.findViewById(R.id.text_product_best_price);
+                // Go to product activity
+                itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Context context = view.getContext();
+                        Intent intent = new Intent(view.getContext(), ProductActivity.class);
+                        intent.putExtra("mProductID", mProductID);
+                        context.startActivity(intent);
+                    }
+                });
             }
         }
 
@@ -98,7 +114,8 @@ public class ShoppingListFragment extends Fragment {
             } else if (holder instanceof ProductViewHolder) {
                 ProductViewHolder h = (ProductViewHolder) holder;
                 h.mProductNameTextView.setText(this.listItems.get(position).product.name); // Set product name in Textview
-                h.mProductID.setText(String.valueOf(this.listItems.get(position).product.productId)); // Set productID in Textview
+                h.mProductIDTextView.setText(String.valueOf(this.listItems.get(position).product.productId)); // Set productID in Textview
+                h.mProductID = this.listItems.get(position).product.productId;
             }
         }
 
