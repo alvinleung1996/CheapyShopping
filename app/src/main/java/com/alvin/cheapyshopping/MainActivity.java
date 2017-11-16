@@ -31,22 +31,30 @@ import com.alvin.cheapyshopping.fragments.StoreListFragment;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements
-        ShoppingListFragment.ShoppingListFragmentListener {
+public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_ADD_SHOPPING_LIST_PRODUCT = 1;
 
 
     private static final String FRAGMENT_SHOPPING_LIST = "com.alvin.cheapyshopping.MainActivity.FRAGMENT_SHOPPING_LIST";
+    private static final String FRAGMENT_STORE_LIST = "com.alvin.cheapyshopping.MainActivity.FRAGMENT_STORE_LIST";
 
 
-    private static final String FRAGMENT_STACK_STATE_HOME = "home";
+
+    public interface FloatingActionButtonInteractionListener {
+
+        void onConfigureFloatingActionButton(FloatingActionButton button);
+
+        void onFloatingActionButtonClick(FloatingActionButton button);
+
+    }
+
 
 
     private DrawerLayout mDrawerLayout;
     private NavigationView mDrawer;
     private Toolbar mToolbar;
-    private FloatingActionButton mPlusFab;
+    private FloatingActionButton mFab;
 
     private ActionBarDrawerToggle mDrawerToggle;
 
@@ -87,11 +95,11 @@ public class MainActivity extends AppCompatActivity implements
         });
 
         //Floating action buttons
-        this.mPlusFab = findViewById(R.id.fab_plus);
-        this.mPlusFab.setOnClickListener(new View.OnClickListener() {
+        this.mFab = findViewById(R.id.fab_plus);
+        this.mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                MainActivity.this.onPlusFabClick(view);
+                MainActivity.this.onFabClick((FloatingActionButton) view);
             }
         });
 
@@ -117,14 +125,14 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
+        /*
+         * No need to call fragment manager to pop back stack,
+         * the super class method has already take care of it
+         */
         if (this.mDrawerLayout.isDrawerVisible(this.mDrawer)) {
             this.mDrawerLayout.closeDrawer(this.mDrawer);
 
-        } else if (this.getSupportFragmentManager().getBackStackEntryCount() > 0) {
-            // TODO: really need this? or the parent class has already take care this?
-            this.getSupportFragmentManager().popBackStack();
-
-        } else {
+        }  else {
             super.onBackPressed();
         }
     }
@@ -170,47 +178,6 @@ public class MainActivity extends AppCompatActivity implements
 
     /*
     ************************************************************************************************
-    * Fragment Interactions
-    ************************************************************************************************
-     */
-
-    private class FragmentLifecycleCallbacks extends FragmentManager.FragmentLifecycleCallbacks {
-
-        @Override
-        public void onFragmentAttached(FragmentManager fm, Fragment f, Context context) {
-            super.onFragmentAttached(fm, f, context);
-            if (f instanceof StoreListFragment) {
-                ((StoreListFragment) f).setInteractableListener(new StoreListFragmentInteractionListener());
-            }
-        }
-
-        @Override
-        public void onFragmentStarted(FragmentManager fm, Fragment f) {
-            super.onFragmentStarted(fm, f);
-            int itemId;
-            if (f instanceof ShoppingListFragment) {
-                itemId = R.id.nav_home;
-            } else if (f instanceof StoreListFragment) {
-                itemId = R.id.item_store_list;
-            } else {
-                return;
-            }
-
-            MainActivity.this.mDrawer.setCheckedItem(itemId);
-        }
-
-        @Override
-        public void onFragmentDetached(FragmentManager fm, Fragment f) {
-            super.onFragmentDetached(fm, f);
-            if (f instanceof StoreListFragment) {
-                ((StoreListFragment) f).setInteractableListener(null);
-            }
-        }
-    };
-
-
-    /*
-    ************************************************************************************************
     * View Interactions
     ************************************************************************************************
      */
@@ -227,9 +194,78 @@ public class MainActivity extends AppCompatActivity implements
         return false;
     }
 
-    private void onPlusFabClick(View view) {
-        Intent intent = new Intent(this, AddShoppingListProductActivity.class);
-        this.startActivityForResult(intent, REQUEST_ADD_SHOPPING_LIST_PRODUCT);
+
+
+    private void configureFab() {
+        if (this.mActiveFragment != null && this.mActiveFragment instanceof FloatingActionButtonInteractionListener) {
+            ((FloatingActionButtonInteractionListener) this.mActiveFragment).onConfigureFloatingActionButton(this.mFab);
+        }
+    }
+
+    private void onFabClick(FloatingActionButton button) {
+        if (this.mActiveFragment != null && this.mActiveFragment instanceof FloatingActionButtonInteractionListener) {
+            ((FloatingActionButtonInteractionListener) this.mActiveFragment).onFloatingActionButtonClick(button);
+        }
+    }
+
+
+
+    /*
+    ************************************************************************************************
+    * Fragment Interactions
+    ************************************************************************************************
+     */
+
+    private Fragment mActiveFragment;
+
+    private class FragmentLifecycleCallbacks extends FragmentManager.FragmentLifecycleCallbacks {
+
+        @Override
+        public void onFragmentAttached(FragmentManager fm, Fragment f, Context context) {
+            super.onFragmentAttached(fm, f, context);
+            if (f instanceof ShoppingListFragment) {
+                ((ShoppingListFragment) f).setInteractionListener(new ShoppingListFragmentInteractionListener());
+            } else if (f instanceof StoreListFragment) {
+                ((StoreListFragment) f).setInteractableListener(new StoreListFragmentInteractionListener());
+            }
+        }
+
+        @Override
+        public void onFragmentStarted(FragmentManager fm, Fragment f) {
+            super.onFragmentStarted(fm, f);
+
+            MainActivity.this.mActiveFragment = f;
+
+            int itemId = 0;
+            if (f instanceof ShoppingListFragment) {
+                itemId = R.id.nav_home;
+            } else if (f instanceof StoreListFragment) {
+                itemId = R.id.item_store_list;
+            }
+            if (itemId != 0) MainActivity.this.mDrawer.setCheckedItem(itemId);
+
+            MainActivity.this.configureFab();
+        }
+
+        @Override
+        public void onFragmentStopped(FragmentManager fm, Fragment f) {
+            super.onFragmentStopped(fm, f);
+            if (MainActivity.this.mActiveFragment == f) {
+                MainActivity.this.mActiveFragment = null;
+
+                MainActivity.this.configureFab();
+            }
+        }
+
+        @Override
+        public void onFragmentDetached(FragmentManager fm, Fragment f) {
+            super.onFragmentDetached(fm, f);
+            if (f instanceof ShoppingListFragment) {
+                ((ShoppingListFragment) f).setInteractionListener(null);
+            } else if (f instanceof StoreListFragment) {
+                ((StoreListFragment) f).setInteractableListener(null);
+            }
+        }
     }
 
 
@@ -248,16 +284,6 @@ public class MainActivity extends AppCompatActivity implements
         return true;
     }
 
-    @Override
-    public void onShoppingListStoreItemSelected(ShoppingListFragment fragment, StoreModel model) {
-        Toast.makeText(this, "Selected Store: " + model.name, Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onShoppingListProductItemSelected(ShoppingListFragment fragment, ProductModel model) {
-        Toast.makeText(this, "Selected Product: " + model.name, Toast.LENGTH_SHORT).show();
-    }
-
     private void onRequestAddShoppingListProductResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_ADD_SHOPPING_LIST_PRODUCT && resultCode == RESULT_OK) {
             ShoppingListFragment fragment = (ShoppingListFragment) this.getSupportFragmentManager().findFragmentByTag(FRAGMENT_SHOPPING_LIST);
@@ -265,6 +291,28 @@ public class MainActivity extends AppCompatActivity implements
                 fragment.updateShoppingListItemList();
             }
         }
+    }
+
+    private class ShoppingListFragmentInteractionListener implements ShoppingListFragment.InteractionListener {
+
+        @Override
+        public void onRequestAddProduct(ShoppingListFragment fragment) {
+            Intent intent = new Intent(MainActivity.this, AddShoppingListProductActivity.class);
+            MainActivity.this.startActivityForResult(intent, REQUEST_ADD_SHOPPING_LIST_PRODUCT);
+        }
+
+        @Override
+        public void onStoreSelected(ShoppingListFragment fragment, StoreModel store) {
+            Toast.makeText(MainActivity.this, "Selected Store: " + store.name, Toast.LENGTH_SHORT).show();
+
+        }
+
+        @Override
+        public void onProductSelected(ShoppingListFragment fragment, ProductModel product) {
+            Toast.makeText(MainActivity.this, "Selected Product: " + product.name, Toast.LENGTH_SHORT).show();
+
+        }
+
     }
 
     /*
@@ -277,7 +325,7 @@ public class MainActivity extends AppCompatActivity implements
         if (!item.isChecked()) {
             this.getSupportFragmentManager().popBackStack();
             this.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, StoreListFragment.newInstance())
+                    .replace(R.id.fragment_container, StoreListFragment.newInstance(), FRAGMENT_STORE_LIST)
                     .addToBackStack(null)
                     .commit();
         }
@@ -292,7 +340,11 @@ public class MainActivity extends AppCompatActivity implements
             Toast.makeText(MainActivity.this, "Store Selected: " + store.name, Toast.LENGTH_SHORT).show();
         }
 
-    };
+        @Override
+        public void onRequestNewStore(StoreListFragment fragment) {
+
+        }
+    }
 
 
     /*

@@ -1,8 +1,8 @@
 package com.alvin.cheapyshopping.fragments;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -11,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.alvin.cheapyshopping.MainActivity;
 import com.alvin.cheapyshopping.R;
 import com.alvin.cheapyshopping.db.models.ProductModel;
 import com.alvin.cheapyshopping.db.models.ShoppingListModel;
@@ -22,13 +23,15 @@ import java.util.List;
 import java.util.Map;
 
 
-public class ShoppingListFragment extends Fragment {
+public class ShoppingListFragment extends Fragment implements MainActivity.FloatingActionButtonInteractionListener {
 
-    public static interface ShoppingListFragmentListener {
+    public interface InteractionListener {
 
-        public void onShoppingListStoreItemSelected(ShoppingListFragment fragment, StoreModel model);
+        void onRequestAddProduct(ShoppingListFragment fragment);
 
-        public void onShoppingListProductItemSelected(ShoppingListFragment fragment, ProductModel model);
+        void onStoreSelected(ShoppingListFragment fragment, StoreModel store);
+
+        void onProductSelected(ShoppingListFragment fragment, ProductModel product);
 
     }
 
@@ -56,100 +59,136 @@ public class ShoppingListFragment extends Fragment {
 
     }
 
-    private class ShoppingListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListItemViewHolder> {
 
-        private class StoreViewHolder extends RecyclerView.ViewHolder {
-            private StoreModel model;
-            private TextView storeNameTextView;
-            private TextView storeLocationTextView;
-            private TextView storeIdTextView;
-            private StoreViewHolder(View v) {
-                super(v);
-                this.storeNameTextView = v.findViewById(R.id.text_store_name);
-                this.storeLocationTextView = v.findViewById(R.id.text_store_location);
-                this.storeIdTextView = v.findViewById(R.id.text_store_id);
-                v.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        ShoppingListFragment.this.onStoreItemClick(view, StoreViewHolder.this.model);
-                    }
-                });
-            }
+        private List<ShoppingListItem> mShoppingListItems;
+
+        private ShoppingListAdapter() {
+            this.mShoppingListItems = new ArrayList<>();
         }
-
-        private class ProductViewHolder extends RecyclerView.ViewHolder {
-            private ProductModel model;
-            private TextView productNameTextView;
-            private TextView productBestPriceTextView;
-            private TextView productIDTextView;
-            private ProductViewHolder(View v) {
-                super(v);
-                this.productNameTextView = v.findViewById(R.id.text_product_name);
-                this.productBestPriceTextView = v.findViewById(R.id.text_product_best_price);
-                this.productIDTextView = v.findViewById(R.id.text_product_id);
-                itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        ShoppingListFragment.this.onProductItemClick(view, ProductViewHolder.this.model);
-                    }
-                });
-            }
-        }
-
-        private ShoppingListAdapter(List<ShoppingListItem> shoppingListItems) {
-            this.shoppingListItems = shoppingListItems;
-        }
-
-        private List<ShoppingListItem> shoppingListItems;
 
         @Override
         public int getItemViewType(int position) {
-            return this.shoppingListItems.get(position).type;
+            return this.mShoppingListItems.get(position).type;
         }
 
         @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View v;
+        public int getItemCount() {
+            return this.mShoppingListItems.size();
+        }
+
+        @Override
+        public ShoppingListItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             switch (viewType) {
                 case ShoppingListItem.TYPE_STORE:
-                    v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_shopping_list_store, parent, false);
-                    return new StoreViewHolder(v);
+                    return new StoreItemViewHolder(parent);
                 case ShoppingListItem.TYPE_PRODUCT:
-                    v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_shopping_list_product, parent, false);
-                    return new ProductViewHolder(v);
+                    return new ProductItemViewHolder(parent);
             }
             return null;
         }
 
         @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            if (holder instanceof StoreViewHolder) {
-                StoreViewHolder h = (StoreViewHolder) holder;
-                StoreModel store = this.shoppingListItems.get(position).store;
-                h.model = store;
-                h.storeNameTextView.setText(store.name);
-                h.storeLocationTextView.setText(store.location);
-                h.storeIdTextView.setText("id:" + store.storeId);
-
-            } else if (holder instanceof ProductViewHolder) {
-                ProductViewHolder h = (ProductViewHolder) holder;
-                ProductModel product = this.shoppingListItems.get(position).product;
-                h.model = product;
-                h.productNameTextView.setText(product.name); // Set product name in Textview
-                h.productBestPriceTextView.setText(10 + "Fake");
-                h.productIDTextView.setText("id:" + product.productId); // Set productID in Textview
+        public void onBindViewHolder(ShoppingListItemViewHolder holder, int position) {
+            ShoppingListItem item = this.mShoppingListItems.get(position);
+            switch (item.type) {
+                case ShoppingListItem.TYPE_STORE:
+                    ((StoreItemViewHolder) holder).onBind(item.store);
+                    break;
+                case ShoppingListItem.TYPE_PRODUCT:
+                    ((ProductItemViewHolder) holder).onBind(item.product);
+                    break;
             }
         }
 
         @Override
-        public int getItemCount() {
-            return this.shoppingListItems.size();
+        public void onViewRecycled(ShoppingListItemViewHolder holder) {
+            super.onViewRecycled(holder);
+            holder.onRecycled();
+
         }
 
         private void updateShoppingListItems(List<ShoppingListItem> items) {
-            this.shoppingListItems = items;
+            this.mShoppingListItems = items;
             this.notifyDataSetChanged();
             // TODO: Can we compute the modification of the data set?
+        }
+    }
+
+    private abstract class ShoppingListItemViewHolder extends RecyclerView.ViewHolder {
+
+        private ShoppingListItemViewHolder(View v) {
+            super(v);
+        }
+
+        protected abstract void onRecycled();
+    }
+
+    private class StoreItemViewHolder extends ShoppingListItemViewHolder {
+
+        private StoreModel mStore;
+        private TextView mStoreNameTextView;
+        private TextView mStoreLocationTextView;
+        private TextView mStoreIdTextView;
+
+        private StoreItemViewHolder(ViewGroup parent) {
+            super(ShoppingListFragment.this.getLayoutInflater().inflate(R.layout.item_shopping_list_store, parent, false));
+            View view = this.itemView;
+            this.mStoreNameTextView = view.findViewById(R.id.text_store_name);
+            this.mStoreLocationTextView = view.findViewById(R.id.text_store_location);
+            this.mStoreIdTextView = view.findViewById(R.id.text_store_id);
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ShoppingListFragment.this.onStoreItemClick(view, StoreItemViewHolder.this.mStore);
+                }
+            });
+        }
+
+        private void onBind(StoreModel store) {
+            this.mStore = store;
+            this.mStoreNameTextView.setText(store.name);
+            this.mStoreLocationTextView.setText(store.location);
+            this.mStoreIdTextView.setText("id:" + store.storeId);
+        }
+
+        @Override
+        protected void onRecycled() {
+            this.mStore = null;
+        }
+    }
+
+    private class ProductItemViewHolder extends ShoppingListItemViewHolder {
+
+        private ProductModel mProduct;
+        private TextView mProductNameTextView;
+        private TextView mProductBestPriceTextView;
+        private TextView mProductIdTextView;
+
+        private ProductItemViewHolder(ViewGroup parent) {
+            super(ShoppingListFragment.this.getLayoutInflater().inflate(R.layout.item_shopping_list_product, parent, false));
+            View view = this.itemView;
+            this.mProductNameTextView = view.findViewById(R.id.text_product_name);
+            this.mProductBestPriceTextView = view.findViewById(R.id.text_product_best_price);
+            this.mProductIdTextView = view.findViewById(R.id.text_product_id);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    ShoppingListFragment.this.onProductItemClick(view, ProductItemViewHolder.this.mProduct);
+                }
+            });
+        }
+
+        private void onBind(ProductModel product) {
+            this.mProduct = product;
+            this.mProductNameTextView.setText(product.name); // Set product name in Textview
+            this.mProductBestPriceTextView.setText(10 + "Fake");
+            this.mProductIdTextView.setText("id:" + product.productId); // Set productID in Textview
+        }
+
+        @Override
+        protected void onRecycled() {
+            this.mProduct = null;
         }
     }
 
@@ -171,19 +210,8 @@ public class ShoppingListFragment extends Fragment {
 
     private ShoppingListModel mShoppingList;
 
-    private ShoppingListFragmentListener mShoppingListFragmentListener;
+    private InteractionListener mInteractionListener;
 
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof ShoppingListFragmentListener) {
-            this.mShoppingListFragmentListener = (ShoppingListFragmentListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement ShoppingListFragmentListener");
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -201,29 +229,38 @@ public class ShoppingListFragment extends Fragment {
 
         this.mShoppingList = ShoppingListModel.manager.getLatestShoppingList(this.getContext());
 
-        this.mShoppingListItemListAdapter = new ShoppingListAdapter(new ArrayList<ShoppingListItem>());
+        this.mShoppingListItemListAdapter = new ShoppingListAdapter();
         this.mShoppingListItemList.setAdapter(this.mShoppingListItemListAdapter);
 
         this.updateShoppingListItemList();
     }
 
+    public void setInteractionListener(InteractionListener listener) {
+        this.mInteractionListener = listener;
+    }
+
+
     @Override
-    public void onDetach() {
-        super.onDetach();
-        this.mShoppingListFragmentListener = null;
+    public void onConfigureFloatingActionButton(FloatingActionButton button) {
+
+    }
+
+    @Override
+    public void onFloatingActionButtonClick(FloatingActionButton button) {
+        this.mInteractionListener.onRequestAddProduct(this);
     }
 
 
 
     private void onStoreItemClick(View view, StoreModel model) {
-        if (this.mShoppingListFragmentListener != null) {
-            this.mShoppingListFragmentListener.onShoppingListStoreItemSelected(this, model);
+        if (this.mInteractionListener != null) {
+            this.mInteractionListener.onStoreSelected(this, model);
         }
     }
 
     private void onProductItemClick(View view, ProductModel model) {
-        if (this.mShoppingListFragmentListener != null) {
-            this.mShoppingListFragmentListener.onShoppingListProductItemSelected(this, model);
+        if (this.mInteractionListener != null) {
+            this.mInteractionListener.onProductSelected(this, model);
         }
     }
 

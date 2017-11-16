@@ -1,8 +1,8 @@
 package com.alvin.cheapyshopping.fragments;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.alvin.cheapyshopping.MainActivity;
 import com.alvin.cheapyshopping.R;
 import com.alvin.cheapyshopping.db.models.StoreModel;
 
@@ -19,11 +20,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class StoreListFragment extends Fragment {
+public class StoreListFragment extends Fragment implements MainActivity.FloatingActionButtonInteractionListener {
 
     public interface InteractionListener {
 
         void onStoreSelected(StoreListFragment fragment, StoreModel store);
+
+        void onRequestNewStore(StoreListFragment fragment);
 
     }
 
@@ -132,6 +135,20 @@ public class StoreListFragment extends Fragment {
 
         this.updateStoreList();
     }
+
+
+    @Override
+    public void onConfigureFloatingActionButton(FloatingActionButton button) {
+
+    }
+
+    @Override
+    public void onFloatingActionButtonClick(FloatingActionButton button) {
+        if (this.mInteractionListener != null) {
+            this.mInteractionListener.onRequestNewStore(this);
+        }
+    }
+
 
     public void onStoreItemClick(View view, StoreModel store) {
         if (mInteractionListener != null) {
