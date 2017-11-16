@@ -3,6 +3,8 @@ package com.alvin.cheapyshopping;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.alvin.cheapyshopping.fragments.SelectStoreFragment;
+
 public class AddPriceActivity extends AppCompatActivity {
 
     @Override

@@ -1,9 +1,9 @@
 <resources>
+
     <string name="app_name">Cheapy Shopping</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- For accessibility -->
+    <string name="message_drawer_open">Open Drawer</string>
+    <string name="message_drawer_close">Close Drawer</string>
 
-    <string name="drawer_open">Open</string>
-    <string name="drawer_close">Close</string>
 </resources>

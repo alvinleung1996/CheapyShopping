@@ -11,7 +11,7 @@
         android:title="Edit"
         app:showAsAction="never" />
     <item
-        android:id="@+id/toolbar_refresh"
+        android:id="@+id/item_refresh"
         android:title="Refresh"
         app:showAsAction="never" />
 

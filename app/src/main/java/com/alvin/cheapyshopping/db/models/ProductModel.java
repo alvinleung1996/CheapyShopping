@@ -3,7 +3,6 @@ package com.alvin.cheapyshopping.db.models;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.alvin.cheapyshopping.db.AbstractModel;
@@ -27,7 +26,7 @@ public class ProductModel extends AbstractProductModel<ProductModel> {
 
 }
 
-abstract class AbstractProductModel<SELF extends AbstractProductModel<SELF>> extends AbstractModel<SELF> {
+abstract class AbstractProductModel<M extends AbstractProductModel<M>> extends AbstractModel<M> {
 
     public static final String COLUMN_PRODUCT_ID = "product_id";
     public static final String COLUMN_NAME = "name";
@@ -66,7 +65,9 @@ abstract class AbstractProductModel<SELF extends AbstractProductModel<SELF>> ext
         public String[] getColumnNames() {
             return new String[] {
                     COLUMN_PRODUCT_ID,
-                    COLUMN_NAME
+                    COLUMN_NAME,
+                    COLUMN_POPULAR,
+                    COLUMN_DESCRIPTION
             };
         }
 
@@ -80,15 +81,17 @@ abstract class AbstractProductModel<SELF extends AbstractProductModel<SELF>> ext
 
     };
 
-    public AbstractProductModel(Context context, AbstractManager<SELF> manager) {
+    public AbstractProductModel(Context context, AbstractManager<M> manager) {
         super(context, manager);
         this.productId = -1;
+        this.popular = 0;
+        this.description = "NO PRODUCT DESCRIPTION AVAILABLE.";
     }
 
     public long productId;
     public String name;
-    public int popular = 1;
-    public String description = "NO PRODUCT DESCRIPTION AVAILABLE.";
+    public int popular;
+    public String description;
 
 
     @Override
@@ -106,14 +109,16 @@ abstract class AbstractProductModel<SELF extends AbstractProductModel<SELF>> ext
     protected void onSave(ContentValues values) {
         super.onSave(values);
         values.put(COLUMN_NAME, this.name);
-        values.put(COLUMN_DESCRIPTION, this.description);
         values.put(COLUMN_POPULAR, this.popular);
+        values.put(COLUMN_DESCRIPTION, this.description);
     }
 
     @Override
     public void readFromCursor(Cursor cursor) {
         super.readFromCursor(cursor);
         this.name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME));
+        this.popular = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_POPULAR));
+        this.description = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DESCRIPTION));
     }
 
 }

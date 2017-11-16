@@ -140,7 +140,7 @@ public class PopularProductsFragment extends Fragment {
         // Set product model for each RecycleView Item
         if (cursor.moveToFirst()){
             do{
-                items.add(new ProductModel(this.getContext()).manager.getByCursor(this.getContext(),cursor));
+                items.add(ProductModel.manager.get(this.getContext(),cursor));
             }while(cursor.moveToNext());
         }
         cursor.close();

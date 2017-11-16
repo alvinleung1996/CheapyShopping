@@ -3,10 +3,8 @@ package com.alvin.cheapyshopping.db.models;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.alvin.cheapyshopping.db.AbstractModel;
 
@@ -33,11 +31,11 @@ public class ShoppingListModel extends AbstractShoppingListModel<ShoppingListMod
 
 }
 
-abstract class AbstractShoppingListModel<SELF extends AbstractShoppingListModel<SELF>> extends AbstractModel<SELF> {
+abstract class AbstractShoppingListModel<M extends AbstractShoppingListModel<M>> extends AbstractModel<M> {
 
     public static final String COLUMN_SHOPPING_LIST_ID = "shopping_list_id";
     public static final String COLUMN_NAME = "name";
-    public static final String COLUMN_CREATION_TIME = "creation_time";
+    public static final String COLUMN_TIME = "time";
 
     public static abstract class AbstractManager<M extends AbstractShoppingListModel<M>> extends AbstractModel.AbstractManager<M> {
 
@@ -57,7 +55,7 @@ abstract class AbstractShoppingListModel<SELF extends AbstractShoppingListModel<
                     "CREATE TABLE " + this.getTableName() + " (" +
                             COLUMN_SHOPPING_LIST_ID + " INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE," +
                             COLUMN_NAME + " TEXT NOT NULL," +
-                            COLUMN_CREATION_TIME + " INTEGER NOT NULL" +
+                            COLUMN_TIME + " INTEGER NOT NULL" +
                     ")"
             );
             ShoppingListProductRelationModel.manager.createTable(db);
@@ -70,7 +68,7 @@ abstract class AbstractShoppingListModel<SELF extends AbstractShoppingListModel<
         }
 
         public M getLatestShoppingList(Context context) {
-            String orderBy = COLUMN_CREATION_TIME + " DESC";
+            String orderBy = COLUMN_TIME + " DESC";
             String limit = "1";
             SQLiteDatabase db = getDatabase(context);
             Cursor cursor = db.query(
@@ -85,23 +83,23 @@ abstract class AbstractShoppingListModel<SELF extends AbstractShoppingListModel<
             );
             M model = null;
             if (cursor.moveToFirst()) {
-                model = this.getByCursor(context, cursor);
+                model = this.get(context, cursor);
             }
             cursor.close();
             return model;
         }
     }
 
-    public AbstractShoppingListModel(Context context, AbstractManager<SELF> manager) {
+    public AbstractShoppingListModel(Context context, AbstractManager<M> manager) {
         super(context, manager);
         this.shoppingListId = -1;
-        this.name = "";
-        this.creationTime = new Date();
+        this.name = "Unnamed Shopping List";
+        this.time = new Date();
     }
 
     public long shoppingListId;
     public String name;
-    public Date creationTime;
+    public Date time;
 
 
     public boolean addProduct(ProductModel product) {
@@ -139,7 +137,7 @@ abstract class AbstractShoppingListModel<SELF extends AbstractShoppingListModel<
 
         List<ProductModel> products = new ArrayList<>();
         while (cursor.moveToNext()) {
-            ProductModel product = ProductModel.manager.getByCursor(this.mContext, cursor);
+            ProductModel product = ProductModel.manager.get(this.mContext, cursor);
             products.add(product);
         }
         cursor.close();
@@ -150,14 +148,14 @@ abstract class AbstractShoppingListModel<SELF extends AbstractShoppingListModel<
     protected void onSave(ContentValues values) {
         super.onSave(values);
         values.put(COLUMN_NAME, this.name);
-        values.put(COLUMN_CREATION_TIME, this.creationTime.getTime());
+        values.put(COLUMN_TIME, this.time.getTime());
     }
 
     @Override
     public void readFromCursor(Cursor cursor) {
         super.readFromCursor(cursor);
         this.name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME));
-        this.creationTime = new Date(cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_CREATION_TIME)));
+        this.time = new Date(cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_TIME)));
     }
 
 }
@@ -179,7 +177,7 @@ class ShoppingListProductRelationModel extends AbstractShoppingListProductRelati
 
 }
 
-abstract class AbstractShoppingListProductRelation<SELF extends AbstractShoppingListProductRelation<SELF>> extends AbstractModel<SELF> {
+abstract class AbstractShoppingListProductRelation<M extends AbstractShoppingListProductRelation<M>> extends AbstractModel<M> {
 
     public static final String COLUMN_RELATION_ID = "relation_id";
     public static final String COLUMN_FOREIGN_SHOPPING_LIST_ID = "shopping_list_id";
@@ -202,14 +200,18 @@ abstract class AbstractShoppingListProductRelation<SELF extends AbstractShopping
             db.execSQL(
                     "CREATE TABLE " + this.getTableName() + " (" +
                             COLUMN_RELATION_ID + " INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE," +
+
                             COLUMN_FOREIGN_SHOPPING_LIST_ID + " INTEGER NOT NULL," +
                             COLUMN_FOREIGN_PRODUCT_ID + " INTEGER NOT NULL," +
+
                             "FOREIGN KEY(" + COLUMN_FOREIGN_SHOPPING_LIST_ID + ") REFERENCES " +
                                     ShoppingListModel.manager.getTableName() + "(" + ShoppingListModel.COLUMN_SHOPPING_LIST_ID + ")" +
                                     " ON DELETE CASCADE," +
                             "FOREIGN KEY(" + COLUMN_FOREIGN_PRODUCT_ID + ") REFERENCES " +
                                     ProductModel.manager.getTableName() + "(" + ProductModel.COLUMN_PRODUCT_ID + ")" +
-                                    " ON DELETE CASCADE" +
+                                    " ON DELETE CASCADE," +
+
+                            "UNIQUE(" + COLUMN_FOREIGN_SHOPPING_LIST_ID + ", " + COLUMN_FOREIGN_PRODUCT_ID + ")" +
                      ")"
             );
         }
@@ -220,7 +222,7 @@ abstract class AbstractShoppingListProductRelation<SELF extends AbstractShopping
         }
     }
 
-    public AbstractShoppingListProductRelation(Context context, AbstractManager<SELF> manager) {
+    public AbstractShoppingListProductRelation(Context context, AbstractManager<M> manager) {
         super(context, manager);
         this.relationId = -1;
         this.foreignShoppingListId = -1;
@@ -238,8 +240,7 @@ abstract class AbstractShoppingListProductRelation<SELF extends AbstractShopping
         String selection = ShoppingListModel.COLUMN_SHOPPING_LIST_ID + " = ?";
         String[] selectionArgs = { Long.toString(this.foreignShoppingListId) };
         String limit = "1";
-        SQLiteDatabase db = getDatabase(mContext);
-        Cursor cursor = db.query(
+        Cursor cursor = this.getDatabase().query(
                 tableName,
                 null, /* read all data */
                 selection,
@@ -251,7 +252,7 @@ abstract class AbstractShoppingListProductRelation<SELF extends AbstractShopping
         );
         ShoppingListModel model = null;
         if (cursor.moveToFirst()) {
-            model = ShoppingListModel.manager.getByCursor(this.mContext, cursor);
+            model = ShoppingListModel.manager.get(this.mContext, cursor);
         }
         cursor.close();
         return model;
@@ -262,8 +263,7 @@ abstract class AbstractShoppingListProductRelation<SELF extends AbstractShopping
         String selection = ProductModel.COLUMN_PRODUCT_ID + " = ?";
         String[] selectionArgs = { Long.toString(this.foreignProductId) };
         String limit = "1";
-        SQLiteDatabase db = getDatabase(mContext);
-        Cursor cursor = db.query(
+        Cursor cursor = this.getDatabase().query(
                 tableName,
                 null, /* read all data */
                 selection,
@@ -275,7 +275,7 @@ abstract class AbstractShoppingListProductRelation<SELF extends AbstractShopping
         );
         ProductModel model = null;
         if (cursor.moveToFirst()) {
-            model = ProductModel.manager.getByCursor(this.mContext, cursor);
+            model = ProductModel.manager.get(this.mContext, cursor);
         }
         cursor.close();
         return model;

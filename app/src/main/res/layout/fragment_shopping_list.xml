@@ -2,24 +2,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.alvin.cheapyshopping.ShoppingListFragment">
-
-    <Button
-        android:layout_width="match_parent"
-        android:layout_height="20dp"
-        android:text="MY SHOPPING LIST"
-        android:textColor="@color/white"
-        android:id="@+id/main_shopping_list_name"
-        android:gravity="center"
-        android:background="@color/colorPrimary"
-        android:elevation="6dp"/>
-
+    tools:context="com.alvin.cheapyshopping.fragments.ShoppingListFragment">
 
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="25dp"
-        android:id="@+id/list_products">
+        android:id="@+id/list_shopping_list_items">
 
     </android.support.v7.widget.RecyclerView>
 

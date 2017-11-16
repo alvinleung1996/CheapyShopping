@@ -18,14 +18,14 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DATABASE_NAME = "database.db";
     private static final int DATABASE_VERSION = 1;
 
-    private static DatabaseHelper instance;
-    private static SQLiteDatabase dbInstance;
+    private static DatabaseHelper sInstance;
+    private static SQLiteDatabase sDbInstance;
 
     public static DatabaseHelper getInstance(Context context) {
-        if (instance == null) {
-            instance = new DatabaseHelper(context);
+        if (sInstance == null) {
+            sInstance = new DatabaseHelper(context);
         }
-        return instance;
+        return sInstance;
     }
 
     private DatabaseHelper(Context context) {
@@ -59,16 +59,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public SQLiteDatabase getDatabase() {
-        if (dbInstance == null) {
-            dbInstance = this.getWritableDatabase();
+        if (sDbInstance == null) {
+            sDbInstance = this.getWritableDatabase();
         }
-        return dbInstance;
+        return sDbInstance;
         /* Leave the db open and android will automatically close/free it when application close */
     }
 
     public boolean deleteDatabase() {
         this.close();
-        dbInstance = null;
+        sDbInstance = null;
         return context.deleteDatabase(DATABASE_NAME);
     }
 

@@ -63,7 +63,7 @@ public class ProductActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int res_id = item.getItemId();
-        if(res_id == R.id.toolbar_refresh)
+        if(res_id == R.id.item_refresh)
         {
             Toast.makeText(getApplicationContext(), "Page will be refreshed", Toast.LENGTH_LONG).show();
         }
@@ -91,7 +91,7 @@ public class ProductActivity extends AppCompatActivity {
         );
 
         if (cursor.moveToFirst()) {
-            mProduct = mProduct.manager.getByCursor(this,cursor);
+            mProduct = ProductModel.manager.get(this,cursor);
         }
         cursor.close();
         return mProduct;

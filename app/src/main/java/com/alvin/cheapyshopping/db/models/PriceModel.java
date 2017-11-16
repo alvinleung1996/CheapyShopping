@@ -3,9 +3,7 @@ package com.alvin.cheapyshopping.db.models;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import com.alvin.cheapyshopping.db.AbstractModel;
 
@@ -31,7 +29,7 @@ public class PriceModel extends AbstractPriceModel<PriceModel> {
 
 }
 
-abstract class AbstractPriceModel<SELF extends AbstractPriceModel<SELF>> extends AbstractModel<SELF> {
+abstract class AbstractPriceModel<M extends AbstractPriceModel<M>> extends AbstractModel<M> {
 
     public static final String COLUMN_PRICE_ID = "price_id";
     public static final String COLUMN_PRICE = "price";
@@ -39,8 +37,8 @@ abstract class AbstractPriceModel<SELF extends AbstractPriceModel<SELF>> extends
     public static final String COLUMN_PRICE_DATA_0 = "price_data_0";
     public static final String COLUMN_PRICE_DATA_1 = "price_data_1";
     public static final String COLUMN_TIME = "time";
-    public static final String COLUMN_FOREIGN_PRODUCT_ID = "product_id";
-    public static final String COLUMN_FOREIGN_STORE_ID = "store_id";
+    public static final String COLUMN_FOREIGN_PRODUCT_ID = "foreign_product_id";
+    public static final String COLUMN_FOREIGN_STORE_ID = "foreign_store_id";
 
     public static final String TYPE_SINGLE = "SI";
     public static final String TYPE_MULTIPLE = "MU";
@@ -69,8 +67,10 @@ abstract class AbstractPriceModel<SELF extends AbstractPriceModel<SELF>> extends
                             COLUMN_PRICE_DATA_0 + " REAL NOT NULL DEFAULT -1," +
                             COLUMN_PRICE_DATA_1 + " REAL NOT NULL DEFAULT -1," +
                             COLUMN_TIME + " INTEGER NOT NULL," +
+
                             COLUMN_FOREIGN_PRODUCT_ID + " INTEGER NOT NULL," +
                             COLUMN_FOREIGN_STORE_ID + " INTEGER NOT NULL," +
+
                             "FOREIGN KEY(" + COLUMN_FOREIGN_PRODUCT_ID + ") REFERENCES " +
                                     ProductModel.manager.getTableName() + "(" + ProductModel.COLUMN_PRODUCT_ID + ")" +
                                     " ON DELETE CASCADE," +
@@ -86,12 +86,15 @@ abstract class AbstractPriceModel<SELF extends AbstractPriceModel<SELF>> extends
             db.execSQL("DROP TABLE IF EXISTS " + this.getTableName());
         }
 
-    };
+    }
 
 
-    AbstractPriceModel(Context context, AbstractManager<SELF> manager) {
+    AbstractPriceModel(Context context, AbstractManager<M> manager) {
         super(context, manager);
         this.priceId = -1;
+        this.time = new Date();
+        this.foreignStoreId = -1;
+        this.foreignStoreId = -1;
     }
 
     public long priceId;
@@ -113,8 +116,7 @@ abstract class AbstractPriceModel<SELF extends AbstractPriceModel<SELF>> extends
         String selection = ProductModel.COLUMN_PRODUCT_ID + " = ?";
         String[] selectionArgs = { Long.toString(this.foreignProductId) };
         String limit = "1";
-        SQLiteDatabase db = getDatabase(mContext);
-        Cursor cursor = db.query(
+        Cursor cursor = this.getDatabase().query(
                 tableName,
                 null, /* read all data */
                 selection,
@@ -126,7 +128,7 @@ abstract class AbstractPriceModel<SELF extends AbstractPriceModel<SELF>> extends
         );
         ProductModel model = null;
         if (cursor.moveToFirst()) {
-            model = ProductModel.manager.getByCursor(this.mContext, cursor);
+            model = ProductModel.manager.get(this.mContext, cursor);
         }
         cursor.close();
         return model;
@@ -142,8 +144,7 @@ abstract class AbstractPriceModel<SELF extends AbstractPriceModel<SELF>> extends
         String selection = StoreModel.COLUMN_STORE_ID + " = ?";
         String[] selectionArgs = { Long.toString(this.foreignStoreId) };
         String limit = "1";
-        SQLiteDatabase db = getDatabase(mContext);
-        Cursor cursor = db.query(
+        Cursor cursor = this.getDatabase().query(
                 tableName,
                 null, /* read all data */
                 selection,
@@ -155,7 +156,7 @@ abstract class AbstractPriceModel<SELF extends AbstractPriceModel<SELF>> extends
         );
         StoreModel model = null;
         if (cursor.moveToFirst()) {
-            model = StoreModel.manager.getByCursor(this.mContext, cursor);
+            model = StoreModel.manager.get(this.mContext, cursor);
         }
         cursor.close();
         return model;
@@ -193,6 +194,7 @@ abstract class AbstractPriceModel<SELF extends AbstractPriceModel<SELF>> extends
         this.priceData1 = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_PRICE_DATA_1));
         this.time = new Date(cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_TIME)));
         this.foreignProductId = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_FOREIGN_PRODUCT_ID));
+        this.foreignStoreId = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_FOREIGN_STORE_ID));
     }
 
 }

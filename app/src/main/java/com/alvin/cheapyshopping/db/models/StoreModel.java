@@ -3,13 +3,9 @@ package com.alvin.cheapyshopping.db.models;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 
 import com.alvin.cheapyshopping.db.AbstractModel;
-
-import java.util.ArrayList;
-import java.util.List;
 
 // TODO: import java.math.BigDecimal;
 
@@ -32,7 +28,7 @@ public class StoreModel extends AbstractStoreModel<StoreModel> {
 
 }
 
-class AbstractStoreModel<SELF extends AbstractStoreModel<SELF>> extends AbstractModel<SELF> {
+class AbstractStoreModel<M extends AbstractStoreModel<M>> extends AbstractModel<M> {
 
     public static final String COLUMN_STORE_ID = "store_id";
     public static final String COLUMN_LOCATION = "location";
@@ -70,7 +66,7 @@ class AbstractStoreModel<SELF extends AbstractStoreModel<SELF>> extends Abstract
     };
 
 
-    public AbstractStoreModel(Context context, AbstractManager<SELF> manager) {
+    public AbstractStoreModel(Context context, AbstractManager<M> manager) {
         super(context, manager);
         this.storeId = -1;
     }
