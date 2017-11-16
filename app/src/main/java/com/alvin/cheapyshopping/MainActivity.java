@@ -1,11 +1,14 @@
 package com.alvin.cheapyshopping;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -23,16 +26,21 @@ import com.alvin.cheapyshopping.db.models.ProductModel;
 import com.alvin.cheapyshopping.db.models.ShoppingListModel;
 import com.alvin.cheapyshopping.db.models.StoreModel;
 import com.alvin.cheapyshopping.fragments.ShoppingListFragment;
+import com.alvin.cheapyshopping.fragments.StoreListFragment;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements ShoppingListFragment.ShoppingListFragmentListener {
+public class MainActivity extends AppCompatActivity implements
+        ShoppingListFragment.ShoppingListFragmentListener {
 
     private static final int REQUEST_ADD_SHOPPING_LIST_PRODUCT = 1;
 
 
     private static final String FRAGMENT_SHOPPING_LIST = "com.alvin.cheapyshopping.MainActivity.FRAGMENT_SHOPPING_LIST";
+
+
+    private static final String FRAGMENT_STACK_STATE_HOME = "home";
 
 
     private DrawerLayout mDrawerLayout;
@@ -48,6 +56,8 @@ public class MainActivity extends AppCompatActivity implements ShoppingListFragm
         setContentView(R.layout.activity_main);
 
         this.createSampleData();
+
+        this.getSupportFragmentManager().registerFragmentLifecycleCallbacks(new FragmentLifecycleCallbacks(), false);
 
         if (savedInstanceState == null) { //Prevent adding fragment twice
             this.getSupportFragmentManager().beginTransaction()
@@ -157,6 +167,48 @@ public class MainActivity extends AppCompatActivity implements ShoppingListFragm
     }
 
 
+
+    /*
+    ************************************************************************************************
+    * Fragment Interactions
+    ************************************************************************************************
+     */
+
+    private class FragmentLifecycleCallbacks extends FragmentManager.FragmentLifecycleCallbacks {
+
+        @Override
+        public void onFragmentAttached(FragmentManager fm, Fragment f, Context context) {
+            super.onFragmentAttached(fm, f, context);
+            if (f instanceof StoreListFragment) {
+                ((StoreListFragment) f).setInteractableListener(new StoreListFragmentInteractionListener());
+            }
+        }
+
+        @Override
+        public void onFragmentStarted(FragmentManager fm, Fragment f) {
+            super.onFragmentStarted(fm, f);
+            int itemId;
+            if (f instanceof ShoppingListFragment) {
+                itemId = R.id.nav_home;
+            } else if (f instanceof StoreListFragment) {
+                itemId = R.id.item_store_list;
+            } else {
+                return;
+            }
+
+            MainActivity.this.mDrawer.setCheckedItem(itemId);
+        }
+
+        @Override
+        public void onFragmentDetached(FragmentManager fm, Fragment f) {
+            super.onFragmentDetached(fm, f);
+            if (f instanceof StoreListFragment) {
+                ((StoreListFragment) f).setInteractableListener(null);
+            }
+        }
+    };
+
+
     /*
     ************************************************************************************************
     * View Interactions
@@ -165,7 +217,14 @@ public class MainActivity extends AppCompatActivity implements ShoppingListFragm
 
     private boolean onDrawerMenuItemSelected(MenuItem item) {
         Toast.makeText(this, item.getTitle()+" Clicked", Toast.LENGTH_SHORT).show();
-        return true;
+        switch (item.getItemId()) {
+            case R.id.nav_home:
+                return this.onShoppingListDrawerMenuItemSelected(item);
+            case R.id.item_store_list:
+                return this.onStoreListDrawerMenuItemSelected(item);
+        }
+
+        return false;
     }
 
     private void onPlusFabClick(View view) {
@@ -180,6 +239,14 @@ public class MainActivity extends AppCompatActivity implements ShoppingListFragm
     * ShoppingListFragment Interactions
     ************************************************************************************************
      */
+
+    private boolean onShoppingListDrawerMenuItemSelected(MenuItem item) {
+        if (!item.isChecked()) {
+            this.getSupportFragmentManager().popBackStack();
+        }
+        this.mDrawerLayout.closeDrawer(this.mDrawer);
+        return true;
+    }
 
     @Override
     public void onShoppingListStoreItemSelected(ShoppingListFragment fragment, StoreModel model) {
@@ -199,6 +266,33 @@ public class MainActivity extends AppCompatActivity implements ShoppingListFragm
             }
         }
     }
+
+    /*
+    ************************************************************************************************
+    * InteractionListener
+    ************************************************************************************************
+     */
+
+    private boolean onStoreListDrawerMenuItemSelected(MenuItem item) {
+        if (!item.isChecked()) {
+            this.getSupportFragmentManager().popBackStack();
+            this.getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, StoreListFragment.newInstance())
+                    .addToBackStack(null)
+                    .commit();
+        }
+        this.mDrawerLayout.closeDrawer(this.mDrawer);
+        return true;
+    }
+
+    private class StoreListFragmentInteractionListener implements StoreListFragment.InteractionListener {
+
+        @Override
+        public void onStoreSelected(StoreListFragment fragment, StoreModel store) {
+            Toast.makeText(MainActivity.this, "Store Selected: " + store.name, Toast.LENGTH_SHORT).show();
+        }
+
+    };
 
 
     /*
