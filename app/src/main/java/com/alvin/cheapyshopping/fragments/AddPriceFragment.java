@@ -188,10 +188,10 @@ public class AddPriceFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_item_discard:
+            case R.id.item_discard:
                 this.onDiscardOptionItemSelected(item);
                 return true;
-            case R.id.menu_item_save:
+            case R.id.item_save:
                 this.onSaveOptionItemSelected(item);
                 return true;
             default:

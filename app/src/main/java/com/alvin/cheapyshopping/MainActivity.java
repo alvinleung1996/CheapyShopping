@@ -34,6 +34,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_ADD_SHOPPING_LIST_PRODUCT = 1;
+    private static final int REQUEST_ADD_STORE = 2;
 
 
     private static final String FRAGMENT_SHOPPING_LIST = "com.alvin.cheapyshopping.MainActivity.FRAGMENT_SHOPPING_LIST";
@@ -163,11 +164,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
             case REQUEST_ADD_SHOPPING_LIST_PRODUCT:
                 this.onRequestAddShoppingListProductResult(requestCode, resultCode, data);
+                break;
+            case REQUEST_ADD_STORE:
+                this.onRequestAddStoreResult(requestCode, resultCode, data);
                 break;
         }
         super.onActivityResult(requestCode, resultCode, data);
@@ -178,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
 
     /*
     ************************************************************************************************
-    * View Interactions
+    * Drawer Interactions
     ************************************************************************************************
      */
 
@@ -195,6 +200,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /*
+    ************************************************************************************************
+    * Floating Action Button Interactions
+    ************************************************************************************************
+     */
 
     private void configureFab() {
         if (this.mActiveFragment != null && this.mActiveFragment instanceof FloatingActionButtonInteractionListener) {
@@ -317,7 +327,7 @@ public class MainActivity extends AppCompatActivity {
 
     /*
     ************************************************************************************************
-    * InteractionListener
+    * StoreListFragment Interactions
     ************************************************************************************************
      */
 
@@ -333,6 +343,22 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    private void onRequestAddStoreResult(int requestCode, int resultCode, Intent data) {
+        switch (resultCode) {
+            case RESULT_OK:
+                long storeId = data.getLongExtra(AddStoreActivity.EXTRA_ADDED_STORE_ID, -1);
+                Toast.makeText(this, "Store Added: (" + storeId + ")", Toast.LENGTH_SHORT).show();
+                StoreListFragment fragment = (StoreListFragment) this.getSupportFragmentManager().findFragmentByTag(FRAGMENT_STORE_LIST);
+                if (fragment != null) {
+                    fragment.updateStoreList();
+                }
+                break;
+            case RESULT_CANCELED:
+                Toast.makeText(this, "Store add cancelled", Toast.LENGTH_SHORT).show();
+                break;
+        }
+    }
+
     private class StoreListFragmentInteractionListener implements StoreListFragment.InteractionListener {
 
         @Override
@@ -342,7 +368,8 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onRequestNewStore(StoreListFragment fragment) {
-
+            Intent intent = new Intent(MainActivity.this, AddStoreActivity.class);
+            MainActivity.this.startActivityForResult(intent, REQUEST_ADD_STORE);
         }
     }
 

@@ -70,14 +70,14 @@ public class StoreListFragment extends Fragment implements MainActivity.Floating
 
         private StoreModel mStore;
 
-        private ImageView mStorePhotoView;
+        private ImageView mStorePhotoImageView;
         private TextView mStoreNameTextView;
         private TextView mStoreLocationTextView;
 
         private StoreItemHolder(ViewGroup parent) {
             super(StoreListFragment.this.getLayoutInflater().inflate(R.layout.item_store_detail, parent, false));
             View view = this.itemView;
-            this.mStorePhotoView = view.findViewById(R.id.image_store_photo);
+            this.mStorePhotoImageView = view.findViewById(R.id.image_store_photo);
             this.mStoreNameTextView = view.findViewById(R.id.text_store_name);
             this.mStoreLocationTextView = view.findViewById(R.id.text_store_location);
             view.setOnClickListener(new View.OnClickListener() {
@@ -161,7 +161,9 @@ public class StoreListFragment extends Fragment implements MainActivity.Floating
         this.mInteractionListener = listener;
     }
 
-    private void updateStoreList() {
+
+
+    public void updateStoreList() {
         List<StoreModel> stores = this.getAllStores();
         this.mStoreListAdapter.updateStores(stores);
     }
