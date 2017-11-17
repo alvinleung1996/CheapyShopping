@@ -29,4 +29,8 @@
         </activity>
     </application>
 
+    <uses-feature
+        android:name="android.hardware.camera.any"
+        android:required="false"/>
+
 </manifest>
