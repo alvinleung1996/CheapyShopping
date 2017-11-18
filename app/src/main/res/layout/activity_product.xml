@@ -1,83 +1,75 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
+<android.support.v4.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/lightGrey">
+    android:orientation="vertical"
+    android:background="@color/lightGrey"
+    >
 
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/product_toolBar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:elevation="10dp"/>
-
-
-     <android.support.v4.widget.NestedScrollView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:elevation="2dp"
+            android:layout_marginBottom="5dp"
+            android:focusableInTouchMode="true">
+            <ImageView
+                android:id="@+id/image_product"
+                android:contentDescription="Product Image"
+                android:layout_width="match_parent"
+                android:layout_height="280dp"
+                android:background="@color/white"
+                android:elevation="4dp"
+                android:src="@mipmap/ic_launcher"/>
 
-            <RelativeLayout
+            <TextView
+                android:id="@+id/text_product_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Product Name"
+                android:textSize="20sp"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:padding="5dp"
+                android:layout_marginTop="265dp"
+                android:background="@color/colorAccent"
+                android:elevation="6dp"
+                android:layout_centerHorizontal="true"
+                />
+
+            <TextView
+                android:id="@+id/text_product_description_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/white"
-                android:elevation="2dp"
-                android:layout_marginBottom="5dp">
-                <ImageView
-                    android:id="@+id/product_img"
-                    android:contentDescription="Product Image"
-                    android:layout_width="match_parent"
-                    android:layout_height="280dp"
-                    android:background="@color/white"
-                    android:elevation="4dp"
-                    android:src="@mipmap/ic_launcher"/>
+                android:text="Description:"
+                android:padding="4dp"
+                android:layout_marginTop="4dp"
+                android:layout_below="@+id/text_product_name"/>
+            <TextView
+                android:id="@+id/text_product_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:layout_marginBottom="5dp"
+                android:text="This is a product description."
+                android:layout_below="@+id/text_product_description_title"/>
+        </RelativeLayout>
 
-                <TextView
-                    android:id="@+id/product_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Product Name"
-                    android:textSize="20sp"
-                    android:textColor="@color/white"
-                    android:textStyle="bold"
-                    android:padding="5dp"
-                    android:layout_marginTop="265dp"
-                    android:background="@color/colorAccent"
-                    android:elevation="6dp"
-                    android:layout_centerHorizontal="true"
-                    />
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/myrecyclerview_product_price"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            android:layout_below="@id/text_product_description">
+        </android.support.v7.widget.RecyclerView>
 
-                <TextView
-                    android:id="@+id/product_description_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Description:"
-                    android:padding="4dp"
-                    android:layout_marginTop="4dp"
-                    android:layout_below="@+id/product_name"/>
-                <TextView
-                    android:id="@+id/product_description"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="4dp"
-                    android:layout_marginBottom="5dp"
-                    android:text="This is a product description."
-                    android:layout_below="@+id/product_description_title"/>
+    </LinearLayout>
 
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/product_price_recyclerView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:nestedScrollingEnabled="false"
-                    android:layout_below="@id/product_description">
-
-                </android.support.v7.widget.RecyclerView>
-
-            </RelativeLayout>
-
-        </android.support.v4.widget.NestedScrollView>
-
-</android.support.constraint.ConstraintLayout>
+</android.support.v4.widget.NestedScrollView>

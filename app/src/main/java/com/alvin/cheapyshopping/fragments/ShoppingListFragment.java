@@ -1,5 +1,7 @@
 package com.alvin.cheapyshopping.fragments;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -12,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.alvin.cheapyshopping.MainActivity;
+import com.alvin.cheapyshopping.ProductActivity;
 import com.alvin.cheapyshopping.R;
 import com.alvin.cheapyshopping.db.models.ProductModel;
 import com.alvin.cheapyshopping.db.models.ShoppingListModel;
@@ -261,6 +264,10 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
     private void onProductItemClick(View view, ProductModel model) {
         if (this.mInteractionListener != null) {
             this.mInteractionListener.onProductSelected(this, model);
+            Context context = view.getContext();
+            Intent intent = new Intent(view.getContext(), ProductActivity.class);
+            intent.putExtra("mProductID", model.productId);
+            context.startActivity(intent);
         }
     }
 
