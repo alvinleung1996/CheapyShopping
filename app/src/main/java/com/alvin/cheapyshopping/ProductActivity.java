@@ -35,6 +35,7 @@ public class ProductActivity extends AppCompatActivity {
 
         RecyclerView mRecyclerView = (RecyclerView)findViewById(R.id.myrecyclerview_product_price);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mRecyclerView.setNestedScrollingEnabled(false);  // For smoother scrolling
         mAdapter = new ProductPriceListAdapter(this,mProduct);
         mRecyclerView.setAdapter(mAdapter);
 

@@ -91,7 +91,7 @@ public class ProductPriceListAdapter extends RecyclerView.Adapter<ProductPriceLi
                 selectionArgs,
                 null,
                 null,
-                null
+                "price ASC"
         );
 
         if (cursor.moveToFirst()) {
