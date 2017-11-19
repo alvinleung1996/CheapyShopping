@@ -17,7 +17,7 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.alvin.cheapyshopping.R;
-import com.alvin.cheapyshopping.db.models.PriceModel;
+import com.alvin.cheapyshopping.olddb.models.PriceModel;
 
 import java.util.Date;
 

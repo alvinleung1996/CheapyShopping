@@ -7,7 +7,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.alvin.cheapyshopping.db.models.StoreModel;
+import com.alvin.cheapyshopping.olddb.models.StoreModel;
 import com.alvin.cheapyshopping.fragments.AddStoreFragment;
 
 public class AddStoreActivity extends AppCompatActivity {
@@ -64,20 +64,20 @@ public class AddStoreActivity extends AppCompatActivity {
 
         @Override
         public void onDiscardOptionSelected(AddStoreFragment fragment) {
-            AddStoreActivity.this.finishActivity(null);
+            AddStoreActivity.this.finishActivityWithResult(-1);
         }
 
         @Override
-        public void onNewStoreAdded(AddStoreFragment fragment, StoreModel store) {
-            AddStoreActivity.this.finishActivity(store);
+        public void onNewStoreAdded(AddStoreFragment fragment, long storeId) {
+            AddStoreActivity.this.finishActivityWithResult(storeId);
         }
     }
 
 
-    private void finishActivity(StoreModel store) {
-        if (store != null) {
+    private void finishActivityWithResult(long storeId) {
+        if (storeId >= 0) {
             Intent data = new Intent();
-            data.putExtra(EXTRA_ADDED_STORE_ID, store.storeId);
+            data.putExtra(EXTRA_ADDED_STORE_ID, storeId);
             this.setResult(RESULT_OK, data);
         } else {
             this.setResult(RESULT_CANCELED);

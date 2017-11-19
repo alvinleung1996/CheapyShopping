@@ -8,12 +8,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.alvin.cheapyshopping.db.DatabaseHelper;
-import com.alvin.cheapyshopping.db.models.PriceModel;
-import com.alvin.cheapyshopping.db.models.ProductModel;
-import com.alvin.cheapyshopping.db.models.StoreModel;
+import com.alvin.cheapyshopping.olddb.DatabaseHelper;
+import com.alvin.cheapyshopping.olddb.models.PriceModel;
+import com.alvin.cheapyshopping.olddb.models.ProductModel;
+import com.alvin.cheapyshopping.olddb.models.StoreModel;
 
 import java.util.ArrayList;
 import java.util.List;

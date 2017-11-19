@@ -16,8 +16,8 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.alvin.cheapyshopping.db.DatabaseHelper;
-import com.alvin.cheapyshopping.db.models.ProductModel;
+import com.alvin.cheapyshopping.olddb.DatabaseHelper;
+import com.alvin.cheapyshopping.olddb.models.ProductModel;
 
 import java.util.ArrayList;
 import java.util.List;

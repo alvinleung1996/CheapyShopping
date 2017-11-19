@@ -5,8 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.alvin.cheapyshopping.db.models.ProductModel;
-import com.alvin.cheapyshopping.db.models.ShoppingListModel;
+import com.alvin.cheapyshopping.olddb.models.ProductModel;
+import com.alvin.cheapyshopping.olddb.models.ShoppingListModel;
 import com.alvin.cheapyshopping.fragments.SelectProductFragment;
 
 import java.util.List;

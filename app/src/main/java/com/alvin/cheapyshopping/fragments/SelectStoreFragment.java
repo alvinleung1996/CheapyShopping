@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.alvin.cheapyshopping.R;
-import com.alvin.cheapyshopping.db.models.StoreModel;
+import com.alvin.cheapyshopping.olddb.models.StoreModel;
 
 import java.util.List;
 

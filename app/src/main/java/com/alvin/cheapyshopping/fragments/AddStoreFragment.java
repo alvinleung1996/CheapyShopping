@@ -1,6 +1,7 @@
 package com.alvin.cheapyshopping.fragments;
 
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
@@ -14,7 +15,9 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.alvin.cheapyshopping.R;
-import com.alvin.cheapyshopping.db.models.StoreModel;
+import com.alvin.cheapyshopping.databinding.AddStoreFragmentBinding;
+import com.alvin.cheapyshopping.olddb.models.StoreModel;
+import com.alvin.cheapyshopping.viewmodels.AddStoreFragmentViewModel;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -25,7 +28,7 @@ public class AddStoreFragment extends Fragment {
 
         void onDiscardOptionSelected(AddStoreFragment fragment);
 
-        void onNewStoreAdded(AddStoreFragment fragment, StoreModel store);
+        void onNewStoreAdded(AddStoreFragment fragment, long storeId);
 
     }
 
@@ -48,10 +51,9 @@ public class AddStoreFragment extends Fragment {
     }
 
 
-    private TextInputLayout mStoreNameInputLayout;
-    private EditText mStoreNameInput;
-    private TextInputLayout mStoreLocationInputLayout;
-    private EditText mStoreLocationInput;
+    private AddStoreFragmentViewModel mViewModel;
+
+    private AddStoreFragmentBinding mBinding;
 
     private InteractionListener mInteractionListener;
 
@@ -70,12 +72,15 @@ public class AddStoreFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_add_store, container, false);
-        this.mStoreNameInputLayout = view.findViewById(R.id.input_layout_store_name);
-        this.mStoreNameInput = this.mStoreNameInputLayout.getEditText();
-        this.mStoreLocationInputLayout = view.findViewById(R.id.input_layout_store_location);
-        this.mStoreLocationInput = this.mStoreLocationInputLayout.getEditText();
-        return view;
+        this.mBinding = AddStoreFragmentBinding.inflate(inflater, container, false);
+        return this.mBinding.getRoot();
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        this.mViewModel = ViewModelProviders.of(this).get(AddStoreFragmentViewModel.class);
     }
 
 
@@ -117,35 +122,29 @@ public class AddStoreFragment extends Fragment {
     }
 
     public void saveInput() {
-        String storeName = this.mStoreNameInput.getText().toString();
-        String storeLocation = this.mStoreLocationInput.getText().toString();
+        String storeName = this.mBinding.inputLayoutStoreName.getEditText().getText().toString();
+        String storeLocation = this.mBinding.inputLayoutStoreLocation.getEditText().getText().toString();
 
         boolean error = false;
 
         if (storeName.isEmpty()) {
-            this.mStoreNameInputLayout.setError("enter a store name pls");
+            this.mBinding.inputLayoutStoreName.setError("enter a store name pls");
             error = true;
         } else {
-            this.mStoreNameInputLayout.setError(null);
+            this.mBinding.inputLayoutStoreName.setError(null);
         }
         if (storeLocation.isEmpty()) {
-            this.mStoreLocationInputLayout.setError("enter a store location pls");
+            this.mBinding.inputLayoutStoreLocation.setError("enter a store location pls");
             error = true;
         } else {
-            this.mStoreLocationInputLayout.setError(null);
+            this.mBinding.inputLayoutStoreLocation.setError(null);
         }
 
         if (error) {
             return;
         }
 
-        StoreModel model = new StoreModel(this.getContext());
-        model.name = storeName;
-        model.location = storeLocation;
-        boolean saved = model.save();
-
-        if (saved && this.mInteractionListener != null) {
-            this.mInteractionListener.onNewStoreAdded(this, model);
-        }
+        long storeId = this.mViewModel.addStore(storeName, storeLocation);
+        this.mInteractionListener.onNewStoreAdded(this, storeId);
     }
 }

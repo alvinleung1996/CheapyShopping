@@ -1,5 +1,7 @@
 package com.alvin.cheapyshopping.fragments;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -9,12 +11,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.alvin.cheapyshopping.MainActivity;
-import com.alvin.cheapyshopping.R;
-import com.alvin.cheapyshopping.db.models.StoreModel;
+import com.alvin.cheapyshopping.databinding.StoreDetailItemBinding;
+import com.alvin.cheapyshopping.databinding.StoreListFragmentBinding;
+import com.alvin.cheapyshopping.room.entities.Store;
+import com.alvin.cheapyshopping.viewmodels.StoreListFragmentViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +26,7 @@ public class StoreListFragment extends Fragment implements MainActivity.Floating
 
     public interface InteractionListener {
 
-        void onStoreSelected(StoreListFragment fragment, StoreModel store);
+        void onStoreSelected(StoreListFragment fragment, Store store);
 
         void onRequestNewStore(StoreListFragment fragment);
 
@@ -32,7 +34,7 @@ public class StoreListFragment extends Fragment implements MainActivity.Floating
 
     public class StoreListAdapter extends RecyclerView.Adapter<StoreItemHolder> {
 
-        private List<StoreModel> mStores;
+        private List<Store> mStores;
 
         private StoreListAdapter() {
             this.mStores = new ArrayList<>();
@@ -45,12 +47,13 @@ public class StoreListFragment extends Fragment implements MainActivity.Floating
 
         @Override
         public StoreItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new StoreItemHolder(parent);
+            StoreDetailItemBinding binding = StoreDetailItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+            return new StoreItemHolder(binding.getRoot(), binding);
         }
 
         @Override
         public void onBindViewHolder(StoreItemHolder holder, int position) {
-            StoreModel store = this.mStores.get(position);
+            Store store = this.mStores.get(position);
             holder.onBind(store);
         }
 
@@ -60,7 +63,7 @@ public class StoreListFragment extends Fragment implements MainActivity.Floating
             holder.onRecycled();
         }
 
-        private void updateStores(List<StoreModel> stores) {
+        private void setStores(List<Store> stores) {
             this.mStores = stores;
             this.notifyDataSetChanged();
         }
@@ -68,34 +71,32 @@ public class StoreListFragment extends Fragment implements MainActivity.Floating
 
     private class StoreItemHolder extends RecyclerView.ViewHolder {
 
-        private StoreModel mStore;
+        private final StoreDetailItemBinding mBinding;
 
-        private ImageView mStorePhotoImageView;
-        private TextView mStoreNameTextView;
-        private TextView mStoreLocationTextView;
-
-        private StoreItemHolder(ViewGroup parent) {
-            super(StoreListFragment.this.getLayoutInflater().inflate(R.layout.item_store_detail, parent, false));
-            View view = this.itemView;
-            this.mStorePhotoImageView = view.findViewById(R.id.image_store_photo);
-            this.mStoreNameTextView = view.findViewById(R.id.text_store_name);
-            this.mStoreLocationTextView = view.findViewById(R.id.text_store_location);
-            view.setOnClickListener(new View.OnClickListener() {
+        private StoreItemHolder(View view, StoreDetailItemBinding binding) {
+            super(view);
+            this.mBinding = binding;
+            this.mBinding.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    StoreListFragment.this.onStoreItemClick(view, StoreItemHolder.this.mStore);
+                    StoreListFragment.this.onStoreItemClick(view, StoreItemHolder.this.mBinding.getStore());
                 }
             });
         }
 
-        private void onBind(StoreModel store) {
-            this.mStore = store;
-            this.mStoreNameTextView.setText(store.name);
-            this.mStoreLocationTextView.setText(store.location);
+        private void onBind(Store store) {
+            this.mBinding.setStore(store);
+            this.mBinding.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    StoreListFragment.this.onStoreItemClick(view, StoreItemHolder.this.mBinding.getStore());
+                }
+            });
         }
 
         private void onRecycled() {
-            this.mStore = null;
+            this.mBinding.setStore(null);
+            this.mBinding.setOnClickListener(null);
         }
 
     }
@@ -107,10 +108,14 @@ public class StoreListFragment extends Fragment implements MainActivity.Floating
     }
 
 
-    private RecyclerView mStoreList;
+    private StoreListFragmentViewModel mViewModel;
+
+    private StoreListFragmentBinding mBinding;
+
     private StoreListAdapter mStoreListAdapter;
 
     private InteractionListener mInteractionListener;
+
 
     public StoreListFragment() {
         // Required empty public constructor
@@ -119,23 +124,39 @@ public class StoreListFragment extends Fragment implements MainActivity.Floating
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_store_list, container, false);
-        this.mStoreList = view.findViewById(R.id.list_stores);
-        return view;
+        this.mBinding = StoreListFragmentBinding.inflate(inflater, container, false);
+        return this.mBinding.getRoot();
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        this.mStoreList.setLayoutManager(new LinearLayoutManager(this.getContext(), LinearLayoutManager.VERTICAL, false));
-        this.mStoreListAdapter = new StoreListAdapter();
-        this.mStoreList.setAdapter(this.mStoreListAdapter);
+        this.mViewModel = ViewModelProviders.of(this).get(StoreListFragmentViewModel.class);
 
-        this.updateStoreList();
+        this.mBinding.listStores.setLayoutManager(new LinearLayoutManager(this.getContext(), LinearLayoutManager.VERTICAL, false));
+
+        this.mStoreListAdapter = new StoreListAdapter();
+        this.mBinding.listStores.setAdapter(this.mStoreListAdapter);
+
+        this.mViewModel.getLiveStores().observe(this, new Observer<List<Store>>() {
+            @Override
+            public void onChanged(@Nullable List<Store> stores) {
+                StoreListFragment.this.mStoreListAdapter.setStores(stores);
+            }
+        });
     }
 
+
+    public void setInteractableListener(InteractionListener listener) {
+        this.mInteractionListener = listener;
+    }
+
+    /*
+    ************************************************************************************************
+    * MainActivity.FloatingActionButtonInteractionListener
+    ************************************************************************************************
+     */
 
     @Override
     public void onConfigureFloatingActionButton(FloatingActionButton button) {
@@ -149,28 +170,16 @@ public class StoreListFragment extends Fragment implements MainActivity.Floating
         }
     }
 
+    /*
+    ************************************************************************************************
+    * UI views interaction
+    ************************************************************************************************
+     */
 
-    public void onStoreItemClick(View view, StoreModel store) {
+    public void onStoreItemClick(View view, Store store) {
         if (mInteractionListener != null) {
             mInteractionListener.onStoreSelected(this, store);
         }
     }
-
-
-    public void setInteractableListener(InteractionListener listener) {
-        this.mInteractionListener = listener;
-    }
-
-
-
-    public void updateStoreList() {
-        List<StoreModel> stores = this.getAllStores();
-        this.mStoreListAdapter.updateStores(stores);
-    }
-
-    private List<StoreModel> getAllStores() {
-        return StoreModel.manager.getAll(this.getContext());
-    }
-
 
 }

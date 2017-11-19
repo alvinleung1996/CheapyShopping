@@ -1,11 +1,11 @@
-package com.alvin.cheapyshopping.db.models;
+package com.alvin.cheapyshopping.olddb.models;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.alvin.cheapyshopping.db.AbstractModel;
+import com.alvin.cheapyshopping.olddb.AbstractModel;
 
 /**
  * Created by Alvin on 5/11/2017.

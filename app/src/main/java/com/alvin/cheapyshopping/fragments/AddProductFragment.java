@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.alvin.cheapyshopping.R;
-import com.alvin.cheapyshopping.db.models.ProductModel;
+import com.alvin.cheapyshopping.olddb.models.ProductModel;
 
 /**
  * A simple {@link Fragment} subclass.

@@ -16,9 +16,9 @@ import android.widget.TextView;
 import com.alvin.cheapyshopping.MainActivity;
 import com.alvin.cheapyshopping.ProductActivity;
 import com.alvin.cheapyshopping.R;
-import com.alvin.cheapyshopping.db.models.ProductModel;
-import com.alvin.cheapyshopping.db.models.ShoppingListModel;
-import com.alvin.cheapyshopping.db.models.StoreModel;
+import com.alvin.cheapyshopping.olddb.models.ProductModel;
+import com.alvin.cheapyshopping.olddb.models.ShoppingListModel;
+import com.alvin.cheapyshopping.olddb.models.StoreModel;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

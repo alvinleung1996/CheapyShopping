@@ -1,15 +1,12 @@
 package com.alvin.cheapyshopping;
 
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.TextView;
 
-import com.alvin.cheapyshopping.db.DatabaseHelper;
-import com.alvin.cheapyshopping.db.models.ProductModel;
+import com.alvin.cheapyshopping.olddb.models.ProductModel;
 
 /**
  * Created by cheng on 11/13/2017.

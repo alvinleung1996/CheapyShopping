@@ -1,13 +1,13 @@
-package com.alvin.cheapyshopping.db;
+package com.alvin.cheapyshopping.olddb;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.alvin.cheapyshopping.db.models.PriceModel;
-import com.alvin.cheapyshopping.db.models.ProductModel;
-import com.alvin.cheapyshopping.db.models.ShoppingListModel;
-import com.alvin.cheapyshopping.db.models.StoreModel;
+import com.alvin.cheapyshopping.olddb.models.PriceModel;
+import com.alvin.cheapyshopping.olddb.models.ProductModel;
+import com.alvin.cheapyshopping.olddb.models.ShoppingListModel;
+import com.alvin.cheapyshopping.olddb.models.StoreModel;
 
 /**
  * Created by Alvin on 5/11/2017.

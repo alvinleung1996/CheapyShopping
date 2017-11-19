@@ -21,13 +21,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.alvin.cheapyshopping.db.DatabaseHelper;
-import com.alvin.cheapyshopping.db.models.PriceModel;
-import com.alvin.cheapyshopping.db.models.ProductModel;
-import com.alvin.cheapyshopping.db.models.ShoppingListModel;
-import com.alvin.cheapyshopping.db.models.StoreModel;
+import com.alvin.cheapyshopping.olddb.DatabaseHelper;
+import com.alvin.cheapyshopping.olddb.models.PriceModel;
+import com.alvin.cheapyshopping.olddb.models.ProductModel;
+import com.alvin.cheapyshopping.olddb.models.ShoppingListModel;
+import com.alvin.cheapyshopping.olddb.models.StoreModel;
 import com.alvin.cheapyshopping.fragments.ShoppingListFragment;
 import com.alvin.cheapyshopping.fragments.StoreListFragment;
+import com.alvin.cheapyshopping.room.entities.Store;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -351,7 +352,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(this, "Store Added: (" + storeId + ")", Toast.LENGTH_SHORT).show();
                 StoreListFragment fragment = (StoreListFragment) this.getSupportFragmentManager().findFragmentByTag(FRAGMENT_STORE_LIST);
                 if (fragment != null) {
-                    fragment.updateStoreList();
+//                    fragment.updateStoreList();
                 }
                 break;
             case RESULT_CANCELED:
@@ -363,8 +364,8 @@ public class MainActivity extends AppCompatActivity {
     private class StoreListFragmentInteractionListener implements StoreListFragment.InteractionListener {
 
         @Override
-        public void onStoreSelected(StoreListFragment fragment, StoreModel store) {
-            Toast.makeText(MainActivity.this, "Store Selected: " + store.name, Toast.LENGTH_SHORT).show();
+        public void onStoreSelected(StoreListFragment fragment, Store store) {
+            Toast.makeText(MainActivity.this, "Store Selected: " + store.getName(), Toast.LENGTH_SHORT).show();
         }
 
         @Override

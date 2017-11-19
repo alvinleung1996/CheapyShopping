@@ -1,4 +1,4 @@
-package com.alvin.cheapyshopping.db.models;
+package com.alvin.cheapyshopping.olddb.models;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -6,7 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 
-import com.alvin.cheapyshopping.db.AbstractModel;
+import com.alvin.cheapyshopping.olddb.AbstractModel;
 
 import java.util.ArrayList;
 import java.util.Date;
