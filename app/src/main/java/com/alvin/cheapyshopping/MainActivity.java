@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.alvin.cheapyshopping.fragments.ProductListFragment;
 import com.alvin.cheapyshopping.olddb.DatabaseHelper;
 import com.alvin.cheapyshopping.olddb.models.PriceModel;
 import com.alvin.cheapyshopping.olddb.models.ProductModel;
@@ -41,6 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String FRAGMENT_SHOPPING_LIST = "com.alvin.cheapyshopping.MainActivity.FRAGMENT_SHOPPING_LIST";
     private static final String FRAGMENT_STORE_LIST = "com.alvin.cheapyshopping.MainActivity.FRAGMENT_STORE_LIST";
+    private static final String FRAGMENT_PRODUCT_LIST = "com.alvin.cheapyshopping.MainActivity.FRAGMENT_PRODUCT_LIST";
 
 
 
@@ -196,6 +198,8 @@ public class MainActivity extends AppCompatActivity {
                 return this.onShoppingListDrawerMenuItemSelected(item);
             case R.id.item_store_list:
                 return this.onStoreListDrawerMenuItemSelected(item);
+            case R.id.item_product_list:
+                return this.onProductListDrawerMenuItemSelected(item);
         }
 
         return false;
@@ -373,6 +377,24 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, AddStoreActivity.class);
             MainActivity.this.startActivityForResult(intent, REQUEST_ADD_STORE);
         }
+    }
+
+    /*
+    ************************************************************************************************
+    * ProductListFragment Interactions
+    ************************************************************************************************
+     */
+
+    private boolean onProductListDrawerMenuItemSelected(MenuItem item) {
+        if (!item.isChecked()) {
+            this.getSupportFragmentManager().popBackStack();
+            this.getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, ProductListFragment.newInstance(), FRAGMENT_PRODUCT_LIST)
+                    .addToBackStack(null)
+                    .commit();
+        }
+        this.mDrawerLayout.closeDrawer(this.mDrawer);
+        return true;
     }
 
 

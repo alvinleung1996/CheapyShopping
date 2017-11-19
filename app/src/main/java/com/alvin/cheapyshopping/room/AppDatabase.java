@@ -5,14 +5,19 @@ import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 
+import com.alvin.cheapyshopping.room.daos.ProductDao;
 import com.alvin.cheapyshopping.room.daos.StoreDao;
+import com.alvin.cheapyshopping.room.entities.Product;
 import com.alvin.cheapyshopping.room.entities.Store;
 
 /**
  * Created by Alvin on 19/11/2017.
  */
 
-@Database(entities = {Store.class}, version = 1)
+@Database(entities = {
+        Store.class,
+        Product.class
+}, version = 1)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static AppDatabase sInstance;
@@ -35,5 +40,7 @@ public abstract class AppDatabase extends RoomDatabase {
     }
 
     public abstract StoreDao getStoreDao();
+
+    public abstract ProductDao getProductDao();
 
 }

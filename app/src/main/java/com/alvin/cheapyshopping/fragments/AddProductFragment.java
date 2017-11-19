@@ -1,10 +1,9 @@
 package com.alvin.cheapyshopping.fragments;
 
 
-import android.content.Context;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -12,21 +11,21 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 
 import com.alvin.cheapyshopping.R;
-import com.alvin.cheapyshopping.olddb.models.ProductModel;
+import com.alvin.cheapyshopping.databinding.AddProductFragmentBinding;
+import com.alvin.cheapyshopping.viewmodels.AddProductFragmentViewModel;
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class AddProductFragment extends Fragment {
 
-    public static interface AddProductFragmentListener {
+    public interface InteractionListener {
 
-        public void onDiscardNewProductOptionSelected(AddProductFragment fragment);
+        void onDiscardOptionSelected(AddProductFragment fragment);
 
-        public void onNewProductAdded(AddProductFragment fragment, ProductModel model);
+        void onNewProductAdded(AddProductFragment fragment, long productId);
 
     }
 
@@ -34,9 +33,6 @@ public class AddProductFragment extends Fragment {
     private static final String ARGUMENT_CREATE_OPTIONS_MENU = "com.alvin.cheapyshopping.fragments.AddProductFragment.ARGUMENT_CREATE_OPTIONS_MENU";
 
 
-    public static AddProductFragment newInstance() {
-        return newInstance(true);
-    }
 
     public static AddProductFragment newInstance(boolean createOptionsMenu) {
         AddProductFragment fragment = new AddProductFragment();
@@ -48,24 +44,17 @@ public class AddProductFragment extends Fragment {
 
 
     public AddProductFragment() {
+        // Required empty public constructor
     }
 
 
-    private EditText mProductNameInput;
+    private AddProductFragmentViewModel mViewModel;
 
-    private AddProductFragmentListener mAddProductFragmentListener;
+    private AddProductFragmentBinding mBinding;
+
+    private InteractionListener mInteractionListener;
 
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof AddProductFragmentListener) {
-            this.mAddProductFragmentListener = (AddProductFragmentListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement AddProductFragmentListener");
-        }
-    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -80,16 +69,18 @@ public class AddProductFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_add_product, container, false);
-        this.mProductNameInput = ((TextInputLayout) v.findViewById(R.id.input_product_name)).getEditText();
-        return v;
+        this.mBinding = AddProductFragmentBinding.inflate(inflater, container, false);
+        return this.mBinding.getRoot();
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
-        this.mAddProductFragmentListener = null;
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+
+        this.mViewModel = ViewModelProviders.of(this).get(AddProductFragmentViewModel.class);
     }
+
+
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -112,9 +103,14 @@ public class AddProductFragment extends Fragment {
     }
 
 
+    public void setInteractionListener(InteractionListener listener) {
+        this.mInteractionListener = listener;
+    }
+
+
     private void onDiscardOptionItemSelected(MenuItem item) {
-        if (this.mAddProductFragmentListener != null) {
-            this.mAddProductFragmentListener.onDiscardNewProductOptionSelected(this);
+        if (this.mInteractionListener != null) {
+            this.mInteractionListener.onDiscardOptionSelected(this);
         }
     }
 
@@ -123,13 +119,29 @@ public class AddProductFragment extends Fragment {
     }
 
     public void saveInput() {
-        String productName = this.mProductNameInput.getText().toString();
-        ProductModel model = new ProductModel(this.getContext());
-        model.name = productName;
-        boolean saved = model.save();
+        String productName = this.mBinding.inputLayoutProductName.getEditText().getText().toString();
+        String productDesscription = this.mBinding.inputLayoutProductDescription.getEditText().getText().toString();
 
-        if (saved && this.mAddProductFragmentListener != null) {
-            this.mAddProductFragmentListener.onNewProductAdded(this, model);
+        boolean error = false;
+
+        if (productName.isEmpty()) {
+            this.mBinding.inputLayoutProductName.setError("enter a product name pls");
+            error = true;
+        } else {
+            this.mBinding.inputLayoutProductName.setError(null);
         }
+        if (productDesscription.isEmpty()) {
+            this.mBinding.inputLayoutProductDescription.setError("enter a product description pls");
+            error = true;
+        } else {
+            this.mBinding.inputLayoutProductDescription.setError(null);
+        }
+
+        if (error) {
+            return;
+        }
+
+        long productId = this.mViewModel.addProduct(productName, productDesscription);
+        this.mInteractionListener.onNewProductAdded(this, productId);
     }
 }

@@ -27,6 +27,10 @@
             android:name=".AddStoreActivity"
             android:label="Add Store">
         </activity>
+        <activity
+            android:name=".AddProductActivity"
+            android:label="Add Product">
+        </activity>
     </application>
 
     <uses-feature

@@ -15,6 +15,11 @@
             android:icon="@drawable/ic_store_black_24dp" />
 
         <item
+            android:id="@+id/item_product_list"
+            android:title="Products"
+            android:icon="@drawable/ic_product_black_24dp"/>
+
+        <item
             android:id="@+id/nav_account"
             android:title="My Account"
             android:icon="@drawable/ic_account_box_black_24dp" />
