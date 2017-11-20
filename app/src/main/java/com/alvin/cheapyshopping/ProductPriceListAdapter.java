@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,7 @@ import com.alvin.cheapyshopping.olddb.models.PriceModel;
 import com.alvin.cheapyshopping.olddb.models.ProductModel;
 import com.alvin.cheapyshopping.olddb.models.StoreModel;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +47,7 @@ public class ProductPriceListAdapter extends RecyclerView.Adapter<ProductPriceLi
         private TextView mPrice;
         private TextView mPriceID;
         private TextView mStoreLocation;
+        private TextView mPriceUpdateDate;
         private ProductPriceListItemViewHolder(View v) {
             super(v);
             View view = this.itemView;
@@ -52,6 +55,7 @@ public class ProductPriceListAdapter extends RecyclerView.Adapter<ProductPriceLi
             mPrice = view.findViewById(R.id.text_store_price);
             mPriceID = view.findViewById(R.id.text_price_id);
             mStoreLocation = view.findViewById(R.id.text_store_location);
+            mPriceUpdateDate = view.findViewById(R.id.text_price_date);
         }
     }
 
@@ -70,6 +74,11 @@ public class ProductPriceListAdapter extends RecyclerView.Adapter<ProductPriceLi
         holder.mStoreLocation.setText(mPriceList.get(position).store.location);
         holder.mPrice.setText(Double.toString(mPriceList.get(position).price.price));
         holder.mPriceID.setText("Price id: " + mPriceList.get(position).price.priceId);
+
+        // Set price update date & time
+        SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy     HH:mm:ss");
+        String updateDate = formatter.format(mPriceList.get(position).price.time);
+        holder.mPriceUpdateDate.setText(updateDate);
     }
 
     public int getItemCount() {

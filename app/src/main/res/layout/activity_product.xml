@@ -2,10 +2,12 @@
 <android.support.v4.widget.NestedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/lightGrey"
+    android:fitsSystemWindows="true"
+    tools:context="com.alvin.cheapyshopping.ProductActivity"
     >
 
     <LinearLayout
@@ -13,45 +15,82 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <RelativeLayout
+        <include
+            android:id="@+id/toolbar"
+            layout="@layout/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize" />
+
+
+        <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
-            android:elevation="2dp"
             android:layout_marginBottom="5dp"
             android:focusableInTouchMode="true">
+
             <ImageView
                 android:id="@+id/image_product"
                 android:contentDescription="Product Image"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="280dp"
                 android:background="@color/white"
-                android:elevation="4dp"
-                android:src="@mipmap/ic_launcher"/>
+                android:elevation="2dp"
+                android:src="@drawable/ic_product_black_24dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+
 
             <TextView
                 android:id="@+id/text_product_name"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Product Name"
                 android:textSize="20sp"
                 android:textColor="@color/white"
                 android:textStyle="bold"
                 android:padding="5dp"
-                android:layout_marginTop="265dp"
                 android:background="@color/colorAccent"
-                android:elevation="6dp"
-                android:layout_centerHorizontal="true"
-                />
+                android:elevation="2dp"
+                android:gravity="center"
+                app:layout_constraintTop_toBottomOf="@id/image_product"/>
 
+            <TextView
+                android:id="@+id/text_best_price_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Best price: "
+                android:padding="4dp"
+                app:layout_constraintBaseline_toBaselineOf="@id/text_best_price"/>
+
+            <TextView
+                android:id="@+id/text_best_price"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="$9999"
+                android:textSize="20sp"
+                app:layout_constraintTop_toBottomOf="@id/text_product_name"
+                app:layout_constraintStart_toEndOf="@id/text_best_price_title"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+            <TextView
+                android:id="@+id/text_best_price_date"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="(Date)"
+                android:textStyle="italic"
+                android:padding="4dp"
+                app:layout_constraintBaseline_toBaselineOf="@id/text_best_price"
+                app:layout_constraintEnd_toEndOf="@id/text_best_price"/>
             <TextView
                 android:id="@+id/text_product_description_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Description:"
                 android:padding="4dp"
-                android:layout_marginTop="4dp"
-                android:layout_below="@+id/text_product_name"/>
+                app:layout_constraintTop_toBottomOf="@id/text_best_price_title"/>
             <TextView
                 android:id="@+id/text_product_description"
                 android:layout_width="match_parent"
@@ -59,15 +98,14 @@
                 android:padding="4dp"
                 android:layout_marginBottom="5dp"
                 android:text="This is a product description."
-                android:layout_below="@+id/text_product_description_title"/>
-        </RelativeLayout>
+                app:layout_constraintTop_toBottomOf="@id/text_product_description_title"/>
+        </android.support.constraint.ConstraintLayout>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/myrecyclerview_product_price"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            android:layout_below="@id/text_product_description">
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
         </android.support.v7.widget.RecyclerView>
 
     </LinearLayout>

@@ -22,7 +22,9 @@
         <activity
             android:name=".AddShoppingListProductActivity"
             android:label="Add Product" />
-        <activity android:name=".ProductActivity" />
+        <activity
+            android:name=".ProductActivity"
+            android:theme="@style/AppTheme.ProductActivity" />
         <activity
             android:name=".AddStoreActivity"
             android:label="Add Store">

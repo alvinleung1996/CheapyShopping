@@ -21,4 +21,15 @@
 
     </style>
 
+    <style name="AppTheme.ProductActivity">
+
+        <!-- translucent status bar -->
+        <item name="android:windowTranslucentStatus">false</item>
+
+        <!-- Remove action bar, copied from Theme.AppCompat.Light.NoActionBar -->
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+
+    </style>
+
 </resources>
