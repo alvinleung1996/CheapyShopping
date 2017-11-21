@@ -3,15 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/toolbar_save"
+        android:id="@+id/action_save"
         android:title="Save"
         app:showAsAction="never" />
     <item
-        android:id="@+id/toolbar_add_price"
+        android:id="@+id/action_add_price"
         android:title="New price"
         app:showAsAction="never"/>
     <item
-        android:id="@+id/toolbar_edit"
+        android:id="@+id/action_edit"
         android:title="Edit"
         app:showAsAction="never" />
 
