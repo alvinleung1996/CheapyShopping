@@ -25,6 +25,10 @@ public interface ShoppingListDao {
     List<ShoppingList> getAllNow();
 
 
+    @Query("SELECT * FROM ShoppingList WHERE foreign_account_id = :accountId")
+    LiveData<List<ShoppingList>> getShoppingListsOfAccount(long accountId);
+
+
     @Query("SELECT * FROM ShoppingList ORDER BY creation_time DESC LIMIT 1")
     LiveData<ShoppingList> findLatest();
 

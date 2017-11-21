@@ -5,8 +5,6 @@ import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 import android.support.annotation.NonNull;
 
-import com.alvin.cheapyshopping.repositories.PriceRepository;
-import com.alvin.cheapyshopping.repositories.StoreRepository;
 import com.alvin.cheapyshopping.room.entities.Account;
 import com.alvin.cheapyshopping.room.entities.Price;
 import com.alvin.cheapyshopping.room.entities.Product;
@@ -40,16 +38,19 @@ public class AppDatabaseCallback extends RoomDatabase.Callback {
 
                 AppDatabase appDb = AppDatabase.getInstance(mContext);
 
+                Account account = new Account();
+                appDb.getAccountDao().insert(account);
+                account = appDb.getAccountDao().getAllNow().get(0);
+
                 ShoppingList list = new ShoppingList();
                 list.setName("Shopping List 0");
                 list.setCreationTime(new Date());
+                list.setForeignAccountId(account.getAccountId());
                 appDb.getShoppingListDao().insert(list);
                 list = appDb.getShoppingListDao().getAllNow().get(0);
 
-                Account account = new Account();
                 account.setActiveShoppingListId(list.getShoppingListId());
-                appDb.getAccountDao().insert(account);
-                account = appDb.getAccountDao().getAllNow().get(0);
+                appDb.getAccountDao().update(account);
 
                 List<Product> products = new ArrayList<>();
                 for (int i = 0; i < 10; ++i) {

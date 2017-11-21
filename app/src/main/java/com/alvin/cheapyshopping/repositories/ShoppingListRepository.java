@@ -1,18 +1,14 @@
 package com.alvin.cheapyshopping.repositories;
 
-import android.arch.core.util.Function;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.Transformations;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.ArrayMap;
-import android.util.Pair;
 
 import com.alvin.cheapyshopping.room.AppDatabase;
 import com.alvin.cheapyshopping.room.daos.ShoppingListDao;
-import com.alvin.cheapyshopping.room.daos.ShoppingListProductDao;
 import com.alvin.cheapyshopping.room.daos.ShoppingListProductDao.ShoppingListProductDetail;
 import com.alvin.cheapyshopping.room.entities.Price;
 import com.alvin.cheapyshopping.room.entities.Product;
@@ -84,69 +80,27 @@ public class ShoppingListRepository {
     * get ShoppingList
     ************************************************************************************************
      */
-    private LiveData<List<ShoppingList>> mAll;
-    public LiveData<List<ShoppingList>> getAll() {
-        if (this.mAll == null) {
-            this.mAll = this.mDao.getAll();
+
+
+
+    private Map<Long, LiveData<List<ShoppingList>>> mAccountShoppingListCache;
+
+    public LiveData<List<ShoppingList>> getAccountShoppingList(long accountId) {
+        if (this.mAccountShoppingListCache == null) {
+            this.mAccountShoppingListCache = new ArrayMap<>();
         }
-        return this.mAll;
-    }
-
-
-    public LiveData<Map<Store, List<ShoppingListProductDetail>>> getCachedResultById(long shoppingListId) {
-        if (!this.mResultCache.containsKey(shoppingListId)) {
-            this.mResultCache.put(shoppingListId, new CachedResult(shoppingListId));
+        if (!this.mAccountShoppingListCache.containsKey(accountId)) {
+            this.mAccountShoppingListCache.put(accountId, this.mDao.getShoppingListsOfAccount(accountId));
         }
-        return this.mResultCache.get(shoppingListId);
-    }
-
-    public LiveData<Map<Store, List<ShoppingListProductDetail>>> getCachedResultOfLatest() {
-        if (this.mResultCacheOfLatest == null) {
-            this.mResultCacheOfLatest = Transformations.switchMap(this.findLatest(), new Function<ShoppingList, LiveData<Map<Store, List<ShoppingListProductDetail>>>>() {
-                @Override
-                public LiveData<Map<Store, List<ShoppingListProductDetail>>> apply(ShoppingList input) {
-                    return input != null ?
-                            ShoppingListRepository.this.getCachedResultById(input.getShoppingListId())
-                            : null;
-                }
-            });
-        }
-        return this.mResultCacheOfLatest;
-    }
-
-    public LiveData<ShoppingList> findLatest() {
-        if (this.mLatest == null) {
-            this.mLatest = this.mDao.findLatest();
-        }
-        return this.mLatest;
-    }
-
-    public LiveData<List<ShoppingListProduct>> findLatestListProducts() {
-        if (this.mLatestProducts == null) {
-            this.mLatestProducts = Transformations.switchMap(this.findLatest(), new Function<ShoppingList, LiveData<List<ShoppingListProduct>>>() {
-                @Override
-                public LiveData<List<ShoppingListProduct>> apply(ShoppingList input) {
-                    return input != null ?
-                            ShoppingListRepository.this.mListProductRepository.findByShoppingListId(input.getShoppingListId())
-                            : null;
-                }
-            });
-        }
-        return this.mLatestProducts;
+        return this.mAccountShoppingListCache.get(accountId);
     }
 
 
-    public LiveData<List<Pair<ShoppingListProduct, List<Price>>>> findLatestRelationsWithPrice() {
-        return null;
-    }
-
-    public LiveData<Map<Store, List<Product>>> getResult() {
-        if (this.mComputedResult == null) {
-            this.mComputedResult = new LiveResult();
-        }
-        return this.mComputedResult;
-    }
-
+    /*
+    ************************************************************************************************
+    * Other
+    ************************************************************************************************
+     */
 
     public long[] insert(ShoppingList... stores) {
         return this.mDao.insert(stores);
@@ -160,177 +114,4 @@ public class ShoppingListRepository {
         return this.mDao.delete(stores);
     }
 
-
-
-    private class CachedResult extends MediatorLiveData<Map<Store, List<ShoppingListProductDetail>>> {
-
-        private List<ShoppingListProductDetail> mDetails;
-
-        private ExecutorService mExecutor;
-        private Future<?> mExecutingJob;
-
-        private CachedResult(long shoppingListId) {
-            final ShoppingListRepository repository = ShoppingListRepository.this;
-            this.addSource(repository.mListProductRepository.findDetailsByShoppingListId(shoppingListId),
-                    new Observer<List<ShoppingListProductDetail>>() {
-                        @Override
-                        public void onChanged(@Nullable List<ShoppingListProductDetail> shoppingListProductDetails) {
-                            CachedResult.this.mDetails = shoppingListProductDetails;
-                            CachedResult.this.update();
-                        }
-                    }
-            );
-        }
-
-        private void update() {
-            if (this.mExecutingJob != null) {
-                this.mExecutingJob.cancel(true);
-                this.mExecutingJob = null;
-            }
-            if (this.mDetails == null) {
-                this.setValue(null);
-            }
-            if (this.mExecutor == null) {
-                this.mExecutor = Executors.newSingleThreadExecutor();
-            }
-            this.mExecutingJob = this.mExecutor.submit(new Runnable() {
-                private final List<ShoppingListProductDetail> mDetails = CachedResult.this.mDetails;
-                @Override
-                public void run() {
-                    Map<Long, List<ShoppingListProductDetail>> idResult = new ArrayMap<>();
-
-                    for (ShoppingListProductDetail detail : this.mDetails) {
-                        List<Price> bestPrices = detail.getBestPrices();
-                        if (bestPrices.size() > 0) {
-                            long bestPriceId = bestPrices.get(0).getForeignStoreId();
-                            if (!idResult.containsKey(bestPriceId)) {
-                                idResult.put(bestPriceId, new ArrayList<ShoppingListProductDetail>());
-                            }
-                            idResult.get(bestPriceId).add(detail);
-                        } else {
-                            if (!idResult.containsKey(null)) {
-                                idResult.put(null, new ArrayList<ShoppingListProductDetail>());
-                            }
-                            idResult.get(null).add(detail);
-                        }
-                    }
-
-                    if (Thread.interrupted()) return;
-
-                    Map<Store, List<ShoppingListProductDetail>> result = new ArrayMap<>();
-                    for (Map.Entry<Long, List<ShoppingListProductDetail>> entry : idResult.entrySet()) {
-                        Store store = ShoppingListRepository.this.mStoreRepository.findByIdNow(entry.getKey());
-                        result.put(store, entry.getValue());
-                    }
-
-                    if (!Thread.interrupted()) CachedResult.this.postValue(result);
-                }
-            });
-        }
-
-    }
-
-    private class LiveResult extends MediatorLiveData<Map<Store, List<Product>>> {
-
-        private ExecutorService mExecutor;
-        private Future<?> mExecutingJob;
-
-        private List<ShoppingListProduct> mRelations;
-        private List<Store> mNearbyStores;
-
-        private LiveResult() {
-            this.addSource(ShoppingListRepository.this.findLatestListProducts(), new Observer<List<ShoppingListProduct>>() {
-                @Override
-                public void onChanged(@Nullable List<ShoppingListProduct> relations) {
-                    LiveResult.this.mRelations = relations;
-                    LiveResult.this.compute();
-                }
-            });
-            this.addSource(ShoppingListRepository.this.mStoreRepository.findNearbyStores(), new Observer<List<Store>>() {
-                @Override
-                public void onChanged(@Nullable List<Store> stores) {
-                    LiveResult.this.mNearbyStores = stores;
-                    LiveResult.this.compute();
-                }
-            });
-        }
-
-
-        private void cancelExecutingJob() {
-            if (this.mExecutingJob != null) {
-                this.mExecutingJob.cancel(true);
-                this.mExecutingJob = null;
-            }
-        }
-
-        private ExecutorService getExecutor() {
-            if (this.mExecutor == null) {
-                this.mExecutor = Executors.newSingleThreadExecutor();
-            }
-            return mExecutor;
-        }
-
-        private void compute() {
-            if (this.mExecutingJob != null) {
-                this.mExecutingJob.cancel(true);
-                this.mExecutingJob = null;
-            }
-            if (this.mRelations == null || this.mNearbyStores == null) {
-                this.setValue(null);
-                return;
-            }
-            if (this.mExecutor == null) {
-                this.mExecutor = Executors.newSingleThreadExecutor();
-            }
-            this.mExecutingJob = this.mExecutor.submit(new Runnable() {
-                private final List<ShoppingListProduct> mRelations = LiveResult.this.mRelations;
-                private final List<Store> mNearbyStores = LiveResult.this.mNearbyStores;
-                @Override
-                public void run() {
-                    Map<Store, List<Product>> result = new ArrayMap<>();
-
-                    List<Long> nearbyStoreIds = new ArrayList<>(this.mNearbyStores.size());
-                    for (Store store : this.mNearbyStores) {
-                        nearbyStoreIds.add(store.getStoreId());
-                    }
-
-                    Map<Long, Map<Product, List<Price>>> idResult = new ArrayMap<>();
-                    // TODO check if we should override equal and hashCode method of the entities
-
-                    for (ShoppingListProduct relation : this.mRelations) {
-                        List<Price> bestPrices = ShoppingListRepository.this.mPriceRepository.findBestPriceOfProductNow(
-                                relation.getForeignProductId(),
-                                nearbyStoreIds,
-                                relation.getQuantity()
-                        );
-                        if (!bestPrices.isEmpty()) {
-                            Price bestPrice = bestPrices.get(0);
-                            relation.setForeignPriceId(bestPrice.getPriceId());
-                        } else {
-                            relation.setForeignPriceId(null);
-                        }
-                    }
-
-                    if (Thread.interrupted()) return;
-
-                    ShoppingListRepository.this.mListProductRepository.update(
-                            this.mRelations.toArray(new ShoppingListProduct[this.mRelations.size()])
-                    );
-
-                    if (Thread.interrupted()) return;
-
-                    if (!Thread.interrupted()) LiveResult.this.postValue(result);
-                }
-            });
-        }
-
-        private void readFromCache() {
-            final ShoppingListRepository repository = ShoppingListRepository.this;
-
-
-        }
-
-    }
-
 }
-

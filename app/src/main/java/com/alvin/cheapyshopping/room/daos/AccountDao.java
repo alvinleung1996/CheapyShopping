@@ -18,14 +18,44 @@ import java.util.List;
 @Dao
 public abstract class AccountDao {
 
+    /*
+    ************************************************************************************************
+    * Query, Async
+    ************************************************************************************************
+     */
+
     @Query("SELECT * FROM Account")
     public abstract LiveData<List<Account>> getAllAccounts();
 
-    @Query("SELECT * FROM Account")
-    public abstract List<Account> getAllNow();
+    // TODO other method?
+    @Query("SELECT * FROM Account LIMIT 1")
+    public abstract LiveData<Account> getCurrentAccount();
 
     @Query("SELECT * FROM Account WHERE account_id = :accountId")
     public abstract LiveData<Account> findAccountByAccountId(long accountId);
+
+
+    /*
+    ************************************************************************************************
+    * Query, Sync
+    ************************************************************************************************
+     */
+
+    // Use by sample data
+    @Query("SELECT * FROM Account")
+    public abstract List<Account> getAllNow();
+
+    // Use by shopping list fragment view model
+    @Query("SELECT * FROM Account LIMIT 1")
+    // TODO other method?
+    public abstract Account getCurrentAccountNow();
+
+
+    /*
+    ************************************************************************************************
+    * Other
+    ************************************************************************************************
+     */
 
     @Insert
     public abstract long[] insert(Account... accounts);

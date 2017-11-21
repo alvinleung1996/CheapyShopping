@@ -16,21 +16,27 @@ import com.alvin.cheapyshopping.viewmodels.AddShoppingListProductActivityViewMod
 
 public class AddShoppingListActivity extends AppCompatActivity {
 
+    public static final String EXTRA_ACCOUNT_ID = "com.alvin.cheapyshopping.AddShoppingListActivity.EXTRA_ACCOUNT_ID";
+
     public static final String EXTRA_SHOPPING_LIST_ID = "com.alvin.cheapyshopping.AddShoppingListActivity.EXTRA_SHOPPING_LIST_ID";
 
-    private AddShoppingListActivityViewModel mViewModel;
 
+    private AddShoppingListActivityViewModel mViewModel;
     private AddShoppingListActivityBinding mBinding;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         this.mViewModel = ViewModelProviders.of(this).get(AddShoppingListActivityViewModel.class);
-
         this.mBinding = DataBindingUtil.setContentView(this, R.layout.activity_add_shopping_list);
 
-
+        Bundle args = this.getIntent().getExtras();
+        if (args == null || !args.containsKey(EXTRA_ACCOUNT_ID)) {
+            throw new RuntimeException("caller must include account id in the intent");
+        }
+        this.mViewModel.setAccountId(args.getLong(EXTRA_ACCOUNT_ID));
     }
 
     @Override

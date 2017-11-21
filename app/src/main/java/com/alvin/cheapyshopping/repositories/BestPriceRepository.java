@@ -1,16 +1,12 @@
 package com.alvin.cheapyshopping.repositories;
 
-import android.arch.lifecycle.LiveData;
 import android.content.Context;
-import android.util.ArrayMap;
-import android.util.Pair;
 
 import com.alvin.cheapyshopping.room.AppDatabase;
 import com.alvin.cheapyshopping.room.daos.BestPriceDao;
 import com.alvin.cheapyshopping.room.entities.Price;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by Alvin on 21/11/2017.
@@ -22,29 +18,41 @@ public class BestPriceRepository {
 
     public static BestPriceRepository getInstance(Context context) {
         if (sInstance == null) {
-            AppDatabase db = AppDatabase.getInstance(context);
-            sInstance = new BestPriceRepository(db.getBestPriceDao());
+            sInstance = new BestPriceRepository(context);
         }
         return sInstance;
     }
 
 
-    private BestPriceDao mDao;
+    private final Context mContext;
 
-    private Map<Pair<Long, Long>, LiveData<List<Price>>> mCache;
+    private BestPriceDao mBestPriceDao;
 
-    private BestPriceRepository(BestPriceDao dao) {
-        this.mDao = dao;
-        this.mCache = new ArrayMap<>();
+
+
+    private BestPriceRepository(Context context) {
+        this.mContext = context.getApplicationContext();
     }
 
-
-    public LiveData<List<Price>> findBestPricesOfShoppingListProduct(long shoppingListId, long productId) {
-        Pair<Long, Long> key = new Pair<>(shoppingListId, productId);
-        if (!this.mCache.containsKey(key)) {
-            this.mCache.put(key, this.mDao.findPriceOfShoppingListProduct(shoppingListId, productId));
+    public BestPriceDao getBestPriceDao() {
+        if (this.mBestPriceDao == null) {
+            this.mBestPriceDao = AppDatabase.getInstance(this.mContext).getBestPriceDao();
         }
-        return this.mCache.get(key);
+        return this.mBestPriceDao;
+    }
+
+//    private Map<Pair<Long, Long>, LiveData<List<Price>>> mCache;
+//
+//    public LiveData<List<Price>> findShoppingListProductBestPrices(long shoppingListId, long productId) {
+//        Pair<Long, Long> key = new Pair<>(shoppingListId, productId);
+//        if (!this.mCache.containsKey(key)) {
+//            this.mCache.put(key, this.mBestPriceDao.findPriceOfShoppingListProduct(shoppingListId, productId));
+//        }
+//        return this.mCache.get(key);
+//    }
+
+    public List<Price> findShoppingListProductBestPricesNow(long shoppingListId, long productId) {
+        return this.getBestPriceDao().findPriceOfShoppingListProductNow(shoppingListId, productId);
     }
 
 }

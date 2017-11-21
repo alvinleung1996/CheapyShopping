@@ -54,13 +54,13 @@ public abstract class AppDatabase extends RoomDatabase {
      */
     public static AppDatabase getInstance(Context context) {
         if (sInstance == null) {
-            sInstance = Room.databaseBuilder(context, AppDatabase.class, "app_database.db")
-                    .addCallback(new AppDatabaseCallback(context))
-                    .build();
-            // For debug use: the database will be destroyed after the process is killed
-//            sInstance = Room.inMemoryDatabaseBuilder(context.getApplicationContext(), AppDatabase.class)
+//            sInstance = Room.databaseBuilder(context, AppDatabase.class, "app_database.db")
 //                    .addCallback(new AppDatabaseCallback(context))
 //                    .build();
+            // For debug use: the database will be destroyed after the process is killed
+            sInstance = Room.inMemoryDatabaseBuilder(context.getApplicationContext(), AppDatabase.class)
+                    .addCallback(new AppDatabaseCallback(context))
+                    .build();
         }
         return sInstance;
     }

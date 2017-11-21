@@ -24,11 +24,23 @@ public abstract class ShoppingListProductDao {
 
     public static class ShoppingListProductDetail extends Product {
 
+        @ColumnInfo(name = "foreign_shopping_list_id")
+        private long mForeignShoppingListId;
+
         @ColumnInfo(name = "quantity")
         private int mQuantity;
 
         @Ignore /* @Relation is not applicable */
         private List<Price> mBestPrices;
+
+
+        public long getForeignShoppingListId() {
+            return this.mForeignShoppingListId;
+        }
+
+        public void setForeignShoppingListId(long foreignShoppingListId) {
+            this.mForeignShoppingListId = foreignShoppingListId;
+        }
 
         public int getQuantity() {
             return this.mQuantity;
@@ -47,19 +59,23 @@ public abstract class ShoppingListProductDao {
         }
     }
 
+
+    /* Use by sample data */
     @Query("SELECT * FROM ShoppingListProduct")
     public abstract List<ShoppingListProduct> getAllNow();
 
 
-    @Query("SELECT * FROM ShoppingListProduct"
-           + " WHERE foreign_shopping_list_id = :shoppingListId")
-    public abstract LiveData<List<ShoppingListProduct>> findByShoppingListId(long shoppingListId);
+//    @Query("SELECT * FROM ShoppingListProduct"
+//           + " WHERE foreign_shopping_list_id = :shoppingListId")
+//    public abstract LiveData<List<ShoppingListProduct>> findByShoppingListId(long shoppingListId);
 
-    @Query("SELECT Product.*, ShoppingListProduct.quantity"
+    @Query("SELECT Product.*, ShoppingListProduct.foreign_shopping_list_id, ShoppingListProduct.quantity"
             + " FROM ShoppingListProduct, Product"
             + " WHERE ShoppingListProduct.foreign_shopping_list_id = :shoppingListId"
                 + " AND ShoppingListProduct.foreign_product_id = Product.product_id")
     public abstract LiveData<List<ShoppingListProductDetail>> findDetailsByShoppingListId(long shoppingListId);
+
+
 
     @Insert
     public abstract long[] insert(ShoppingListProduct... relations);

@@ -23,6 +23,9 @@ public class ShoppingList {
     @ColumnInfo(name = "creation_time")
     private Date mCreationTime;
 
+    @ColumnInfo(name = "foreign_account_id")
+    private long mForeignAccountId;
+
 
     public long getShoppingListId() {
         return this.mShoppingListId;
@@ -47,4 +50,13 @@ public class ShoppingList {
     public void setCreationTime(Date creationTime) {
         this.mCreationTime = creationTime;
     }
+
+    public long getForeignAccountId() {
+        return this.mForeignAccountId;
+    }
+
+    public void setForeignAccountId(long foreignAccountId) {
+        this.mForeignAccountId = foreignAccountId;
+    }
+
 }

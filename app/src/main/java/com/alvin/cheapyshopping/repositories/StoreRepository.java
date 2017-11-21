@@ -64,7 +64,7 @@ public class StoreRepository {
         return this.mCache.get(id);
     }
 
-    public Store findByIdNow(long id) {
+    public Store findStoreByIdNow(long id) {
         return this.mDao.findByIdNow(id);
     }
 

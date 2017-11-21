@@ -1,5 +1,6 @@
 package com.alvin.cheapyshopping.viewmodels;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.arch.core.util.Function;
 import android.arch.lifecycle.AndroidViewModel;
@@ -24,28 +25,50 @@ public class AddShoppingListActivityViewModel extends AndroidViewModel {
         this.mShoppingListRepository = ShoppingListRepository.getInstance(application);
     }
 
-    public void addShoppingList(String name, Function<long[], Void> callback) {
-        ShoppingList shoppingList = new ShoppingList();
-        shoppingList.setName(name);
-        shoppingList.setCreationTime(new Date());
-        new InsertShoppingListTask(this.mShoppingListRepository, callback).execute(shoppingList);
+
+    private Long mAccountId;
+
+    public void setAccountId(Long accountId) {
+        this.mAccountId = accountId;
+    }
+
+    public Long getAccountId() {
+        return this.mAccountId;
     }
 
 
 
-    private static class InsertShoppingListTask extends AsyncTask<ShoppingList, Void, long[]> {
+    public void addShoppingList(String name, Function<long[], Void> callback) {
+        if (this.mAccountId == null) {
+            throw new RuntimeException("account id not set");
+        }
+        ShoppingList shoppingList = new ShoppingList();
+        shoppingList.setName(name);
+        shoppingList.setCreationTime(new Date());
+        new InsertShoppingListTask(this.getApplication(), this.mAccountId, name, callback).execute();
+    }
 
-        private final ShoppingListRepository mShoppingListRepository;
+    private static class InsertShoppingListTask extends AsyncTask<Void, Void, long[]> {
+
+        @SuppressLint("StaticFieldLeak")
+        private final Context mContext;
+        private final long mAccountId;
+        private final String mName;
         private final Function<long[], Void> mCallback;
 
-        private InsertShoppingListTask(ShoppingListRepository shoppingListRepository, Function<long[], Void> callback) {
-            this.mShoppingListRepository = shoppingListRepository;
+        private InsertShoppingListTask(Context context, long accountId, String name, Function<long[], Void> callback) {
+            this.mContext = context.getApplicationContext();
+            this.mAccountId = accountId;
+            this.mName = name;
             this.mCallback = callback;
         }
 
         @Override
-        protected long[] doInBackground(ShoppingList... shoppingLists) {
-            return mShoppingListRepository.insert(shoppingLists);
+        protected long[] doInBackground(Void... voids) {
+            ShoppingList list = new ShoppingList();
+            list.setForeignAccountId(this.mAccountId);
+            list.setName(mName);
+            return ShoppingListRepository.getInstance(this.mContext).insert(list);
         }
 
         @Override

@@ -206,7 +206,7 @@ public abstract class AbstractModel<M extends AbstractModel<M>> {
 
     /**
      * Set the id value of this model.
-     * Other method will use this method to update the model id value
+     * Other method will use this method to updateAccount the model id value
      * e.g. Creating from cursor instance
      *
      * @param idValue the value of the id

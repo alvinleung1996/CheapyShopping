@@ -52,7 +52,7 @@
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                android:text="@{store.name}"
+                android:text="@{store != null ? store.name : `Not yet computed`}"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/image_store_photo"
                 app:layout_constraintTop_toTopOf="parent" />

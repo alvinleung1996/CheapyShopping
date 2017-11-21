@@ -21,7 +21,7 @@ public class AccountRepository {
 
     private static AccountRepository sInstance;
 
-    private static AccountRepository getInstance(Context context) {
+    public static AccountRepository getInstance(Context context) {
         if (sInstance == null) {
             sInstance = new AccountRepository(context.getApplicationContext());
         }
@@ -52,6 +52,9 @@ public class AccountRepository {
         return this.mAccountDao;
     }
 
+    /*
+    ************************************************************************************************
+     */
 
     public LiveData<List<Account>> getAllAccounts() {
         if (this.mAllAccounts == null) {
@@ -78,5 +81,23 @@ public class AccountRepository {
             this.mCache.put(accountId, this.getAccountDao().findAccountByAccountId(accountId));
         }
         return this.mCache.get(accountId);
+    }
+
+    /*
+    ************************************************************************************************
+    * Sync method
+    ************************************************************************************************
+     */
+
+    public Account getCurrentAccountNow() {
+        return this.getAccountDao().getCurrentAccountNow();
+    }
+
+    /*
+    ************************************************************************************************
+     */
+
+    public int updateAccount(Account... accounts) {
+        return this.getAccountDao().update(accounts);
     }
 }
