@@ -326,6 +326,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onProductSelected(ShoppingListFragment fragment, ProductModel product) {
             Toast.makeText(MainActivity.this, "Selected Product: " + product.name, Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(MainActivity.this, ProductActivity.class);
+            intent.putExtra("mProductID", product.productId);
+            MainActivity.this.startActivity(intent);
 
         }
 

@@ -264,10 +264,6 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
     private void onProductItemClick(View view, ProductModel model) {
         if (this.mInteractionListener != null) {
             this.mInteractionListener.onProductSelected(this, model);
-            Context context = view.getContext();
-            Intent intent = new Intent(view.getContext(), ProductActivity.class);
-            intent.putExtra("mProductID", model.productId);
-            context.startActivity(intent);
         }
     }
 
