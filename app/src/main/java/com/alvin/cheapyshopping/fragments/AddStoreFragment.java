@@ -1,6 +1,7 @@
 package com.alvin.cheapyshopping.fragments;
 
 
+import android.arch.core.util.Function;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -141,7 +142,14 @@ public class AddStoreFragment extends Fragment {
             return;
         }
 
-        long storeId = this.mViewModel.addStore(storeName, storeLocation);
-        this.mInteractionListener.onNewStoreAdded(this, storeId);
+        this.mViewModel.addStore(storeName, storeLocation, new Function<long[], Void>() {
+            @Override
+            public Void apply(long[] storeIds) {
+                if (AddStoreFragment.this.mInteractionListener != null) {
+                    AddStoreFragment.this.mInteractionListener.onNewStoreAdded(AddStoreFragment.this, storeIds[0]);
+                }
+                return null;
+            }
+        });
     }
 }

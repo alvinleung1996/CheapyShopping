@@ -26,7 +26,7 @@ public class ProductListFragmentViewModel extends AndroidViewModel {
 
     public LiveData<List<Product>> getLiveProducts() {
         if (this.mLiveProducts == null) {
-            this.mLiveProducts = this.mProductRepository.getProducts();
+            this.mLiveProducts = this.mProductRepository.getAll();
         }
         return this.mLiveProducts;
     }

@@ -13,34 +13,36 @@ public class Store {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "store_id")
-    private long storeId;
+    private long mStoreId;
 
-    private String name;
+    @ColumnInfo(name = "name")
+    private String mName;
 
-    private String location;
+    @ColumnInfo(name = "location")
+    private String mLocation;
 
 
     public long getStoreId() {
-        return storeId;
+        return this.mStoreId;
     }
 
     public void setStoreId(long storeId) {
-        this.storeId = storeId;
+        this.mStoreId = storeId;
     }
 
     public String getName() {
-        return name;
+        return this.mName;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.mName = name;
     }
 
     public String getLocation() {
-        return location;
+        return this.mLocation;
     }
 
     public void setLocation(String location) {
-        this.location = location;
+        this.mLocation = location;
     }
 }

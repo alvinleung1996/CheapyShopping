@@ -13,35 +13,37 @@ public class Product {
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "product_id")
-    private long productId;
+    private long mProductId;
 
-    private String name;
+    @ColumnInfo(name = "name")
+    private String mName;
 
-    private String description;
+    @ColumnInfo(name="description")
+    private String mDescription;
 
 
     public long getProductId() {
-        return productId;
+        return this.mProductId;
     }
 
     public void setProductId(long productId) {
-        this.productId = productId;
+        this.mProductId = productId;
     }
 
     public String getName() {
-        return name;
+        return this.mName;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.mName = name;
     }
 
     public String getDescription() {
-        return description;
+        return this.mDescription;
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        this.mDescription = description;
     }
 
 }

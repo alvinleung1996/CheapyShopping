@@ -17,18 +17,14 @@ public class StoreListFragmentViewModel extends AndroidViewModel {
 
     private final StoreRepository mStoreRepository;
 
-    private LiveData<List<Store>> mLiveStores;
-
     public StoreListFragmentViewModel(Application application) {
         super(application);
         this.mStoreRepository = StoreRepository.getInstance(application);
     }
 
-    public LiveData<List<Store>> getLiveStores() {
-        if (this.mLiveStores == null) {
-            this.mLiveStores = this.mStoreRepository.getStores();
-        }
-        return this.mLiveStores;
+
+    public LiveData<List<Store>> getStores() {
+        return this.mStoreRepository.getAll();
     }
 
 }

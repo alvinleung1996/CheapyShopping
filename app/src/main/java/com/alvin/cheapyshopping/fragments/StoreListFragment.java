@@ -139,7 +139,7 @@ public class StoreListFragment extends Fragment implements MainActivity.Floating
         this.mStoreListAdapter = new StoreListAdapter();
         this.mBinding.listStores.setAdapter(this.mStoreListAdapter);
 
-        this.mViewModel.getLiveStores().observe(this, new Observer<List<Store>>() {
+        this.mViewModel.getStores().observe(this, new Observer<List<Store>>() {
             @Override
             public void onChanged(@Nullable List<Store> stores) {
                 StoreListFragment.this.mStoreListAdapter.setStores(stores);

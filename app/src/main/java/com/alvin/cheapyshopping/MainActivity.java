@@ -169,22 +169,6 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case REQUEST_ADD_SHOPPING_LIST_PRODUCT:
-                this.onRequestAddShoppingListProductResult(requestCode, resultCode, data);
-                break;
-            case REQUEST_ADD_STORE:
-                this.onRequestAddStoreResult(requestCode, resultCode, data);
-                break;
-        }
-        super.onActivityResult(requestCode, resultCode, data);
-
-    }
-
-
-
     /*
     ************************************************************************************************
     * Drawer Interactions
@@ -240,7 +224,6 @@ public class MainActivity extends AppCompatActivity {
         public void onFragmentAttached(FragmentManager fm, Fragment f, Context context) {
             super.onFragmentAttached(fm, f, context);
             if (f instanceof ShoppingListFragment) {
-                ((ShoppingListFragment) f).setInteractionListener(new ShoppingListFragmentInteractionListener());
             } else if (f instanceof StoreListFragment) {
                 ((StoreListFragment) f).setInteractableListener(new StoreListFragmentInteractionListener());
             }
@@ -277,7 +260,6 @@ public class MainActivity extends AppCompatActivity {
         public void onFragmentDetached(FragmentManager fm, Fragment f) {
             super.onFragmentDetached(fm, f);
             if (f instanceof ShoppingListFragment) {
-                ((ShoppingListFragment) f).setInteractionListener(null);
             } else if (f instanceof StoreListFragment) {
                 ((StoreListFragment) f).setInteractableListener(null);
             }
@@ -300,40 +282,6 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
-    private void onRequestAddShoppingListProductResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == REQUEST_ADD_SHOPPING_LIST_PRODUCT && resultCode == RESULT_OK) {
-            ShoppingListFragment fragment = (ShoppingListFragment) this.getSupportFragmentManager().findFragmentByTag(FRAGMENT_SHOPPING_LIST);
-            if (fragment != null) {
-                fragment.updateShoppingListItemList();
-            }
-        }
-    }
-
-    private class ShoppingListFragmentInteractionListener implements ShoppingListFragment.InteractionListener {
-
-        @Override
-        public void onRequestAddProduct(ShoppingListFragment fragment) {
-            Intent intent = new Intent(MainActivity.this, AddShoppingListProductActivity.class);
-            MainActivity.this.startActivityForResult(intent, REQUEST_ADD_SHOPPING_LIST_PRODUCT);
-        }
-
-        @Override
-        public void onStoreSelected(ShoppingListFragment fragment, StoreModel store) {
-            Toast.makeText(MainActivity.this, "Selected Store: " + store.name, Toast.LENGTH_SHORT).show();
-
-        }
-
-        @Override
-        public void onProductSelected(ShoppingListFragment fragment, ProductModel product) {
-            Toast.makeText(MainActivity.this, "Selected Product: " + product.name, Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(MainActivity.this, ProductActivity.class);
-            intent.putExtra("mProductID", product.productId);
-            MainActivity.this.startActivity(intent);
-
-        }
-
-    }
-
     /*
     ************************************************************************************************
     * StoreListFragment Interactions
@@ -350,22 +298,6 @@ public class MainActivity extends AppCompatActivity {
         }
         this.mDrawerLayout.closeDrawer(this.mDrawer);
         return true;
-    }
-
-    private void onRequestAddStoreResult(int requestCode, int resultCode, Intent data) {
-        switch (resultCode) {
-            case RESULT_OK:
-                long storeId = data.getLongExtra(AddStoreActivity.EXTRA_ADDED_STORE_ID, -1);
-                Toast.makeText(this, "Store Added: (" + storeId + ")", Toast.LENGTH_SHORT).show();
-                StoreListFragment fragment = (StoreListFragment) this.getSupportFragmentManager().findFragmentByTag(FRAGMENT_STORE_LIST);
-                if (fragment != null) {
-//                    fragment.updateStoreList();
-                }
-                break;
-            case RESULT_CANCELED:
-                Toast.makeText(this, "Store add cancelled", Toast.LENGTH_SHORT).show();
-                break;
-        }
     }
 
     private class StoreListFragmentInteractionListener implements StoreListFragment.InteractionListener {

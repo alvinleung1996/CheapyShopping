@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.alvin.cheapyshopping">
+          package="com.alvin.cheapyshopping">
+
+    <uses-feature
+        android:name="android.hardware.camera.any"
+        android:required="false"/>
 
     <application
         android:allowBackup="true"
@@ -13,12 +17,12 @@
             android:name=".MainActivity"
             android:theme="@style/AppTheme.MainActivity">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".AddPriceActivity" />
+        <activity android:name=".AddPriceActivity"/>
         <activity
             android:name=".AddShoppingListProductActivity"
             android:label="Add Product" />
@@ -32,6 +36,10 @@
         <activity
             android:name=".AddProductActivity"
             android:label="Add Product">
+        </activity>
+        <activity
+            android:name=".AddShoppingListActivity"
+            android:label="Add Shopping List">
         </activity>
     </application>
 

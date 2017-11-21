@@ -187,7 +187,7 @@ abstract class AbstractShoppingListProductRelation<M extends AbstractShoppingLis
 
         @Override
         public String getTableName() {
-            return "ShoppingListProductRelation";
+            return "ShoppingListProduct";
         }
 
         @Override

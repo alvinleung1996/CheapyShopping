@@ -25,6 +25,8 @@ public class ProductActivity extends AppCompatActivity {
     private static final int REQUEST_PRODUCT_ADD_PRICE = 1;
     private static final int REQUEST_PRODUCT_EDIT = 2;
 
+    public static final String EXTRA_PRODUCT_ID = "com.alvin.cheapyshopping.ProductActivity.EXTRA_PRODUCT_ID";
+
     private static final String FRAGMENT_PRODUCT = "com.alvin.cheapyshopping.ProductActivity.FRAGMENT_PRODUCT";
 
     private Toolbar mToolbar;
@@ -63,12 +65,12 @@ public class ProductActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_save:
-                return true;
-            case R.id.action_edit:
-                return true;
-            case R.id.action_add_price:
-                return true;
+//            case R.id.action_save:
+//                return true;
+//            case R.id.action_edit:
+//                return true;
+//            case R.id.action_add_price:
+//                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

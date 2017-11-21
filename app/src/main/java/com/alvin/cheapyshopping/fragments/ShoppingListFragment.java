@@ -1,7 +1,11 @@
 package com.alvin.cheapyshopping.fragments;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -9,16 +13,26 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.alvin.cheapyshopping.AddShoppingListActivity;
+import com.alvin.cheapyshopping.AddShoppingListProductActivity;
 import com.alvin.cheapyshopping.MainActivity;
 import com.alvin.cheapyshopping.ProductActivity;
 import com.alvin.cheapyshopping.R;
-import com.alvin.cheapyshopping.olddb.models.ProductModel;
-import com.alvin.cheapyshopping.olddb.models.ShoppingListModel;
-import com.alvin.cheapyshopping.olddb.models.StoreModel;
+import com.alvin.cheapyshopping.databinding.ShoppingListFragmentBinding;
+import com.alvin.cheapyshopping.databinding.ShoppingListProductItemBinding;
+import com.alvin.cheapyshopping.databinding.ShoppingListStoreItemBinding;
+import com.alvin.cheapyshopping.room.daos.ShoppingListProductDao.ShoppingListProductDetail;
+import com.alvin.cheapyshopping.room.entities.Product;
+import com.alvin.cheapyshopping.room.entities.ShoppingList;
+import com.alvin.cheapyshopping.room.entities.Store;
+import com.alvin.cheapyshopping.viewmodels.ShoppingListFragmentViewModel;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -28,15 +42,7 @@ import java.util.Map;
 
 public class ShoppingListFragment extends Fragment implements MainActivity.FloatingActionButtonInteractionListener {
 
-    public interface InteractionListener {
-
-        void onRequestAddProduct(ShoppingListFragment fragment);
-
-        void onStoreSelected(ShoppingListFragment fragment, StoreModel store);
-
-        void onProductSelected(ShoppingListFragment fragment, ProductModel product);
-
-    }
+    private static final int REQUEST_ADD_SHOPPING_LIST = 1;
 
 
     private class ShoppingListItem {
@@ -44,21 +50,21 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
         private static final int TYPE_STORE = 0;
         private static final int TYPE_PRODUCT = 1;
 
-        private ShoppingListItem(StoreModel store) {
+        private ShoppingListItem(Store store) {
             this.type = TYPE_STORE;
             this.store = store;
             this.product = null;
         }
 
-        private ShoppingListItem(ProductModel product) {
+        private ShoppingListItem(Product product) {
             this.type = TYPE_PRODUCT;
             this.store = null;
             this.product = product;
         }
 
         private int type;
-        private StoreModel store;
-        private ProductModel product;
+        private Store store;
+        private Product product;
 
     }
 
@@ -111,10 +117,9 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
 
         }
 
-        private void updateShoppingListItems(List<ShoppingListItem> items) {
+        private void setShoppingListItems(List<ShoppingListItem> items) {
             this.mShoppingListItems = items;
             this.notifyDataSetChanged();
-            // TODO: Can we compute the modification of the data set?
         }
     }
 
@@ -129,69 +134,53 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
 
     private class StoreItemViewHolder extends ShoppingListItemViewHolder {
 
-        private StoreModel mStore;
-        private TextView mStoreNameTextView;
-        private TextView mStoreLocationTextView;
-        private TextView mStoreIdTextView;
+        private ShoppingListStoreItemBinding mBinding;
 
         private StoreItemViewHolder(ViewGroup parent) {
-            super(ShoppingListFragment.this.getLayoutInflater().inflate(R.layout.item_shopping_list_store, parent, false));
-            View view = this.itemView;
-            this.mStoreNameTextView = view.findViewById(R.id.text_store_name);
-            this.mStoreLocationTextView = view.findViewById(R.id.text_store_location);
-            this.mStoreIdTextView = view.findViewById(R.id.text_store_id);
-            view.setOnClickListener(new View.OnClickListener() {
+            super(ShoppingListStoreItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false).getRoot());
+            this.mBinding = DataBindingUtil.getBinding(this.itemView);
+        }
+
+        private void onBind(Store store) {
+            this.mBinding.setStore(store);
+            this.mBinding.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    ShoppingListFragment.this.onStoreItemClick(view, StoreItemViewHolder.this.mStore);
+                    ShoppingListFragment.this.onStoreItemClick(view, StoreItemViewHolder.this.mBinding.getStore());
                 }
             });
         }
 
-        private void onBind(StoreModel store) {
-            this.mStore = store;
-            this.mStoreNameTextView.setText(store.name);
-            this.mStoreLocationTextView.setText(store.location);
-            this.mStoreIdTextView.setText("id:" + store.storeId);
-        }
-
         @Override
         protected void onRecycled() {
-            this.mStore = null;
+            this.mBinding.setStore(null);
+            this.mBinding.setOnClickListener(null);
         }
     }
 
     private class ProductItemViewHolder extends ShoppingListItemViewHolder {
 
-        private ProductModel mProduct;
-        private TextView mProductNameTextView;
-        private TextView mProductBestPriceTextView;
-        private TextView mProductIdTextView;
+        private ShoppingListProductItemBinding mBinding;
 
         private ProductItemViewHolder(ViewGroup parent) {
-            super(ShoppingListFragment.this.getLayoutInflater().inflate(R.layout.item_shopping_list_product, parent, false));
-            View view = this.itemView;
-            this.mProductNameTextView = view.findViewById(R.id.text_product_name);
-            this.mProductBestPriceTextView = view.findViewById(R.id.text_product_best_price);
-            this.mProductIdTextView = view.findViewById(R.id.text_product_id);
-            itemView.setOnClickListener(new View.OnClickListener() {
+            super(ShoppingListProductItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false).getRoot());
+            this.mBinding = DataBindingUtil.getBinding(this.itemView);
+        }
+
+        private void onBind(Product product) {
+            this.mBinding.setProduct(product);
+            this.mBinding.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    ShoppingListFragment.this.onProductItemClick(view, ProductItemViewHolder.this.mProduct);
+                    ShoppingListFragment.this.onProductItemClick(view, ProductItemViewHolder.this.mBinding.getProduct());
                 }
             });
         }
 
-        private void onBind(ProductModel product) {
-            this.mProduct = product;
-            this.mProductNameTextView.setText(product.name); // Set product name in Textview
-            this.mProductBestPriceTextView.setText(10 + "Fake");
-            this.mProductIdTextView.setText("id:" + product.productId); // Set productID in Textview
-        }
-
         @Override
         protected void onRecycled() {
-            this.mProduct = null;
+            this.mBinding.setProduct(null);
+            this.mBinding.setOnClickListener(null);
         }
     }
 
@@ -208,39 +197,93 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
     }
 
 
-    private RecyclerView mShoppingListItemList;
+    private ShoppingListFragmentViewModel mViewModel;
+    private ShoppingListFragmentBinding mBinding;
     private ShoppingListAdapter mShoppingListItemListAdapter;
 
-    private ShoppingListModel mShoppingList;
+    private List<ShoppingList> mShoppingLists;
 
-    private InteractionListener mInteractionListener;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        this.setHasOptionsMenu(true);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_shopping_list, container, false);
-        this.mShoppingListItemList = view.findViewById(R.id.list_shopping_list_items);
-        return view;
+        this.mBinding = ShoppingListFragmentBinding.inflate(inflater, container, false);
+        return mBinding.getRoot();
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        this.mShoppingListItemList.setLayoutManager(new LinearLayoutManager(this.getContext()));
+        this.mViewModel = ViewModelProviders.of(this).get(ShoppingListFragmentViewModel.class);
 
-        this.mShoppingList = ShoppingListModel.manager.getLatestShoppingList(this.getContext());
+        this.mBinding.listShoppingListItems.setLayoutManager(new LinearLayoutManager(this.getContext()));
 
         this.mShoppingListItemListAdapter = new ShoppingListAdapter();
-        this.mShoppingListItemList.setAdapter(this.mShoppingListItemListAdapter);
+        this.mBinding.listShoppingListItems.setAdapter(this.mShoppingListItemListAdapter);
 
-        this.updateShoppingListItemList();
+        this.mViewModel.getShoppingLists().observe(this, new Observer<List<ShoppingList>>() {
+            @Override
+            public void onChanged(@Nullable List<ShoppingList> shoppingLists) {
+                ShoppingListFragment.this.mShoppingLists = shoppingLists;
+                ShoppingListFragment.this.getActivity().invalidateOptionsMenu();
+            }
+        });
+
+        this.mViewModel.getResult().observe(this, new Observer<Map<Store, List<ShoppingListProductDetail>>>() {
+            @Override
+            public void onChanged(@Nullable Map<Store, List<ShoppingListProductDetail>> storeListMap) {
+                List<ShoppingListItem> items = ShoppingListFragment.this.resultToListItems(storeListMap);
+                ShoppingListFragment.this.mShoppingListItemListAdapter.setShoppingListItems(items);
+            }
+        });
     }
 
-    public void setInteractionListener(InteractionListener listener) {
-        this.mInteractionListener = listener;
+
+
+    private static final int MENU_GROUP_ID = 1;
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.shopping_list_fragment_menu, menu);
+        if (this.mShoppingLists != null) {
+            for (ShoppingList list : this.mShoppingLists) {
+                MenuItem item = menu.add(MENU_GROUP_ID, (int)list.getShoppingListId(), Menu.NONE, list.getName());
+            }
+        }
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_item_add:
+                this.onAddShoppingListButtonClick(item);
+                return true;
+        }
+        if (this.mShoppingLists != null) {
+            for (ShoppingList list: this.mShoppingLists) {
+                if (list.getShoppingListId() == item.getItemId()) {
+
+                    return true;
+                }
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    private void onAddShoppingListButtonClick(MenuItem item) {
+        Intent intent = new Intent(this.getContext(), AddShoppingListActivity.class);
+        this.startActivityForResult(intent, REQUEST_ADD_SHOPPING_LIST);
+    }
+
 
 
     @Override
@@ -250,71 +293,40 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
 
     @Override
     public void onFloatingActionButtonClick(FloatingActionButton button) {
-        this.mInteractionListener.onRequestAddProduct(this);
+        Intent intent = new Intent(this.getContext(), AddShoppingListProductActivity.class);
+        this.startActivity(intent);
     }
 
 
 
-    private void onStoreItemClick(View view, StoreModel model) {
-        if (this.mInteractionListener != null) {
-            this.mInteractionListener.onStoreSelected(this, model);
-        }
+    private void onStoreItemClick(View view, Store model) {
+
     }
 
-    private void onProductItemClick(View view, ProductModel model) {
-        if (this.mInteractionListener != null) {
-            this.mInteractionListener.onProductSelected(this, model);
-        }
+    private void onProductItemClick(View view, Product model) {
+        Intent intent = new Intent(this.getContext(), ProductActivity.class);
+        intent.putExtra(ProductActivity.EXTRA_PRODUCT_ID, model.getProductId());
+        this.startActivity(intent);
     }
 
 
 
-    public void updateShoppingListItemList() {
-        List<ShoppingListItem> items = this.getShoppingListItems();
-        this.mShoppingListItemListAdapter.updateShoppingListItems(items);
-    }
 
-    private List<ShoppingListItem> getShoppingListItems() {
-        LinkedHashMap<StoreModel, List<ProductModel>> result = this.getProductBestPriceResult();
-
+    private List<ShoppingListItem> resultToListItems(Map<Store, List<ShoppingListProductDetail>> result) {
         List<ShoppingListItem> items = new ArrayList<>();
-        for (Map.Entry<StoreModel, List<ProductModel>> entry : result.entrySet()) {
-            final StoreModel store = entry.getKey();
-            final List<ProductModel> products = entry.getValue();
+        for (Map.Entry<Store, List<ShoppingListProductDetail>> entry : result.entrySet()) {
+            final Store store = entry.getKey();
+            final List<ShoppingListProductDetail> products = entry.getValue();
 
             if (products.size() > 0) {
                 items.add(new ShoppingListItem(store));
 
-                for (ProductModel product : products) {
+                for (Product product : products) {
                     items.add(new ShoppingListItem(product));
                 }
             }
         }
         return items;
-    }
-
-    private LinkedHashMap<StoreModel, List<ProductModel>> getProductBestPriceResult() {
-        LinkedHashMap<StoreModel, List<ProductModel>> result = new LinkedHashMap<>();
-
-        // TODO: Implement best price algorithm (in ShoppingListModel)
-        // Now it can only support 12 products: 3 stores and each store contain 4 products
-        List<ProductModel> products = this.mShoppingList.getProducts();
-        List<StoreModel> stores = StoreModel.manager.getAll(this.getContext());
-
-        int storeIndex = 0;
-        int productIndex = 0;
-        for (; storeIndex < stores.size() && productIndex < products.size(); ++storeIndex) {
-            final StoreModel store = stores.get(storeIndex);
-            List<ProductModel> storeProducts = new ArrayList<>();
-
-            for (; productIndex < (storeIndex+1)*4 && productIndex < products.size(); ++productIndex) {
-                storeProducts.add(products.get(productIndex));
-            }
-
-            result.put(store, storeProducts);
-        }
-
-        return result;
     }
 
 }
