@@ -7,7 +7,7 @@
     <data class="StoreDetailItemBinding">
         <variable
             name="store"
-            type="com.alvin.cheapyshopping.room.entities.Store"/>
+            type="com.alvin.cheapyshopping.db.entities.Store"/>
         <variable
             name="onClickListener"
             type="android.view.View.OnClickListener"/>

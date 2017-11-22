@@ -10,9 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.alvin.cheapyshopping.databinding.AddShoppingListActivityBinding;
-import com.alvin.cheapyshopping.room.entities.ShoppingList;
 import com.alvin.cheapyshopping.viewmodels.AddShoppingListActivityViewModel;
-import com.alvin.cheapyshopping.viewmodels.AddShoppingListProductActivityViewModel;
 
 public class AddShoppingListActivity extends AppCompatActivity {
 

@@ -1,14 +1,13 @@
 package com.alvin.cheapyshopping.repositories;
 
-import android.arch.core.util.Function;
+import android.annotation.SuppressLint;
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Transformations;
 import android.content.Context;
 import android.util.ArrayMap;
 
-import com.alvin.cheapyshopping.room.AppDatabase;
-import com.alvin.cheapyshopping.room.daos.AccountDao;
-import com.alvin.cheapyshopping.room.entities.Account;
+import com.alvin.cheapyshopping.db.AppDatabase;
+import com.alvin.cheapyshopping.db.daos.AccountDao;
+import com.alvin.cheapyshopping.db.entities.Account;
 
 import java.util.List;
 import java.util.Map;
@@ -19,11 +18,12 @@ import java.util.Map;
 
 public class AccountRepository {
 
+    @SuppressLint("StaticFieldLeak")
     private static AccountRepository sInstance;
 
     public static AccountRepository getInstance(Context context) {
         if (sInstance == null) {
-            sInstance = new AccountRepository(context.getApplicationContext());
+            sInstance = new AccountRepository(context);
         }
         return sInstance;
     }
@@ -31,20 +31,18 @@ public class AccountRepository {
 
     private final Context mContext;
 
-    private AccountDao mAccountDao;
-
-    private LiveData<List<Account>> mAllAccounts;
-    private Map<Long, LiveData<Account>> mCache;
-
-    private LiveData<Account> mCurrentAccount;
-
-
     private AccountRepository(Context context) {
-        this.mContext = context;
-        this.mCache = new ArrayMap<>();
+        this.mContext = context.getApplicationContext();
     }
 
 
+    /*
+    ************************************************************************************************
+    * Dao
+    ************************************************************************************************
+     */
+
+    private AccountDao mAccountDao;
     private AccountDao getAccountDao() {
         if (this.mAccountDao == null) {
             this.mAccountDao = AppDatabase.getInstance(this.mContext).getAccountDao();
@@ -52,10 +50,14 @@ public class AccountRepository {
         return this.mAccountDao;
     }
 
+
     /*
+    ************************************************************************************************
+    * Async
     ************************************************************************************************
      */
 
+    private LiveData<List<Account>> mAllAccounts;
     public LiveData<List<Account>> getAllAccounts() {
         if (this.mAllAccounts == null) {
             this.mAllAccounts = this.getAccountDao().getAllAccounts();
@@ -63,41 +65,59 @@ public class AccountRepository {
         return this.mAllAccounts;
     }
 
+    private LiveData<Account> mCurrentAccount;
     public LiveData<Account> getCurrentAccount() {
         if (this.mCurrentAccount == null) {
-            this.mCurrentAccount = Transformations.map(this.getAllAccounts(), new Function<List<Account>, Account>() {
-                @Override
-                public Account apply(List<Account> input) {
-                    // Just return the first user
-                    return input != null && input.size() > 0 ? input.get(0) : null;
-                }
-            });
+            this.mCurrentAccount = this.getAccountDao().getCurrentAccount();
         }
         return this.mCurrentAccount;
     }
 
+    private Map<Long, LiveData<Account>> mAccountCache;
     public LiveData<Account> findAccountByAccountId(long accountId) {
-        if (!this.mCache.containsKey(accountId)) {
-            this.mCache.put(accountId, this.getAccountDao().findAccountByAccountId(accountId));
+        if (this.mAccountCache == null) {
+            this.mAccountCache = new ArrayMap<>();
         }
-        return this.mCache.get(accountId);
+        if (!this.mAccountCache.containsKey(accountId)) {
+            this.mAccountCache.put(accountId, this.getAccountDao().findAccountByAccountId(accountId));
+        }
+        return this.mAccountCache.get(accountId);
     }
+
 
     /*
     ************************************************************************************************
-    * Sync method
+    * Sync
     ************************************************************************************************
      */
+
+    public List<Account> getAllAccountsNow() {
+        return this.getAccountDao().getAllAccountsNow();
+    }
 
     public Account getCurrentAccountNow() {
         return this.getAccountDao().getCurrentAccountNow();
     }
 
+    public Account findAccountByAccountIdNow(long accountId) {
+        return this.getAccountDao().findAccountByAccountIdNow(accountId);
+    }
+
     /*
+    ************************************************************************************************
+    * Other
     ************************************************************************************************
      */
 
+    public long[] insertAccount(Account... accounts) {
+        return this.getAccountDao().insertAccount(accounts);
+    }
+
     public int updateAccount(Account... accounts) {
-        return this.getAccountDao().update(accounts);
+        return this.getAccountDao().updateAccount(accounts);
+    }
+
+    public int deleteAccount(Account... accounts) {
+        return this.getAccountDao().deleteAccount(accounts);
     }
 }

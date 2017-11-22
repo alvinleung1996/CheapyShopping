@@ -9,12 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.alvin.cheapyshopping.fragments.ProductFragment;
-import com.alvin.cheapyshopping.olddb.models.PriceModel;
-import com.alvin.cheapyshopping.olddb.models.StoreModel;
-import com.alvin.cheapyshopping.room.entities.Store;
 
 /**
  * Created by cheng on 11/13/2017.
@@ -104,7 +100,7 @@ public class ProductActivity extends AppCompatActivity {
         public void onFragmentAttached(FragmentManager fm, Fragment f, Context context) {
             super.onFragmentAttached(fm, f, context);
             if (f instanceof ProductFragment) {
-                ((ProductFragment) f).setInteractionListener(new ProductFragmentInteractionListener());
+//                ((ProductFragment) f).setInteractionListener(new ProductFragmentInteractionListener());
             }
         }
 
@@ -120,22 +116,22 @@ public class ProductActivity extends AppCompatActivity {
         if (requestCode == REQUEST_PRODUCT_ADD_PRICE && resultCode == RESULT_OK) {
             ProductFragment fragment = (ProductFragment) this.getSupportFragmentManager().findFragmentByTag(FRAGMENT_PRODUCT);
             if (fragment != null) {
-                fragment.updateProductPriceItemList();
+//                fragment.updateProductPriceItemList();
             }
         }
     }
-    private class ProductFragmentInteractionListener implements ProductFragment.InteractionListener {
-
-        @Override
-        public void onPriceSelected(ProductFragment fragment, PriceModel price) {
-
-        }
-
-        @Override
-        public void onStoreSelected(ProductFragment fragment, StoreModel store) {
-            Toast.makeText(ProductActivity.this, "Store Selected: " + store.name, Toast.LENGTH_SHORT).show();
-            // TODO: link to Store Activity?
-        }
-    }
+//    private class ProductFragmentInteractionListener implements ProductFragment.InteractionListener {
+//
+//        @Override
+//        public void onPriceSelected(ProductFragment fragment, PriceModel price) {
+//
+//        }
+//
+//        @Override
+//        public void onStoreSelected(ProductFragment fragment, StoreModel store) {
+//            Toast.makeText(ProductActivity.this, "Store Selected: " + store.name, Toast.LENGTH_SHORT).show();
+//            // TODO: link to Store Activity?
+//        }
+//    }
 
 }

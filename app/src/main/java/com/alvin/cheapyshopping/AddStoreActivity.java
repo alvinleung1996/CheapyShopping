@@ -7,7 +7,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.alvin.cheapyshopping.olddb.models.StoreModel;
 import com.alvin.cheapyshopping.fragments.AddStoreFragment;
 
 public class AddStoreActivity extends AppCompatActivity {

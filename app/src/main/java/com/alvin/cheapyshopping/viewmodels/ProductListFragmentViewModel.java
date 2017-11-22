@@ -5,7 +5,7 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 
 import com.alvin.cheapyshopping.repositories.ProductRepository;
-import com.alvin.cheapyshopping.room.entities.Product;
+import com.alvin.cheapyshopping.db.entities.Product;
 
 import java.util.List;
 
@@ -26,7 +26,7 @@ public class ProductListFragmentViewModel extends AndroidViewModel {
 
     public LiveData<List<Product>> getLiveProducts() {
         if (this.mLiveProducts == null) {
-            this.mLiveProducts = this.mProductRepository.getAll();
+            this.mLiveProducts = this.mProductRepository.getAllProducts();
         }
         return this.mLiveProducts;
     }

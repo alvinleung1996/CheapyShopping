@@ -8,7 +8,7 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import com.alvin.cheapyshopping.repositories.ShoppingListRepository;
-import com.alvin.cheapyshopping.room.entities.ShoppingList;
+import com.alvin.cheapyshopping.db.entities.ShoppingList;
 
 import java.util.Date;
 
@@ -68,7 +68,7 @@ public class AddShoppingListActivityViewModel extends AndroidViewModel {
             ShoppingList list = new ShoppingList();
             list.setForeignAccountId(this.mAccountId);
             list.setName(mName);
-            return ShoppingListRepository.getInstance(this.mContext).insert(list);
+            return ShoppingListRepository.getInstance(this.mContext).insertShoppingList(list);
         }
 
         @Override

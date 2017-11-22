@@ -1,12 +1,11 @@
 package com.alvin.cheapyshopping.repositories;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 
-import com.alvin.cheapyshopping.room.AppDatabase;
-import com.alvin.cheapyshopping.room.daos.BestPriceDao;
-import com.alvin.cheapyshopping.room.entities.Price;
-
-import java.util.List;
+import com.alvin.cheapyshopping.db.AppDatabase;
+import com.alvin.cheapyshopping.db.daos.BestPriceRelationDao;
+import com.alvin.cheapyshopping.db.entities.BestPriceRelation;
 
 /**
  * Created by Alvin on 21/11/2017.
@@ -14,6 +13,7 @@ import java.util.List;
 
 public class BestPriceRepository {
 
+    @SuppressLint("StaticFieldLeak")
     private static BestPriceRepository sInstance;
 
     public static BestPriceRepository getInstance(Context context) {
@@ -26,33 +26,58 @@ public class BestPriceRepository {
 
     private final Context mContext;
 
-    private BestPriceDao mBestPriceDao;
-
-
-
     private BestPriceRepository(Context context) {
         this.mContext = context.getApplicationContext();
     }
 
-    public BestPriceDao getBestPriceDao() {
-        if (this.mBestPriceDao == null) {
-            this.mBestPriceDao = AppDatabase.getInstance(this.mContext).getBestPriceDao();
+
+    /*
+    ************************************************************************************************
+    * Dao
+    ************************************************************************************************
+     */
+
+    private BestPriceRelationDao mBestPriceRelationDao;
+    private BestPriceRelationDao getBestPriceRelationDao() {
+        if (this.mBestPriceRelationDao == null) {
+            this.mBestPriceRelationDao = AppDatabase.getInstance(this.mContext).getBestPriceRelationDao();
         }
-        return this.mBestPriceDao;
+        return this.mBestPriceRelationDao;
     }
 
-//    private Map<Pair<Long, Long>, LiveData<List<Price>>> mCache;
-//
-//    public LiveData<List<Price>> findShoppingListProductBestPrices(long shoppingListId, long productId) {
-//        Pair<Long, Long> key = new Pair<>(shoppingListId, productId);
-//        if (!this.mCache.containsKey(key)) {
-//            this.mCache.put(key, this.mBestPriceDao.findPriceOfShoppingListProduct(shoppingListId, productId));
-//        }
-//        return this.mCache.get(key);
-//    }
+    /*
+    ************************************************************************************************
+    * Query, Async
+    ************************************************************************************************
+     */
 
-    public List<Price> findShoppingListProductBestPricesNow(long shoppingListId, long productId) {
-        return this.getBestPriceDao().findPriceOfShoppingListProductNow(shoppingListId, productId);
+
+
+    /*
+    ************************************************************************************************
+    * Query, Sync
+    ************************************************************************************************
+     */
+
+
+
+
+    /*
+    ************************************************************************************************
+    * Other
+    ************************************************************************************************
+     */
+
+    public long[] insertBestPrice(BestPriceRelation... bestPriceRelations) {
+        return this.getBestPriceRelationDao().insertBestPrice(bestPriceRelations);
+    }
+
+    public int udpateBestPrice(BestPriceRelation... bestPriceRelations) {
+        return this.getBestPriceRelationDao().updateBestPrice(bestPriceRelations);
+    }
+
+    public int deleteBestPrice(BestPriceRelation... bestPriceRelations) {
+        return this.getBestPriceRelationDao().deleteBestPrice(bestPriceRelations);
     }
 
 }

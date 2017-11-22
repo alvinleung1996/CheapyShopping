@@ -1,4 +1,4 @@
-package com.alvin.cheapyshopping.room;
+package com.alvin.cheapyshopping.db;
 
 import android.arch.persistence.room.TypeConverter;
 

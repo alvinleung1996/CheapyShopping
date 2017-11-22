@@ -1,4 +1,4 @@
-package com.alvin.cheapyshopping.room.entities;
+package com.alvin.cheapyshopping.db.entities;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;

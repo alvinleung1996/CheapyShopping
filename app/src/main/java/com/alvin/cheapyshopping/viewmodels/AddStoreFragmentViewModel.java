@@ -3,11 +3,10 @@ package com.alvin.cheapyshopping.viewmodels;
 import android.app.Application;
 import android.arch.core.util.Function;
 import android.arch.lifecycle.AndroidViewModel;
-import android.content.Context;
 import android.os.AsyncTask;
 
 import com.alvin.cheapyshopping.repositories.StoreRepository;
-import com.alvin.cheapyshopping.room.entities.Store;
+import com.alvin.cheapyshopping.db.entities.Store;
 
 /**
  * Created by Alvin on 19/11/2017.
@@ -41,7 +40,7 @@ public class AddStoreFragmentViewModel extends AndroidViewModel {
 
         @Override
         protected long[] doInBackground(Store... stores) {
-            return this.mStoreRepository.insert(stores);
+            return this.mStoreRepository.insertStore(stores);
         }
 
         @Override

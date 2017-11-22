@@ -1,27 +1,27 @@
-package com.alvin.cheapyshopping.room;
+package com.alvin.cheapyshopping.db;
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
 import android.arch.persistence.room.TypeConverters;
 import android.content.Context;
-import android.support.annotation.NonNull;
 
-import com.alvin.cheapyshopping.room.daos.AccountDao;
-import com.alvin.cheapyshopping.room.daos.BestPriceDao;
-import com.alvin.cheapyshopping.room.daos.PriceDao;
-import com.alvin.cheapyshopping.room.daos.ProductDao;
-import com.alvin.cheapyshopping.room.daos.ShoppingListDao;
-import com.alvin.cheapyshopping.room.daos.ShoppingListProductDao;
-import com.alvin.cheapyshopping.room.daos.StoreDao;
-import com.alvin.cheapyshopping.room.entities.Account;
-import com.alvin.cheapyshopping.room.entities.BestPrice;
-import com.alvin.cheapyshopping.room.entities.Price;
-import com.alvin.cheapyshopping.room.entities.Product;
-import com.alvin.cheapyshopping.room.entities.ShoppingList;
-import com.alvin.cheapyshopping.room.entities.ShoppingListProduct;
-import com.alvin.cheapyshopping.room.entities.Store;
+import com.alvin.cheapyshopping.db.daos.AccountDao;
+import com.alvin.cheapyshopping.db.daos.BestPriceRelationDao;
+import com.alvin.cheapyshopping.db.daos.PriceDao;
+import com.alvin.cheapyshopping.db.daos.ProductDao;
+import com.alvin.cheapyshopping.db.daos.ShoppingListDao;
+import com.alvin.cheapyshopping.db.daos.ShoppingListProductDao;
+import com.alvin.cheapyshopping.db.daos.ShoppingListProductRelationDao;
+import com.alvin.cheapyshopping.db.daos.StoreDao;
+import com.alvin.cheapyshopping.db.daos.StorePriceDao;
+import com.alvin.cheapyshopping.db.entities.Account;
+import com.alvin.cheapyshopping.db.entities.BestPriceRelation;
+import com.alvin.cheapyshopping.db.entities.Price;
+import com.alvin.cheapyshopping.db.entities.Product;
+import com.alvin.cheapyshopping.db.entities.ShoppingList;
+import com.alvin.cheapyshopping.db.entities.ShoppingListProductRelation;
+import com.alvin.cheapyshopping.db.entities.Store;
 
 /**
  * Created by Alvin on 19/11/2017.
@@ -32,9 +32,9 @@ import com.alvin.cheapyshopping.room.entities.Store;
         ShoppingList.class,
         Store.class,
         Product.class,
-        ShoppingListProduct.class,
+        ShoppingListProductRelation.class,
         Price.class,
-        BestPrice.class,
+        BestPriceRelation.class,
         Account.class
     },
     version = 1
@@ -72,12 +72,16 @@ public abstract class AppDatabase extends RoomDatabase {
 
     public abstract ProductDao getProductDao();
 
-    public abstract ShoppingListProductDao getShoppingListProductDao();
+    public abstract ShoppingListProductRelationDao getShoppingListProductRelationDao();
 
     public abstract PriceDao getPriceDao();
 
-    public abstract BestPriceDao getBestPriceDao();
+    public abstract BestPriceRelationDao getBestPriceRelationDao();
 
     public abstract AccountDao getAccountDao();
+
+    public abstract ShoppingListProductDao getShoppingListProductDao();
+
+    public abstract StorePriceDao getStorePriceDao();
 
 }

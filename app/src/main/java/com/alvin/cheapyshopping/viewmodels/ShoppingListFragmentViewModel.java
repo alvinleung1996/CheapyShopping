@@ -13,14 +13,13 @@ import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 
 import com.alvin.cheapyshopping.repositories.AccountRepository;
-import com.alvin.cheapyshopping.repositories.ShoppingListProductRepository;
+import com.alvin.cheapyshopping.repositories.ShoppingListProductRelationRepository;
 import com.alvin.cheapyshopping.repositories.ShoppingListRepository;
-import com.alvin.cheapyshopping.room.daos.ShoppingListProductDao;
-import com.alvin.cheapyshopping.room.daos.ShoppingListProductDao.ShoppingListProductDetail;
-import com.alvin.cheapyshopping.room.entities.Account;
-import com.alvin.cheapyshopping.room.entities.Product;
-import com.alvin.cheapyshopping.room.entities.ShoppingList;
-import com.alvin.cheapyshopping.room.entities.Store;
+import com.alvin.cheapyshopping.db.daos.ShoppingListProductRelationDao.ShoppingListProduct;
+import com.alvin.cheapyshopping.db.entities.Account;
+import com.alvin.cheapyshopping.db.entities.Product;
+import com.alvin.cheapyshopping.db.entities.ShoppingList;
+import com.alvin.cheapyshopping.db.entities.Store;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +36,7 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
 
     private AccountRepository mAccountRepository;
     private ShoppingListRepository mShoppingListRepository;
-    private ShoppingListProductRepository mShoppingListProductRepository;
+    private ShoppingListProductRelationRepository mShoppingListProductRelationRepository;
 
 
     public ShoppingListFragmentViewModel(Application application) {
@@ -58,11 +57,11 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
         return this.mShoppingListRepository;
     }
 
-    private ShoppingListProductRepository getShoppingListProductRepository() {
-        if (this.mShoppingListProductRepository == null) {
-            this.mShoppingListProductRepository = ShoppingListProductRepository.getInstance(this.getApplication());
+    private ShoppingListProductRelationRepository getShoppingListProductRelationRepository() {
+        if (this.mShoppingListProductRelationRepository == null) {
+            this.mShoppingListProductRelationRepository = ShoppingListProductRelationRepository.getInstance(this.getApplication());
         }
-        return this.mShoppingListProductRepository;
+        return this.mShoppingListProductRelationRepository;
     }
 
 
@@ -100,7 +99,7 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
                         return input == null ? null
                             : ShoppingListFragmentViewModel.this
                                 .getShoppingListRepository()
-                                .getAccountShoppingList(input.getAccountId());
+                                .findAccountShoppingLists(input.getAccountId());
                     }
                 }
             );
@@ -114,17 +113,17 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
     ************************************************************************************************
      */
 
-    private LiveData<Map<Store, List<ShoppingListProductDetail>>> mCurrentAccountShoppingListResult;
+    private LiveData<Map<Store, List<ShoppingListProduct>>> mCurrentAccountShoppingListResult;
 
-    public LiveData<Map<Store, List<ShoppingListProductDetail>>> getCurrentAccountShoppingListResult() {
+    public LiveData<Map<Store, List<ShoppingListProduct>>> getCurrentAccountShoppingListResult() {
         if (this.mCurrentAccountShoppingListResult == null) {
             this.mCurrentAccountShoppingListResult = Transformations.switchMap(
                 this.getCurrentAccount(),
-                new Function<Account, LiveData<Map<Store, List<ShoppingListProductDetail>>>>() {
+                new Function<Account, LiveData<Map<Store, List<ShoppingListProduct>>>>() {
                     @Override
-                    public LiveData<Map<Store, List<ShoppingListProductDetail>>> apply(Account input) {
+                    public LiveData<Map<Store, List<ShoppingListProduct>>> apply(Account input) {
                         return input == null ? null
-                            : ShoppingListFragmentViewModel.this.getShoppingListProductRepository()
+                            : ShoppingListFragmentViewModel.this.getShoppingListProductRelationRepository()
                                 .getShoppingListResult(input.getActiveShoppingListId());
                     }
                 }
@@ -175,16 +174,16 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
 
     private class CurrentAccountShoppingListItemsComputer extends MediatorLiveData<List<ShoppingListItem>> {
 
-        private Map<Store, List<ShoppingListProductDetail>> mCurrentAccountShoppingListResult;
+        private Map<Store, List<ShoppingListProduct>> mCurrentAccountShoppingListResult;
         private ExecutorService mExecutor;
         private Future<?> mExecutingJob;
 
         private CurrentAccountShoppingListItemsComputer() {
             this.addSource(
                 ShoppingListFragmentViewModel.this.getCurrentAccountShoppingListResult(),
-                new Observer<Map<Store, List<ShoppingListProductDetail>>>() {
+                new Observer<Map<Store, List<ShoppingListProduct>>>() {
                     @Override
-                    public void onChanged(@Nullable Map<Store, List<ShoppingListProductDetail>> result) {
+                    public void onChanged(@Nullable Map<Store, List<ShoppingListProduct>> result) {
                         CurrentAccountShoppingListItemsComputer.this.mCurrentAccountShoppingListResult
                                 = result;
                         CurrentAccountShoppingListItemsComputer.this.compute();
@@ -206,16 +205,16 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
                 return;
             }
             this.mExecutingJob = this.mExecutor.submit(new Runnable() {
-                private final Map<Store, List<ShoppingListProductDetail>> mCurrentAccountShoppingListResult
+                private final Map<Store, List<ShoppingListProduct>> mCurrentAccountShoppingListResult
                         = CurrentAccountShoppingListItemsComputer.this.mCurrentAccountShoppingListResult;
                 @Override
                 public void run() {
                     List<ShoppingListItem> items = new ArrayList<>();
-                    for (Map.Entry<Store, List<ShoppingListProductDetail>> entry
+                    for (Map.Entry<Store, List<ShoppingListProduct>> entry
                             : this.mCurrentAccountShoppingListResult.entrySet()) {
 
                         final Store store = entry.getKey();
-                        final List<ShoppingListProductDetail> products = entry.getValue();
+                        final List<ShoppingListProduct> products = entry.getValue();
 
                         if (products.size() > 0) {
                             items.add(new ShoppingListItem(store));

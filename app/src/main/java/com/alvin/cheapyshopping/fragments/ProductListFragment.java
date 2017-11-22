@@ -17,7 +17,7 @@ import com.alvin.cheapyshopping.AddProductActivity;
 import com.alvin.cheapyshopping.MainActivity;
 import com.alvin.cheapyshopping.databinding.ProductDetailItemBinding;
 import com.alvin.cheapyshopping.databinding.ProductListFragmentBinding;
-import com.alvin.cheapyshopping.room.entities.Product;
+import com.alvin.cheapyshopping.db.entities.Product;
 import com.alvin.cheapyshopping.viewmodels.ProductListFragmentViewModel;
 
 import java.util.ArrayList;

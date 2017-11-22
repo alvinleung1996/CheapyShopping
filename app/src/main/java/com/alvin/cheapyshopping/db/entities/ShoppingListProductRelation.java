@@ -1,16 +1,18 @@
-package com.alvin.cheapyshopping.room.entities;
+package com.alvin.cheapyshopping.db.entities;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
-import android.arch.persistence.room.PrimaryKey;
 
 /**
  * Created by Alvin on 20/11/2017.
  */
 
 @Entity(
-    primaryKeys = {"foreign_shopping_list_id", "foreign_product_id"},
+    primaryKeys = {
+        "foreign_shopping_list_id",
+        "foreign_product_id"
+    },
     foreignKeys = {
         @ForeignKey(
             childColumns = "foreign_shopping_list_id",
@@ -26,16 +28,9 @@ import android.arch.persistence.room.PrimaryKey;
             onUpdate = ForeignKey.CASCADE,
             onDelete = ForeignKey.CASCADE
         ),
-        @ForeignKey(
-            childColumns = "foreign_price_id",
-            entity = Price.class,
-            parentColumns = "price_id",
-            onUpdate = ForeignKey.CASCADE,
-            onDelete = ForeignKey.CASCADE
-        )
     }
 )
-public class ShoppingListProduct {
+public class ShoppingListProductRelation {
 
     @ColumnInfo(name = "foreign_shopping_list_id", index = true)
     private long mForeignShoppingListId;
@@ -45,9 +40,6 @@ public class ShoppingListProduct {
 
     @ColumnInfo(name = "quantity")
     private int mQuantity;
-
-    @ColumnInfo(name = "foreign_price_id", index = true)
-    private Long mForeignPriceId;
 
 
     public long getForeignShoppingListId() {
@@ -72,13 +64,5 @@ public class ShoppingListProduct {
 
     public void setQuantity(int quantity) {
         this.mQuantity = quantity;
-    }
-
-    public Long getForeignPriceId() {
-        return this.mForeignPriceId;
-    }
-
-    public void setForeignPriceId(Long foreignPriceId) {
-        this.mForeignPriceId = foreignPriceId;
     }
 }

@@ -1,7 +1,10 @@
 package com.alvin.cheapyshopping;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -10,8 +13,7 @@ import com.alvin.cheapyshopping.viewmodels.AddShoppingListProductActivityViewMod
 
 import java.util.List;
 
-public class AddShoppingListProductActivity extends AppCompatActivity
-        implements SelectProductFragment.SelectProductFragmentListener {
+public class AddShoppingListProductActivity extends AppCompatActivity {
 
     public static final String EXTRA_SHOPPING_LIST_ID = "com.alvin.cheapyshopping.AddShoppingListProductActivity.EXTRA_SHOPPING_LIST_ID";
 
@@ -27,6 +29,8 @@ public class AddShoppingListProductActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_shopping_list_item);
+
+        this.getSupportFragmentManager().registerFragmentLifecycleCallbacks(new FragmentLifecycleCallbacks(), false);
 
         this.mViewModel = ViewModelProviders.of(this).get(AddShoppingListProductActivityViewModel.class);
 
@@ -61,24 +65,52 @@ public class AddShoppingListProductActivity extends AppCompatActivity
 
     /*
     ************************************************************************************************
+    * Fragment Interactions
+    ************************************************************************************************
+     */
+
+    private class FragmentLifecycleCallbacks extends FragmentManager.FragmentLifecycleCallbacks {
+
+        @Override
+        public void onFragmentAttached(FragmentManager fm, Fragment f, Context context) {
+            super.onFragmentAttached(fm, f, context);
+            if (f instanceof SelectProductFragment) {
+                ((SelectProductFragment) f).setInteractionListener(new SelectProductFragmentInteractionListener());
+            }
+        }
+
+        @Override
+        public void onFragmentDetached(FragmentManager fm, Fragment f) {
+            super.onFragmentDetached(fm, f);
+            if (f instanceof SelectProductFragment) {
+                ((SelectProductFragment) f).setInteractionListener(null);
+            }
+        }
+    }
+
+
+    /*
+    ************************************************************************************************
     * SelectStoreFragment Interactions
     ************************************************************************************************
      */
 
-    @Override
-    public void onAddProductOptionSelected(SelectProductFragment fragment) {
-        // Do nothing
-        // User are not allowed to add product at this stage,
-        // they have to go to other page to add product.
-        // Also the add product button has been disabled/hidden (newInstance(false))
+    private class SelectProductFragmentInteractionListener implements SelectProductFragment.InteractionListener {
+
+        @Override
+        public void onAddProductOptionSelected(SelectProductFragment fragment) {
+            // Do nothing
+            // User are not allowed to add product at this stage,
+            // they have to go to other page to add product.
+            // Also the add product button has been disabled/hidden (newInstance(false))
+        }
+
+        @Override
+        public void onProductItemsSelected(SelectProductFragment fragment, List<Long> productIds) {
+            AddShoppingListProductActivity.this.mViewModel
+                    .addShoppingListProduct(AddShoppingListProductActivity.this.mShoppingListId, productIds);
+            AddShoppingListProductActivity.this.finishActivity(productIds);
+        }
     }
-
-    @Override
-    public void onProductItemsSelected(SelectProductFragment fragment, List<Long> productIds) {
-        this.mViewModel.addShoppingListProduct(this.mShoppingListId, productIds);
-        this.finishActivity(productIds);
-    }
-
-
 
 }

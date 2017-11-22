@@ -6,7 +6,7 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.os.AsyncTask;
 
 import com.alvin.cheapyshopping.repositories.ProductRepository;
-import com.alvin.cheapyshopping.room.entities.Product;
+import com.alvin.cheapyshopping.db.entities.Product;
 
 /**
  * Created by Alvin on 19/11/2017.
@@ -41,7 +41,7 @@ public class AddProductFragmentViewModel extends AndroidViewModel {
 
         @Override
         protected long[] doInBackground(Product... products) {
-            return this.mProductRepository.insert(products);
+            return this.mProductRepository.insertProduct(products);
         }
 
         @Override

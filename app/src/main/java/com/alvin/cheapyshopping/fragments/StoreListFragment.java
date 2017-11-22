@@ -15,7 +15,7 @@ import android.view.ViewGroup;
 import com.alvin.cheapyshopping.MainActivity;
 import com.alvin.cheapyshopping.databinding.StoreDetailItemBinding;
 import com.alvin.cheapyshopping.databinding.StoreListFragmentBinding;
-import com.alvin.cheapyshopping.room.entities.Store;
+import com.alvin.cheapyshopping.db.entities.Store;
 import com.alvin.cheapyshopping.viewmodels.StoreListFragmentViewModel;
 
 import java.util.ArrayList;

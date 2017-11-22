@@ -7,7 +7,7 @@
     <data class="ShoppingListProductItemBinding">
         <variable
             name="product"
-            type="com.alvin.cheapyshopping.room.entities.Product"/>
+            type="com.alvin.cheapyshopping.db.entities.Product"/>
         <variable
             name="onClickListener"
             type="android.view.View.OnClickListener"/>

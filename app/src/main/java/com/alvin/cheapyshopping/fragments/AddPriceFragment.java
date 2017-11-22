@@ -17,7 +17,6 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 
 import com.alvin.cheapyshopping.R;
-import com.alvin.cheapyshopping.olddb.models.PriceModel;
 
 import java.util.Date;
 
@@ -27,13 +26,13 @@ import java.util.Date;
  */
 public class AddPriceFragment extends Fragment {
 
-    public static interface AddPriceFragmentListener {
-
-        public void onDiscardNewPriceOptionSelected(AddPriceFragment fragment);
-
-        public void onNewPriceAdded(AddPriceFragment fragment, PriceModel model);
-
-    }
+//    public static interface AddPriceFragmentListener {
+//
+//        public void onDiscardNewPriceOptionSelected(AddPriceFragment fragment);
+//
+//        public void onNewPriceAdded(AddPriceFragment fragment, PriceModel model);
+//
+//    }
 
     public static final String ARGUMENT_PRODUCT_ID = "com.alvin.cheapyshopping.fragments.AddPriceFragment.ARGUMENT_PRODUCT_ID";
     public static final String ARGUMENT_STORE_ID = "com.alvin.cheapyshopping.fragments.AddPriceFragment.ARGUMENT_STORE_ID";
@@ -92,19 +91,19 @@ public class AddPriceFragment extends Fragment {
     private EditText mDiscountQuantityInput;
     private EditText mDiscountPercentageInput;
 
-    private AddPriceFragmentListener mAddPriceFragmentListener;
+//    private AddPriceFragmentListener mAddPriceFragmentListener;
 
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof AddPriceFragmentListener) {
-            this.mAddPriceFragmentListener = (AddPriceFragmentListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement AddPriceFragmentListener");
-        }
-    }
+//    @Override
+//    public void onAttach(Context context) {
+//        super.onAttach(context);
+//        if (context instanceof AddPriceFragmentListener) {
+//            this.mAddPriceFragmentListener = (AddPriceFragmentListener) context;
+//        } else {
+//            throw new RuntimeException(context.toString()
+//                    + " must implement AddPriceFragmentListener");
+//        }
+//    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -176,7 +175,7 @@ public class AddPriceFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        this.mAddPriceFragmentListener = null;
+//        this.mAddPriceFragmentListener = null;
     }
 
     @Override
@@ -208,9 +207,9 @@ public class AddPriceFragment extends Fragment {
     }
 
     private void onDiscardOptionItemSelected(MenuItem item) {
-        if (this.mAddPriceFragmentListener != null) {
-            this.mAddPriceFragmentListener.onDiscardNewPriceOptionSelected(this);
-        }
+//        if (this.mAddPriceFragmentListener != null) {
+//            this.mAddPriceFragmentListener.onDiscardNewPriceOptionSelected(this);
+//        }
     }
 
     private void onSaveOptionItemSelected(MenuItem item) {
@@ -223,40 +222,40 @@ public class AddPriceFragment extends Fragment {
             return;
         }
 
-        PriceModel model = new PriceModel(this.getContext());
-        model.foreignProductId = this.mProductId;
-        model.foreignStoreId = this.mStoreId;
-        model.time = new Date();
-
-        switch (this.mChoice) {
-            case CHOICE_SINGLE:
-                model.type = PriceModel.TYPE_SINGLE;
-                model.price = Double.valueOf(this.mSinglePriceInput.getText().toString());
-                break;
-            case CHOICE_MULTIPLE:
-                model.type = PriceModel.TYPE_MULTIPLE;
-                model.price = Double.valueOf(this.mMultiplePriceInput.getText().toString());
-                model.priceData0 = Integer.valueOf(this.mMultipleQuantityInput.getText().toString());
-                break;
-            case CHOICE_FREE:
-                model.type = PriceModel.TYPE_BUY_X_GET_Y_FREE;
-                model.price = Double.valueOf(this.mFreePriceInput.getText().toString());
-                model.priceData0 = Integer.valueOf(this.mFreeQuantityInput.getText().toString());
-                model.priceData1 = Integer.valueOf(this.mFreeYInput.getText().toString());
-                break;
-            case CHOICE_DISCOUNT:
-                model.type = PriceModel.TYPE_BUY_X_GET_DISCOUNT;
-                model.price = Double.valueOf(this.mDiscountPriceInput.getText().toString());
-                model.priceData0 = Integer.valueOf(this.mDiscountQuantityInput.getText().toString());
-                model.priceData1 = Integer.valueOf(this.mDiscountPercentageInput.getText().toString()) / 100;
-                break;
-        }
-
-        boolean saved = model.save();
-
-        if (saved && this.mAddPriceFragmentListener != null) {
-            this.mAddPriceFragmentListener.onNewPriceAdded(this, model);
-        }
+//        PriceModel model = new PriceModel(this.getContext());
+//        model.foreignProductId = this.mProductId;
+//        model.foreignStoreId = this.mStoreId;
+//        model.time = new Date();
+//
+//        switch (this.mChoice) {
+//            case CHOICE_SINGLE:
+//                model.type = PriceModel.TYPE_SINGLE;
+//                model.price = Double.valueOf(this.mSinglePriceInput.getText().toString());
+//                break;
+//            case CHOICE_MULTIPLE:
+//                model.type = PriceModel.TYPE_MULTIPLE;
+//                model.price = Double.valueOf(this.mMultiplePriceInput.getText().toString());
+//                model.priceData0 = Integer.valueOf(this.mMultipleQuantityInput.getText().toString());
+//                break;
+//            case CHOICE_FREE:
+//                model.type = PriceModel.TYPE_BUY_X_GET_Y_FREE;
+//                model.price = Double.valueOf(this.mFreePriceInput.getText().toString());
+//                model.priceData0 = Integer.valueOf(this.mFreeQuantityInput.getText().toString());
+//                model.priceData1 = Integer.valueOf(this.mFreeYInput.getText().toString());
+//                break;
+//            case CHOICE_DISCOUNT:
+//                model.type = PriceModel.TYPE_BUY_X_GET_DISCOUNT;
+//                model.price = Double.valueOf(this.mDiscountPriceInput.getText().toString());
+//                model.priceData0 = Integer.valueOf(this.mDiscountQuantityInput.getText().toString());
+//                model.priceData1 = Integer.valueOf(this.mDiscountPercentageInput.getText().toString()) / 100;
+//                break;
+//        }
+//
+//        boolean saved = model.save();
+//
+//        if (saved && this.mAddPriceFragmentListener != null) {
+//            this.mAddPriceFragmentListener.onNewPriceAdded(this, model);
+//        }
     }
 
 }

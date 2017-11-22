@@ -15,24 +15,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 import com.alvin.cheapyshopping.fragments.ProductListFragment;
-import com.alvin.cheapyshopping.olddb.DatabaseHelper;
-import com.alvin.cheapyshopping.olddb.models.PriceModel;
-import com.alvin.cheapyshopping.olddb.models.ProductModel;
-import com.alvin.cheapyshopping.olddb.models.ShoppingListModel;
-import com.alvin.cheapyshopping.olddb.models.StoreModel;
 import com.alvin.cheapyshopping.fragments.ShoppingListFragment;
 import com.alvin.cheapyshopping.fragments.StoreListFragment;
-import com.alvin.cheapyshopping.room.entities.Store;
-
-import java.util.ArrayList;
-import java.util.List;
+import com.alvin.cheapyshopping.db.entities.Store;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -67,8 +58,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        this.createSampleData();
 
         this.getSupportFragmentManager().registerFragmentLifecycleCallbacks(new FragmentLifecycleCallbacks(), false);
 
@@ -332,93 +321,6 @@ public class MainActivity extends AppCompatActivity {
         }
         this.mDrawerLayout.closeDrawer(this.mDrawer);
         return true;
-    }
-
-
-    /*
-    ************************************************************************************************
-    * Sample Data
-    ************************************************************************************************
-     */
-
-    private void createSampleData() {
-        if (!DatabaseHelper.getInstance(this).deleteDatabase()) {
-            Log.e("DB", "Cannot delete database");
-        }
-
-        ShoppingListModel shoppingList = new ShoppingListModel(this);
-        shoppingList.saveOrThrow();
-
-        List<ProductModel> products = new ArrayList<>();
-        for (int i = 0; i < 10; ++i) {
-            ProductModel product = new ProductModel(this);
-            product.name = "Product " + i;
-            product.saveOrThrow();
-            products.add(product);
-        }
-        for (int i = 0; i < 7 && i < products.size(); ++i) {
-            shoppingList.addProduct(products.get(i));
-        }
-
-        StoreModel store0 = new StoreModel(this);
-        store0.location = "HKU";
-        store0.name = "COOP";
-        store0.saveOrThrow();
-
-        StoreModel store1 = new StoreModel(this);
-        store1.location = "UST";
-        store1.name = "Hall 1";
-        store1.saveOrThrow();
-
-        StoreModel store2 = new StoreModel(this);
-        store2.location = "IFC";
-        store2.name = "CitySuper";
-        store2.saveOrThrow();
-
-        StoreModel store3 = new StoreModel(this);
-        store3.location = "HKU";
-        store3.name = "Library";
-        store3.saveOrThrow();
-
-
-        PriceModel price0 = new PriceModel(this);
-        price0.price = 100;
-        price0.type = "SINGLE";
-        price0.foreignProductId = 1;
-        price0.foreignStoreId = 1;
-        price0.saveOrThrow();
-
-        PriceModel price1 = new PriceModel(this);
-        price1.price = 200;
-        price1.type = "SINGLE";
-        price1.foreignProductId = 1;
-        price1.foreignStoreId = 2;
-        price1.saveOrThrow();
-
-        PriceModel price2 = new PriceModel(this);
-        price2.price = 300;
-        price2.type = "SINGLE";
-        price2.foreignProductId = 1;
-        price2.foreignStoreId = 3;
-        price2.saveOrThrow();
-
-        PriceModel price3 = new PriceModel(this);
-        price3.price = 300;
-        price3.type = "SINGLE";
-        price3.foreignProductId = 1;
-        price3.foreignStoreId = 4;
-        price3.saveOrThrow();
-
-        for(int i = 0; i < 10; ++i){
-            PriceModel price = new PriceModel(this);
-            price.price = 100 * (i+1);
-            price.type = "SINGLE";
-            price.foreignProductId = 1;
-            price.foreignStoreId = 1;
-            price.saveOrThrow();
-        }
-
-
     }
 
 }

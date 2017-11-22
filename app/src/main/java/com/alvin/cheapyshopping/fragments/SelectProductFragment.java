@@ -20,7 +20,7 @@ import android.view.ViewGroup;
 import com.alvin.cheapyshopping.R;
 import com.alvin.cheapyshopping.databinding.ProductItemBinding;
 import com.alvin.cheapyshopping.databinding.SelectProductFragmentBinding;
-import com.alvin.cheapyshopping.room.entities.Product;
+import com.alvin.cheapyshopping.db.entities.Product;
 import com.alvin.cheapyshopping.viewmodels.SelectProductFragmentViewModel;
 
 import java.util.ArrayList;
@@ -35,11 +35,11 @@ import java.util.List;
  */
 public class SelectProductFragment extends Fragment {
 
-    public static interface SelectProductFragmentListener {
+    public interface InteractionListener {
 
-        public void onAddProductOptionSelected(SelectProductFragment fragment);
+        void onAddProductOptionSelected(SelectProductFragment fragment);
 
-        public void onProductItemsSelected(SelectProductFragment fragment, List<Long> products);
+        void onProductItemsSelected(SelectProductFragment fragment, List<Long> products);
 
     }
 
@@ -137,7 +137,7 @@ public class SelectProductFragment extends Fragment {
     private SelectProductFragmentBinding mBinding;
     private ProductListAdapter mProductListAdapter;
 
-    private SelectProductFragmentListener mSelectProductFragmentListener;
+    private InteractionListener mInteractionListener;
 
 
 
@@ -203,15 +203,20 @@ public class SelectProductFragment extends Fragment {
     }
 
 
+    public void setInteractionListener(InteractionListener interactionListener) {
+        this.mInteractionListener = interactionListener;
+    }
+
+
     private void onAddProductOptionItemSelected(MenuItem item) {
-        if (this.mSelectProductFragmentListener != null) {
-            this.mSelectProductFragmentListener.onAddProductOptionSelected(this);
+        if (this.mInteractionListener != null) {
+            this.mInteractionListener.onAddProductOptionSelected(this);
         }
     }
 
     private void onProductItemClick(View view, Product product) {
-        if (this.mSelectProductFragmentListener != null) {
-            this.mSelectProductFragmentListener.onProductItemsSelected(this, Arrays.asList(product.getProductId()));
+        if (this.mInteractionListener != null) {
+            this.mInteractionListener.onProductItemsSelected(this, Arrays.asList(product.getProductId()));
         }
     }
 

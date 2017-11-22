@@ -25,10 +25,10 @@ import com.alvin.cheapyshopping.R;
 import com.alvin.cheapyshopping.databinding.ShoppingListFragmentBinding;
 import com.alvin.cheapyshopping.databinding.ShoppingListProductItemBinding;
 import com.alvin.cheapyshopping.databinding.ShoppingListStoreItemBinding;
-import com.alvin.cheapyshopping.room.entities.Account;
-import com.alvin.cheapyshopping.room.entities.Product;
-import com.alvin.cheapyshopping.room.entities.ShoppingList;
-import com.alvin.cheapyshopping.room.entities.Store;
+import com.alvin.cheapyshopping.db.entities.Account;
+import com.alvin.cheapyshopping.db.entities.Product;
+import com.alvin.cheapyshopping.db.entities.ShoppingList;
+import com.alvin.cheapyshopping.db.entities.Store;
 import com.alvin.cheapyshopping.viewmodels.ShoppingListFragmentViewModel;
 import com.alvin.cheapyshopping.viewmodels.ShoppingListFragmentViewModel.ShoppingListItem;
 
@@ -176,7 +176,7 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
     private ShoppingListFragmentBinding mBinding;
     private ShoppingListAdapter mShoppingListItemListAdapter;
 
-    private Long mCurrentAccountId;
+    private Account mCurrentAccount;
     private List<ShoppingList> mCurrentAccountShoppingLists;
 
 
@@ -208,8 +208,7 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
         this.mViewModel.getCurrentAccount().observe(this, new Observer<Account>() {
             @Override
             public void onChanged(@Nullable Account account) {
-                ShoppingListFragment.this.mCurrentAccountId = account == null ?
-                        null : account.getAccountId();
+                ShoppingListFragment.this.mCurrentAccount = account;
             }
         });
 
@@ -267,8 +266,11 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
 
 
     private void onAddShoppingListOptionSelected(MenuItem item) {
-        Intent intent = new Intent(this.getContext(), AddShoppingListActivity.class);
-        this.startActivityForResult(intent, REQUEST_ADD_SHOPPING_LIST);
+        if (this.mCurrentAccount != null) {
+            Intent intent = new Intent(this.getContext(), AddShoppingListActivity.class);
+            intent.putExtra(AddShoppingListActivity.EXTRA_ACCOUNT_ID, this.mCurrentAccount.getActiveShoppingListId());
+            this.startActivityForResult(intent, REQUEST_ADD_SHOPPING_LIST);
+        }
     }
 
     private void onShoppingListSelected(MenuItem item, long shoppingListId) {
@@ -284,9 +286,9 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
 
     @Override
     public void onFloatingActionButtonClick(FloatingActionButton button) {
-        if (this.mCurrentAccountId != null) {
+        if (this.mCurrentAccount != null && this.mCurrentAccount.getActiveShoppingListId() != null) {
             Intent intent = new Intent(this.getContext(), AddShoppingListProductActivity.class);
-            intent.putExtra(AddShoppingListActivity.EXTRA_ACCOUNT_ID, this.mCurrentAccountId);
+            intent.putExtra(AddShoppingListProductActivity.EXTRA_SHOPPING_LIST_ID, this.mCurrentAccount.getActiveShoppingListId());
             this.startActivity(intent);
         }
     }

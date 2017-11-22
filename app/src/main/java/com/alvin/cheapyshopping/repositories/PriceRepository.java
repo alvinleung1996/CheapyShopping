@@ -1,12 +1,14 @@
 package com.alvin.cheapyshopping.repositories;
 
+import android.annotation.SuppressLint;
 import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.util.ArrayMap;
+import android.util.Pair;
 
-import com.alvin.cheapyshopping.room.AppDatabase;
-import com.alvin.cheapyshopping.room.daos.PriceDao;
-import com.alvin.cheapyshopping.room.entities.Price;
+import com.alvin.cheapyshopping.db.AppDatabase;
+import com.alvin.cheapyshopping.db.daos.PriceDao;
+import com.alvin.cheapyshopping.db.entities.Price;
 
 import java.util.List;
 import java.util.Map;
@@ -17,66 +19,113 @@ import java.util.Map;
 
 public class PriceRepository {
 
+    @SuppressLint("StaticFieldLeak")
     private static PriceRepository sInstance;
 
     public static PriceRepository getInstance(Context context) {
         if (sInstance == null) {
-            sInstance = new PriceRepository(AppDatabase.getInstance(context).getPriceDao());
+            sInstance = new PriceRepository(context);
         }
         return sInstance;
     }
 
 
-    private final PriceDao mDao;
+    private final Context mContext;
 
-    private final Map<Long, LiveData<List<Price>>> mCacheByProductId;
-    private final Map<Long, LiveData<List<Price>>> mCacheByStoreId;
-
-
-    private PriceRepository(PriceDao dao) {
-        this.mDao = dao;
-        this.mCacheByProductId = new ArrayMap<>();
-        this.mCacheByStoreId = new ArrayMap<>();
+    private PriceRepository(Context context) {
+        this.mContext = context.getApplicationContext();
     }
 
 
+    /*
+    ************************************************************************************************
+    * Dao
+    ************************************************************************************************
+     */
 
-    public LiveData<List<Price>> findByProductId(long productId) {
-        if (!this.mCacheByProductId.containsKey(productId)) {
-            this.mCacheByProductId.put(productId, this.mDao.findByProductId(productId));
+    private PriceDao mPriceDao;
+    private PriceDao getPriceDao() {
+        if (this.mPriceDao == null) {
+            this.mPriceDao = AppDatabase.getInstance(this.mContext).getPriceDao();
         }
-        return this.mCacheByProductId.get(productId);
+        return this.mPriceDao;
     }
 
-    public LiveData<List<Price>> findByStoreId(long storeId) {
-        if (!this.mCacheByStoreId.containsKey(storeId)) {
-            this.mCacheByStoreId.put(storeId, this.mDao.findByStoreId(storeId));
+
+    /*
+    ************************************************************************************************
+    * Query, Async
+    ************************************************************************************************
+     */
+
+    private Map<Long, LiveData<List<Price>>> mProductPriceCache;
+    public LiveData<List<Price>> findProductPrices(long productId) {
+        if (this.mProductPriceCache == null) {
+            this.mProductPriceCache = new ArrayMap<>();
         }
-        return this.mCacheByStoreId.get(storeId);
+        if (!this.mProductPriceCache.containsKey(productId)) {
+            this.mProductPriceCache.put(productId, this.getPriceDao().findProductPrices(productId));
+        }
+        return this.mProductPriceCache.get(productId);
     }
 
-    public LiveData<List<Price>> findByProductIdAndStoreIds(long productId, List<Long> storeIds) {
+    private Map<Pair<Long, Long>, LiveData<List<Price>>> mShoppingListProductBestPriceCache;
+    public LiveData<List<Price>> findShoppingListProductBestPrices(long shoppingListId, long productId) {
+        if (this.mShoppingListProductBestPriceCache == null) {
+            this.mShoppingListProductBestPriceCache = new ArrayMap<>();
+        }
+        Pair<Long, Long> key = new Pair<>(shoppingListId, productId);
+        if (!this.mShoppingListProductBestPriceCache.containsKey(key)) {
+            this.mShoppingListProductBestPriceCache
+                    .put(key, this.getPriceDao()
+                            .findShoppingListProductBestPrice(shoppingListId, productId));
+        }
+        return this.mShoppingListProductBestPriceCache.get(key);
+    }
+
+
+    public LiveData<List<Price>> computeProductBestPrices(long productId, List<Long> storeIds, int quantity) {
         // TODO cache or not?
-        return this.mDao.findByProductIdAndStoreIds(productId, storeIds);
+        return this.getPriceDao().computeProductBestPrices(productId, storeIds, quantity);
     }
 
-    public List<Price> findBestPriceOfProductNow(long productId, List<Long> storeIds, int quantity) {
+
+    /*
+    ************************************************************************************************
+    * Query, Sync
+    ************************************************************************************************
+     */
+
+    public List<Price> findProductPricesNow(long productId) {
+        return this.getPriceDao().findProductPricesNow(productId);
+    }
+
+    public List<Price> findShoppingListProductBestPricesNow(long shoppingListId, long productId) {
+        return this.getPriceDao()
+                .findShoppingListProductBestPriceNow(shoppingListId, productId);
+    }
+
+    public List<Price> findProductBestPricesNow(long productId, List<Long> storeIds, int quantity) {
         // TODO cache or not?
-        return this.mDao.findBestPriceOfProductNow(productId, storeIds, quantity);
+        return this.getPriceDao().computeProductBestPricesNow(productId, storeIds, quantity);
     }
 
+    /*
+    ************************************************************************************************
+    * Other
+    ************************************************************************************************
+     */
 
-
-    public long[] insert(Price... prices) {
-        return this.mDao.insert(prices);
+    public long[] insertPrice(Price... prices) {
+        return this.getPriceDao().insertPrice(prices);
     }
 
-    public int update(Price... prices) {
-        return this.mDao.update(prices);
+    public int updatePrice(Price... prices) {
+        return this.getPriceDao().updatePrice(prices);
     }
 
-    public int delete(Price... prices) {
-        return this.mDao.delete(prices);
+    public int deletePrice(Price... prices) {
+        return this.getPriceDao().deletePrice(prices);
     }
 
 }

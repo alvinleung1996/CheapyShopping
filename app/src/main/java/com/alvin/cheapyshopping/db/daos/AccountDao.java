@@ -1,4 +1,4 @@
-package com.alvin.cheapyshopping.room.daos;
+package com.alvin.cheapyshopping.db.daos;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
@@ -7,7 +7,7 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
-import com.alvin.cheapyshopping.room.entities.Account;
+import com.alvin.cheapyshopping.db.entities.Account;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ import java.util.List;
  */
 
 @Dao
-public abstract class AccountDao {
+public interface AccountDao {
 
     /*
     ************************************************************************************************
@@ -25,14 +25,14 @@ public abstract class AccountDao {
      */
 
     @Query("SELECT * FROM Account")
-    public abstract LiveData<List<Account>> getAllAccounts();
+    LiveData<List<Account>> getAllAccounts();
 
     // TODO other method?
     @Query("SELECT * FROM Account LIMIT 1")
-    public abstract LiveData<Account> getCurrentAccount();
+    LiveData<Account> getCurrentAccount();
 
     @Query("SELECT * FROM Account WHERE account_id = :accountId")
-    public abstract LiveData<Account> findAccountByAccountId(long accountId);
+    LiveData<Account> findAccountByAccountId(long accountId);
 
 
     /*
@@ -43,12 +43,15 @@ public abstract class AccountDao {
 
     // Use by sample data
     @Query("SELECT * FROM Account")
-    public abstract List<Account> getAllNow();
+    List<Account> getAllAccountsNow();
 
     // Use by shopping list fragment view model
     @Query("SELECT * FROM Account LIMIT 1")
     // TODO other method?
-    public abstract Account getCurrentAccountNow();
+    Account getCurrentAccountNow();
+
+    @Query("SELECT * FROM Account WHERE account_id = :accountId")
+    Account findAccountByAccountIdNow(long accountId);
 
 
     /*
@@ -58,12 +61,12 @@ public abstract class AccountDao {
      */
 
     @Insert
-    public abstract long[] insert(Account... accounts);
+    long[] insertAccount(Account... accounts);
 
     @Update
-    public abstract int update(Account... accounts);
+    int updateAccount(Account... accounts);
 
     @Delete
-    public abstract int delete(Account... accounts);
+    int deleteAccount(Account... accounts);
 
 }
