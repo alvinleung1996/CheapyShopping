@@ -47,7 +47,7 @@ public class ProductActivity extends AppCompatActivity {
         // Start ProductFragment
         if (savedInstanceState == null) { //Prevent adding fragment twice
             this.getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, ProductFragment.newInstance(extras.getLong("mProductID")), FRAGMENT_PRODUCT)
+                    .add(R.id.fragment_container, ProductFragment.newInstance(extras.getLong(EXTRA_PRODUCT_ID)), FRAGMENT_PRODUCT)
                     .commit();
         }
 

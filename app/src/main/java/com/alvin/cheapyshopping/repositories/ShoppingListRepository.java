@@ -102,16 +102,16 @@ public class ShoppingListRepository {
     ************************************************************************************************
      */
 
-    public long[] insert(ShoppingList... stores) {
-        return this.mDao.insert(stores);
+    public long[] insert(ShoppingList... shoppingLists) {
+        return this.mDao.insert(shoppingLists);
     }
 
-    public int update(ShoppingList... stores) {
-        return this.mDao.update(stores);
+    public int update(ShoppingList... shoppingLists) {
+        return this.mDao.update(shoppingLists);
     }
 
-    public int delete(ShoppingList... stores) {
-        return this.mDao.delete(stores);
+    public int delete(ShoppingList... shoppingLists) {
+        return this.mDao.delete(shoppingLists);
     }
 
 }
