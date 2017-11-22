@@ -240,6 +240,8 @@ public class MainActivity extends AppCompatActivity {
                 itemId = R.id.nav_home;
             } else if (f instanceof StoreListFragment) {
                 itemId = R.id.item_store_list;
+            } else if (f instanceof ProductListFragment){
+                itemId = R.id.item_product_list;
             }
             if (itemId != 0) MainActivity.this.mDrawer.setCheckedItem(itemId);
 
