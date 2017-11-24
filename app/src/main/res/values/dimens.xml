@@ -5,5 +5,5 @@
 
     <!-- For Account Fragment -->
     <dimen name="account_fragment_box_distance">5dp</dimen>
-    <dimen name="accoutn_fragment_box_padding_inner">10dp</dimen>
+    <dimen name="account_fragment_box_padding_inner">10dp</dimen>
 </resources>
