@@ -30,9 +30,9 @@ public class AddShoppingListProductActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_shopping_list_item);
 
-        this.getSupportFragmentManager().registerFragmentLifecycleCallbacks(new FragmentLifecycleCallbacks(), false);
-
         this.mViewModel = ViewModelProviders.of(this).get(AddShoppingListProductActivityViewModel.class);
+
+        this.getSupportFragmentManager().registerFragmentLifecycleCallbacks(new FragmentLifecycleCallbacks(), false);
 
         if (savedInstanceState == null) {
             Bundle args = this.getIntent().getExtras();

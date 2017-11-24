@@ -1,7 +1,10 @@
 package com.alvin.cheapyshopping.viewmodels;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
+import android.content.Context;
+import android.os.AsyncTask;
 
 import com.alvin.cheapyshopping.repositories.ShoppingListProductRelationRepository;
 import com.alvin.cheapyshopping.db.entities.ShoppingListProductRelation;
@@ -19,6 +22,13 @@ public class AddShoppingListProductActivityViewModel extends AndroidViewModel {
         super(application);
     }
 
+
+    /*
+    ************************************************************************************************
+    * Repository
+    ************************************************************************************************
+     */
+
     private ShoppingListProductRelationRepository mListProductRepository;
     private ShoppingListProductRelationRepository getListProductRepository() {
         if (this.mListProductRepository == null) {
@@ -27,15 +37,36 @@ public class AddShoppingListProductActivityViewModel extends AndroidViewModel {
         return this.mListProductRepository;
     }
 
-    public long[] addShoppingListProduct(long shoppingListId, List<Long> productIds) {
-        List<ShoppingListProductRelation> listProducts = new ArrayList<>(productIds.size());
-        for (Long productId : productIds) {
-            ShoppingListProductRelation relation = new ShoppingListProductRelation();
-            relation.setForeignShoppingListId(shoppingListId);
-            relation.setForeignProductId(productId);
-            listProducts.add(relation);
+    public void addShoppingListProduct(long shoppingListId, List<Long> productIds) {
+        new ShoppingListProductAdder(this.getApplication(), shoppingListId, productIds).execute();
+    }
+
+    private static class ShoppingListProductAdder extends AsyncTask<Void, Void, long[]> {
+
+        @SuppressLint("StaticFieldLeak")
+        private final Context mContext;
+        private final long mShoppingListId;
+        private final List<Long> mProductIds;
+
+        private ShoppingListProductAdder(Context context, long shoppingListId, List<Long> productIds) {
+            this.mContext = context.getApplicationContext();
+            this.mShoppingListId = shoppingListId;
+            this.mProductIds = productIds;
         }
-        return this.getListProductRepository().insertShoppingListProductRelation(listProducts.toArray(new ShoppingListProductRelation[listProducts.size()]));
+
+        @Override
+        protected long[] doInBackground(Void... voids) {
+            List<ShoppingListProductRelation> listProducts = new ArrayList<>(this.mProductIds.size());
+            for (long productId : mProductIds) {
+                ShoppingListProductRelation relation = new ShoppingListProductRelation();
+                relation.setForeignShoppingListId(mShoppingListId);
+                relation.setForeignProductId(productId);
+                listProducts.add(relation);
+            }
+            return ShoppingListProductRelationRepository.getInstance(this.mContext)
+                    .insertShoppingListProductRelation(listProducts
+                            .toArray(new ShoppingListProductRelation[listProducts.size()]));
+        }
     }
 
 }

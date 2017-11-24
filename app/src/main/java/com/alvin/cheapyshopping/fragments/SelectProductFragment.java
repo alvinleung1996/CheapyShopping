@@ -100,11 +100,11 @@ public class SelectProductFragment extends Fragment {
 
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    private class ViewHolder extends RecyclerView.ViewHolder {
 
         private ProductItemBinding mBinding;
 
-        public ViewHolder(ViewGroup parent) {
+        private ViewHolder(ViewGroup parent) {
             super(ProductItemBinding.inflate(SelectProductFragment.this.getLayoutInflater(), parent, false).getRoot());
             this.mBinding = DataBindingUtil.getBinding(this.itemView);
         }
