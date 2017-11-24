@@ -69,26 +69,6 @@ public class PriceRepository {
         return this.mProductPriceCache.get(productId);
     }
 
-    private Map<Pair<Long, Long>, LiveData<List<Price>>> mShoppingListProductBestPriceCache;
-    public LiveData<List<Price>> findShoppingListProductBestPrices(long shoppingListId, long productId) {
-        if (this.mShoppingListProductBestPriceCache == null) {
-            this.mShoppingListProductBestPriceCache = new ArrayMap<>();
-        }
-        Pair<Long, Long> key = new Pair<>(shoppingListId, productId);
-        if (!this.mShoppingListProductBestPriceCache.containsKey(key)) {
-            this.mShoppingListProductBestPriceCache
-                    .put(key, this.getPriceDao()
-                            .findShoppingListProductBestPrice(shoppingListId, productId));
-        }
-        return this.mShoppingListProductBestPriceCache.get(key);
-    }
-
-
-    public LiveData<List<Price>> computeProductBestPrices(long productId, List<Long> storeIds, int quantity) {
-        // TODO cache or not?
-        return this.getPriceDao().computeProductBestPrices(productId, storeIds, quantity);
-    }
-
 
     /*
     ************************************************************************************************
@@ -100,15 +80,6 @@ public class PriceRepository {
         return this.getPriceDao().findProductPricesNow(productId);
     }
 
-    public List<Price> findShoppingListProductBestPricesNow(long shoppingListId, long productId) {
-        return this.getPriceDao()
-                .findShoppingListProductBestPriceNow(shoppingListId, productId);
-    }
-
-    public List<Price> findProductBestPricesNow(long productId, List<Long> storeIds, int quantity) {
-        // TODO cache or not?
-        return this.getPriceDao().computeProductBestPricesNow(productId, storeIds, quantity);
-    }
 
     /*
     ************************************************************************************************

@@ -10,6 +10,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.ArrayMap;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -34,6 +35,7 @@ import com.alvin.cheapyshopping.viewmodels.ShoppingListFragmentViewModel.Shoppin
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 
 public class ShoppingListFragment extends Fragment implements MainActivity.FloatingActionButtonInteractionListener {
@@ -178,6 +180,7 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
 
     private Account mCurrentAccount;
     private List<ShoppingList> mCurrentAccountShoppingLists;
+    private ShoppingList mCurrentAccountActiveShoppingList;
 
 
     @Override
@@ -205,22 +208,31 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
         this.mBinding.listShoppingListItems.setAdapter(this.mShoppingListItemListAdapter);
 
 
-        this.mViewModel.getCurrentAccount().observe(this, new Observer<Account>() {
+        this.mViewModel.findCurrentAccount().observe(this, new Observer<Account>() {
             @Override
             public void onChanged(@Nullable Account account) {
                 ShoppingListFragment.this.mCurrentAccount = account;
             }
         });
 
-        this.mViewModel.getCurrentAccountShoppingLists().observe(this, new Observer<List<ShoppingList>>() {
+        this.mViewModel.findCurrentAccountShoppingLists().observe(this, new Observer<List<ShoppingList>>() {
             @Override
             public void onChanged(@Nullable List<ShoppingList> shoppingLists) {
                 ShoppingListFragment.this.mCurrentAccountShoppingLists = shoppingLists;
-                ShoppingListFragment.this.getActivity().invalidateOptionsMenu();
+                if (ShoppingListFragment.this.getActivity() != null) {
+                    ShoppingListFragment.this.getActivity().invalidateOptionsMenu();
+                }
             }
         });
 
-        this.mViewModel.getCurrentAccountShoppingListItems().observe(this, new Observer<List<ShoppingListItem>>() {
+        this.mViewModel.findCurrentAccountActiveShoppingList().observe(this, new Observer<ShoppingList>() {
+            @Override
+            public void onChanged(@Nullable ShoppingList shoppingList) {
+                ShoppingListFragment.this.mCurrentAccountActiveShoppingList = shoppingList;
+            }
+        });
+
+        this.mViewModel.findCurrentAccountShoppingListItems().observe(this, new Observer<List<ShoppingListItem>>() {
             @Override
             public void onChanged(@Nullable List<ShoppingListItem> items) {
                 ShoppingListFragment.this.mShoppingListItemListAdapter
@@ -230,17 +242,28 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
     }
 
 
+    /*
+    ************************************************************************************************
+    * Menu
+    ************************************************************************************************
+     */
 
     private static final int MENU_GROUP_ID = 1;
+
+    private Map<MenuItem, Long> mShoppingListMenuItemIds;
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.shopping_list_fragment_menu, menu);
+
         if (this.mCurrentAccountShoppingLists != null) {
+            this.mShoppingListMenuItemIds = new ArrayMap<>();
+
             for (ShoppingList list : this.mCurrentAccountShoppingLists) {
                 MenuItem item = menu.add(MENU_GROUP_ID, (int)list.getShoppingListId(), Menu.NONE, list.getName());
                 item.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+                this.mShoppingListMenuItemIds.put(item, list.getShoppingListId());
             }
         }
     }
@@ -252,18 +275,14 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
                 this.onAddShoppingListOptionSelected(item);
                 return true;
         }
-        if (this.mCurrentAccountShoppingLists != null) {
-            for (ShoppingList list: this.mCurrentAccountShoppingLists) {
-                if (list.getShoppingListId() == item.getItemId()) {
-                    this.onShoppingListSelected(item, item.getItemId());
-                    return true;
-                }
-            }
+
+        if (this.mShoppingListMenuItemIds != null && this.mShoppingListMenuItemIds.containsKey(item)) {
+            this.onShoppingListOptionSelected(item, this.mShoppingListMenuItemIds.get(item));
+            return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
-
-
 
     private void onAddShoppingListOptionSelected(MenuItem item) {
         if (this.mCurrentAccount != null) {
@@ -273,11 +292,18 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
         }
     }
 
-    private void onShoppingListSelected(MenuItem item, long shoppingListId) {
-        this.mViewModel.setShoppingListId(shoppingListId);
+    private void onShoppingListOptionSelected(MenuItem item, long shoppingListId) {
+        if (this.mCurrentAccount.getActiveShoppingListId() != shoppingListId) {
+            this.mViewModel.setShoppingListId(shoppingListId);
+        }
     }
 
 
+    /*
+    ************************************************************************************************
+    * Floating Action Button
+    ************************************************************************************************
+     */
 
     @Override
     public void onConfigureFloatingActionButton(FloatingActionButton button) {
@@ -288,7 +314,8 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
     public void onFloatingActionButtonClick(FloatingActionButton button) {
         if (this.mCurrentAccount != null && this.mCurrentAccount.getActiveShoppingListId() != null) {
             Intent intent = new Intent(this.getContext(), AddShoppingListProductActivity.class);
-            intent.putExtra(AddShoppingListProductActivity.EXTRA_SHOPPING_LIST_ID, this.mCurrentAccount.getActiveShoppingListId());
+            intent.putExtra(AddShoppingListProductActivity.EXTRA_SHOPPING_LIST_ID,
+                    this.mCurrentAccountActiveShoppingList.getShoppingListId());
             this.startActivity(intent);
         }
     }

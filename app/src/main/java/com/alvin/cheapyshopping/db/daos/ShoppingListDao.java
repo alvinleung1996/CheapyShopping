@@ -24,6 +24,9 @@ public interface ShoppingListDao {
     ************************************************************************************************
      */
 
+    @Query("SELECT * FROM ShoppingList WHERE shopping_list_id = :shoppingListId")
+    LiveData<ShoppingList> findShoppingList(long shoppingListId);
+
     @Query("SELECT * FROM ShoppingList WHERE foreign_account_id = :accountId")
     LiveData<List<ShoppingList>> findAccountShoppingLists(long accountId);
 
@@ -33,6 +36,9 @@ public interface ShoppingListDao {
     * Query, Sync
     ************************************************************************************************
      */
+
+    @Query("SELECT * FROM ShoppingList WHERE shopping_list_id = :shoppingListId")
+    ShoppingList findShoppingListNow(long shoppingListId);
 
     @Query("SELECT * FROM ShoppingList WHERE foreign_account_id = :accountId")
     List<ShoppingList> findAccountShoppingListsNow(long accountId);

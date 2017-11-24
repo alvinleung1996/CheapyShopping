@@ -11,14 +11,14 @@ import com.alvin.cheapyshopping.db.entities.BestPriceRelation;
  * Created by Alvin on 21/11/2017.
  */
 
-public class BestPriceRepository {
+public class BestPriceRelationRepository {
 
     @SuppressLint("StaticFieldLeak")
-    private static BestPriceRepository sInstance;
+    private static BestPriceRelationRepository sInstance;
 
-    public static BestPriceRepository getInstance(Context context) {
+    public static BestPriceRelationRepository getInstance(Context context) {
         if (sInstance == null) {
-            sInstance = new BestPriceRepository(context);
+            sInstance = new BestPriceRelationRepository(context);
         }
         return sInstance;
     }
@@ -26,7 +26,7 @@ public class BestPriceRepository {
 
     private final Context mContext;
 
-    private BestPriceRepository(Context context) {
+    private BestPriceRelationRepository(Context context) {
         this.mContext = context.getApplicationContext();
     }
 

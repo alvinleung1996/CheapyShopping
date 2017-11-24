@@ -12,10 +12,10 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
 
+import com.alvin.cheapyshopping.db.entities.pseudo.ShoppingListProduct;
 import com.alvin.cheapyshopping.repositories.AccountRepository;
-import com.alvin.cheapyshopping.repositories.ShoppingListProductRelationRepository;
+import com.alvin.cheapyshopping.repositories.ShoppingListProductRepository;
 import com.alvin.cheapyshopping.repositories.ShoppingListRepository;
-import com.alvin.cheapyshopping.db.daos.ShoppingListProductRelationDao.ShoppingListProduct;
 import com.alvin.cheapyshopping.db.entities.Account;
 import com.alvin.cheapyshopping.db.entities.Product;
 import com.alvin.cheapyshopping.db.entities.ShoppingList;
@@ -24,9 +24,6 @@ import com.alvin.cheapyshopping.db.entities.Store;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 /**
  * Created by Alvin on 20/11/2017.
@@ -34,15 +31,20 @@ import java.util.concurrent.Future;
 
 public class ShoppingListFragmentViewModel extends AndroidViewModel {
 
-    private AccountRepository mAccountRepository;
-    private ShoppingListRepository mShoppingListRepository;
-    private ShoppingListProductRelationRepository mShoppingListProductRelationRepository;
 
 
     public ShoppingListFragmentViewModel(Application application) {
         super(application);
     }
 
+
+    /*
+    ************************************************************************************************
+    * Repository
+    ************************************************************************************************
+     */
+
+    private AccountRepository mAccountRepository;
     private AccountRepository getAccountRepository() {
         if (this.mAccountRepository == null) {
             this.mAccountRepository = AccountRepository.getInstance(this.getApplication());
@@ -50,6 +52,7 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
         return mAccountRepository;
     }
 
+    private ShoppingListRepository mShoppingListRepository;
     private ShoppingListRepository getShoppingListRepository() {
         if (this.mShoppingListRepository == null) {
             this.mShoppingListRepository = ShoppingListRepository.getInstance(this.getApplication());
@@ -57,23 +60,23 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
         return this.mShoppingListRepository;
     }
 
-    private ShoppingListProductRelationRepository getShoppingListProductRelationRepository() {
-        if (this.mShoppingListProductRelationRepository == null) {
-            this.mShoppingListProductRelationRepository = ShoppingListProductRelationRepository.getInstance(this.getApplication());
+    private ShoppingListProductRepository mShoppingListProductRepository;
+    private ShoppingListProductRepository getShoppingListProductRepository() {
+        if (this.mShoppingListProductRepository == null) {
+            this.mShoppingListProductRepository = ShoppingListProductRepository.getInstance(this.getApplication());
         }
-        return this.mShoppingListProductRelationRepository;
+        return this.mShoppingListProductRepository;
     }
 
 
     /*
     ************************************************************************************************
-    * get account
+    * current account information
     ************************************************************************************************
      */
 
-    public LiveData<Account> mCurrentAccount;
-
-    public LiveData<Account> getCurrentAccount() {
+    private LiveData<Account> mCurrentAccount;
+    public LiveData<Account> findCurrentAccount() {
         if (this.mCurrentAccount == null) {
             this.mCurrentAccount = this.getAccountRepository().getCurrentAccount();
         }
@@ -83,22 +86,19 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
 
     /*
     ************************************************************************************************
-    * get Shopping List
+    * get Shopping Lists: depend on current account
     ************************************************************************************************
      */
 
     private LiveData<List<ShoppingList>> mCurrentAccountShoppingLists;
-
-    public LiveData<List<ShoppingList>> getCurrentAccountShoppingLists() {
+    public LiveData<List<ShoppingList>> findCurrentAccountShoppingLists() {
         if (this.mCurrentAccountShoppingLists == null) {
             this.mCurrentAccountShoppingLists = Transformations.switchMap(
                 this.getAccountRepository().getCurrentAccount(),
                 new Function<Account, LiveData<List<ShoppingList>>>() {
                     @Override
                     public LiveData<List<ShoppingList>> apply(Account input) {
-                        return input == null ? null
-                            : ShoppingListFragmentViewModel.this
-                                .getShoppingListRepository()
+                        return input == null ? null : ShoppingListFragmentViewModel.this.getShoppingListRepository()
                                 .findAccountShoppingLists(input.getAccountId());
                     }
                 }
@@ -109,36 +109,56 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
 
     /*
     ************************************************************************************************
-    * get Shopping List
+    * get current account active shopping List: depend on current account
     ************************************************************************************************
      */
 
-    private LiveData<Map<Store, List<ShoppingListProduct>>> mCurrentAccountShoppingListResult;
-
-    public LiveData<Map<Store, List<ShoppingListProduct>>> getCurrentAccountShoppingListResult() {
-        if (this.mCurrentAccountShoppingListResult == null) {
-            this.mCurrentAccountShoppingListResult = Transformations.switchMap(
-                this.getCurrentAccount(),
-                new Function<Account, LiveData<Map<Store, List<ShoppingListProduct>>>>() {
+    private LiveData<ShoppingList> mCurrentAccountActiveShoppingListCache;
+    public LiveData<ShoppingList> findCurrentAccountActiveShoppingList() {
+        if (this.mCurrentAccountActiveShoppingListCache == null) {
+            this.mCurrentAccountActiveShoppingListCache = Transformations.switchMap(
+                this.findCurrentAccount(),
+                new Function<Account, LiveData<ShoppingList>>() {
                     @Override
-                    public LiveData<Map<Store, List<ShoppingListProduct>>> apply(Account input) {
-                        return input == null ? null
-                            : ShoppingListFragmentViewModel.this.getShoppingListProductRelationRepository()
-                                .getShoppingListResult(input.getActiveShoppingListId());
+                    public LiveData<ShoppingList> apply(Account account) {
+                        if (account == null) {
+                            return null;
+                        }
+                        Long activeId = account.getActiveShoppingListId();
+                        if (activeId == null) {
+                            return null;
+                        }
+                        return ShoppingListFragmentViewModel.this.getShoppingListRepository()
+                                .findShoppingList(activeId);
                     }
                 }
             );
         }
-        return this.mCurrentAccountShoppingListResult;
+        return this.mCurrentAccountActiveShoppingListCache;
     }
-
 
     /*
     ************************************************************************************************
-    * set active shopping list item
+    * get Grouped Shopping List Products: depend on current account active shopping list
     ************************************************************************************************
      */
 
+    private LiveData<Map<Store, List<ShoppingListProduct>>> mCurrentAccountGroupedActiveShoppingListProductsCache;
+    private LiveData<Map<Store, List<ShoppingListProduct>>> findCurrentAccountGroupedActiveShoppingListProducts() {
+        if (this.mCurrentAccountGroupedActiveShoppingListProductsCache == null) {
+            this.mCurrentAccountGroupedActiveShoppingListProductsCache = Transformations.switchMap(
+                this.findCurrentAccountActiveShoppingList(),
+                new Function<ShoppingList, LiveData<Map<Store, List<ShoppingListProduct>>>>() {
+                    @Override
+                    public LiveData<Map<Store, List<ShoppingListProduct>>> apply(ShoppingList list) {
+                        return list == null ? null : ShoppingListFragmentViewModel.this.getShoppingListProductRepository()
+                                .findGroupedShoppingListProducts(list.getShoppingListId());
+                    }
+                }
+            );
+        }
+        return this.mCurrentAccountGroupedActiveShoppingListProductsCache;
+    }
 
     public class ShoppingListItem {
 
@@ -164,8 +184,7 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
     }
 
     private LiveData<List<ShoppingListItem>> mCurrentAccountShoppingListItems;
-
-    public LiveData<List<ShoppingListItem>> getCurrentAccountShoppingListItems() {
+    public LiveData<List<ShoppingListItem>> findCurrentAccountShoppingListItems() {
         if (this.mCurrentAccountShoppingListItems == null) {
             this.mCurrentAccountShoppingListItems = new CurrentAccountShoppingListItemsComputer();
         }
@@ -174,60 +193,44 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
 
     private class CurrentAccountShoppingListItemsComputer extends MediatorLiveData<List<ShoppingListItem>> {
 
-        private Map<Store, List<ShoppingListProduct>> mCurrentAccountShoppingListResult;
-        private ExecutorService mExecutor;
-        private Future<?> mExecutingJob;
-
         private CurrentAccountShoppingListItemsComputer() {
             this.addSource(
-                ShoppingListFragmentViewModel.this.getCurrentAccountShoppingListResult(),
+                ShoppingListFragmentViewModel.this
+                        .findCurrentAccountGroupedActiveShoppingListProducts(),
                 new Observer<Map<Store, List<ShoppingListProduct>>>() {
                     @Override
-                    public void onChanged(@Nullable Map<Store, List<ShoppingListProduct>> result) {
-                        CurrentAccountShoppingListItemsComputer.this.mCurrentAccountShoppingListResult
-                                = result;
-                        CurrentAccountShoppingListItemsComputer.this.compute();
+                    public void onChanged(@Nullable Map<Store, List<ShoppingListProduct>> groups) {
+                        CurrentAccountShoppingListItemsComputer.this
+                                .onCurrentAccountGroupedShoppingListProductsChanged(groups);
                     }
                 }
             );
         }
 
-        private void compute() {
-            if (this.mExecutingJob != null) {
-                this.mExecutingJob.cancel(true);
-                this.mExecutingJob = null;
-            }
-            if (this.mExecutor == null) {
-                this.mExecutor = Executors.newSingleThreadExecutor();
-            }
-            if (this.mCurrentAccountShoppingListResult == null) {
+        private void onCurrentAccountGroupedShoppingListProductsChanged(
+                @Nullable Map<Store, List<ShoppingListProduct>> groups) {
+
+            if (groups == null) {
                 this.setValue(null);
                 return;
             }
-            this.mExecutingJob = this.mExecutor.submit(new Runnable() {
-                private final Map<Store, List<ShoppingListProduct>> mCurrentAccountShoppingListResult
-                        = CurrentAccountShoppingListItemsComputer.this.mCurrentAccountShoppingListResult;
-                @Override
-                public void run() {
-                    List<ShoppingListItem> items = new ArrayList<>();
-                    for (Map.Entry<Store, List<ShoppingListProduct>> entry
-                            : this.mCurrentAccountShoppingListResult.entrySet()) {
 
-                        final Store store = entry.getKey();
-                        final List<ShoppingListProduct> products = entry.getValue();
+            List<ShoppingListItem> items = new ArrayList<>();
+            for (Map.Entry<Store, List<ShoppingListProduct>> entry : groups.entrySet()) {
 
-                        if (products.size() > 0) {
-                            items.add(new ShoppingListItem(store));
+                final Store store = entry.getKey();
+                final List<ShoppingListProduct> products = entry.getValue();
 
-                            for (Product product : products) {
-                                items.add(new ShoppingListItem(product));
-                            }
-                        }
+                if (products.size() > 0) {
+                    items.add(new ShoppingListItem(store));
+
+                    for (Product product : products) {
+                        items.add(new ShoppingListItem(product));
                     }
-
-                    if (!Thread.interrupted()) CurrentAccountShoppingListItemsComputer.this.postValue(items);
                 }
-            });
+            }
+
+            this.setValue(items);
         }
 
     }
@@ -239,24 +242,26 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
     ************************************************************************************************
      */
 
-    public void setShoppingListId(long shoppingListId) {
-        new UpdateAccountTask(this.getApplication()).execute(shoppingListId);
+    public void setShoppingListId(Long shoppingListId) {
+        new UpdateAccountTask(this.getApplication(), shoppingListId).execute();
     }
 
-    private static class UpdateAccountTask extends AsyncTask<Long, Void, Integer> {
+    private static class UpdateAccountTask extends AsyncTask<Void, Void, Integer> {
 
         @SuppressLint("StaticFieldLeak")
         private final Context mContext;
+        private final Long mShoppingListId;
 
-        private UpdateAccountTask(Context context) {
+        private UpdateAccountTask(Context context, Long shoppingListId) {
             this.mContext = context.getApplicationContext();
+            this.mShoppingListId = shoppingListId;
         }
 
         @Override
-        protected Integer doInBackground(Long... shoppingListId) {
+        protected Integer doInBackground(Void... voids) {
             AccountRepository repository = AccountRepository.getInstance(this.mContext);
             Account account = repository.getCurrentAccountNow();
-            account.setActiveShoppingListId(shoppingListId[0]);
+            account.setActiveShoppingListId(this.mShoppingListId);
             return repository.updateAccount(account);
         }
 

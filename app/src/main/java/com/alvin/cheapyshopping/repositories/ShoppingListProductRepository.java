@@ -10,13 +10,12 @@ import android.util.ArrayMap;
 
 import com.alvin.cheapyshopping.db.AppDatabase;
 import com.alvin.cheapyshopping.db.daos.ShoppingListProductDao;
-import com.alvin.cheapyshopping.db.daos.ShoppingListProductRelationDao;
-import com.alvin.cheapyshopping.db.entities.Price;
 import com.alvin.cheapyshopping.db.entities.Store;
 import com.alvin.cheapyshopping.db.entities.pseudo.ShoppingListProduct;
 import com.alvin.cheapyshopping.db.entities.pseudo.StorePrice;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -94,6 +93,12 @@ public class ShoppingListProductRepository {
         return this.mShoppingListProductsCache.get(shoppingListId);
     }
 
+    private static Comparator<ShoppingListProduct> sShoppingListProductComparator = new Comparator<ShoppingListProduct>() {
+        @Override
+        public int compare(ShoppingListProduct a, ShoppingListProduct b) {
+            return (int) (a.getProductId() - b.getProductId());
+        }
+    };
     private class ShoppingListProductAssembler extends MediatorLiveData<List<ShoppingListProduct>> {
 
         private List<LiveData<List<StorePrice>>> mSources;
@@ -131,8 +136,8 @@ public class ShoppingListProductRepository {
             }
 
             this.mSources = new ArrayList<>();
-            this.mNotReadyProducts = new TreeSet<>();
-            this.mReadyProducts = new TreeSet<>();
+            this.mNotReadyProducts = new TreeSet<>(sShoppingListProductComparator);
+            this.mReadyProducts = new TreeSet<>(sShoppingListProductComparator);
 
             StorePriceRepository storePriceRepository = ShoppingListProductRepository.this.getStorePriceRepository();
 
@@ -155,6 +160,9 @@ public class ShoppingListProductRepository {
                     }
                 );
             }
+
+            // In case the partial list size is 0
+            this.onReadyProductsChanged();
         }
 
         private void onBestStorePriceChanged(ShoppingListProduct shoppingListProduct, List<StorePrice> bestPrices) {
@@ -188,8 +196,8 @@ public class ShoppingListProductRepository {
             this.mPartialShoppingListProductsCache = new ArrayMap<>();
         }
         if (!this.mPartialShoppingListProductsCache.containsKey(shoppingListId)) {
-            this.mPartialShoppingListProductsCache.put(shoppingListId,
-                    new ShoppingListProductAssembler(shoppingListId));
+            this.mPartialShoppingListProductsCache.put(shoppingListId, this.getShoppingListProductDao()
+                    .findPartialShoppingListProducts(shoppingListId));
         }
         return this.mPartialShoppingListProductsCache.get(shoppingListId);
     }
@@ -201,7 +209,7 @@ public class ShoppingListProductRepository {
             this.mGroupedShoppingListProductsCache = new ArrayMap<>();
         }
         if (!this.mGroupedShoppingListProductsCache.containsKey(shoppingListId)) {
-
+            this.mGroupedShoppingListProductsCache.put(shoppingListId, new ShoppingListProductsGrouper(shoppingListId));
         }
         return this.mGroupedShoppingListProductsCache.get(shoppingListId);
     }
