@@ -4,26 +4,24 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data class="AccountFragmentBindingn"/>
+    <data class="AccountFragmentBinding"/>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/lightGrey">
 
-        <android.support.constraint.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/box_account_profile_top"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/background_account"
                 android:elevation="2dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
                 >
 
                 <ImageView
@@ -72,8 +70,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:background="@color/white"
-                android:padding="@dimen/accoutn_fragment_box_padding_inner"
-                app:layout_constraintTop_toBottomOf="@id/box_account_profile_top">
+                android:padding="@dimen/account_fragment_box_padding_inner">
 
                 <TextView
                     android:id="@+id/text_account_email_title"
@@ -100,8 +97,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/account_fragment_box_distance"
                 android:background="@color/white"
-                android:padding="@dimen/accoutn_fragment_box_padding_inner"
-                app:layout_constraintTop_toBottomOf="@id/box_account_email">
+                android:padding="@dimen/account_fragment_box_padding_inner">
 
                 <TextView
                     android:id="@+id/text_account_mobile_title"
@@ -128,8 +124,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/account_fragment_box_distance"
                 android:background="@color/white"
-                android:padding="@dimen/accoutn_fragment_box_padding_inner"
-                app:layout_constraintTop_toBottomOf="@id/box_account_mobile">
+                android:padding="@dimen/account_fragment_box_padding_inner">
 
                 <TextView
                     android:id="@+id/text_account_type_title"
@@ -155,9 +150,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/account_fragment_box_distance"
-                android:background="@color/white"
-                android:padding="@dimen/accoutn_fragment_box_padding_inner"
-                app:layout_constraintTop_toBottomOf="@id/box_account_type">
+                android:background="@drawable/background_account_box_badge"
+                android:padding="@dimen/account_fragment_box_padding_inner">
 
                 <TextView
                     android:id="@+id/text_account_score_title"
@@ -174,6 +168,7 @@
                     android:layout_marginEnd="20dp"
                     android:gravity="end"
                     android:text="9999"
+                    android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"/>
 
                 <ImageView
@@ -192,6 +187,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:text="RANK TITLE"
+                    android:textStyle="bold"
                     android:textSize="15sp"
                     android:gravity="center"
                     app:layout_constraintStart_toStartOf="@id/image_account_badge"
@@ -206,8 +202,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/account_fragment_box_distance"
                 android:background="@color/white"
-                android:padding="@dimen/accoutn_fragment_box_padding_inner"
-                app:layout_constraintTop_toBottomOf="@id/box_account_score_and_badge">
+                android:padding="@dimen/account_fragment_box_padding_inner">
 
                 <TextView
                     android:id="@+id/text_account_password_title"
@@ -230,13 +225,10 @@
                 android:layout_marginTop="@dimen/account_fragment_box_distance"
                 android:layout_marginBottom="@dimen/account_fragment_box_distance"
                 android:elevation="2dp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/box_account_password"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_gravity="center"
                 />
 
-        </android.support.constraint.ConstraintLayout>
+        </LinearLayout>
 
     </ScrollView>
 
