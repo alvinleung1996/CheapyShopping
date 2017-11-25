@@ -9,22 +9,22 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
-import com.alvin.cheapyshopping.databinding.AddShoppingListProductActivityBinding;
+import com.alvin.cheapyshopping.databinding.AddShoppingListProductRelationActivityBinding;
 import com.alvin.cheapyshopping.fragments.SelectProductFragment;
-import com.alvin.cheapyshopping.viewmodels.AddShoppingListProductActivityViewModel;
+import com.alvin.cheapyshopping.viewmodels.AddShoppingListProductRelationActivityViewModel;
 
 import java.util.List;
 
-public class AddShoppingListProductActivity extends AppCompatActivity {
+public class AddShoppingListProductRelationActivity extends AppCompatActivity {
 
-    public static final String EXTRA_SHOPPING_LIST_ID = "com.alvin.cheapyshopping.AddShoppingListProductActivity.EXTRA_SHOPPING_LIST_ID";
+    public static final String EXTRA_SHOPPING_LIST_ID = "com.alvin.cheapyshopping.AddShoppingListProductRelationActivity.EXTRA_SHOPPING_LIST_ID";
 
-    public static final String EXTRA_SELECTED_PRODUCT_IDS = "com.alvin.cheapyshopping.AddShoppingListProductActivity.EXTRA_SELECTED_PRODUCT_IDS";
+    public static final String EXTRA_SELECTED_PRODUCT_IDS = "com.alvin.cheapyshopping.AddShoppingListProductRelationActivity.EXTRA_SELECTED_PRODUCT_IDS";
 
 
-    private AddShoppingListProductActivityViewModel mViewModel;
+    private AddShoppingListProductRelationActivityViewModel mViewModel;
 
-    private AddShoppingListProductActivityBinding mBinding;
+    private AddShoppingListProductRelationActivityBinding mBinding;
 
     private long mShoppingListId;
 
@@ -33,9 +33,9 @@ public class AddShoppingListProductActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        this.mBinding = DataBindingUtil.setContentView(this, R.layout.activity_add_shopping_product);
+        this.mBinding = DataBindingUtil.setContentView(this, R.layout.activity_add_shopping_product_relation);
 
-        this.mViewModel = ViewModelProviders.of(this).get(AddShoppingListProductActivityViewModel.class);
+        this.mViewModel = ViewModelProviders.of(this).get(AddShoppingListProductRelationActivityViewModel.class);
 
         this.getSupportFragmentManager().registerFragmentLifecycleCallbacks(new FragmentLifecycleCallbacks(), false);
 
@@ -112,9 +112,9 @@ public class AddShoppingListProductActivity extends AppCompatActivity {
 
         @Override
         public void onProductItemsSelected(SelectProductFragment fragment, List<Long> productIds) {
-            AddShoppingListProductActivity.this.mViewModel
-                    .addShoppingListProduct(AddShoppingListProductActivity.this.mShoppingListId, productIds);
-            AddShoppingListProductActivity.this.finishActivity(productIds);
+            AddShoppingListProductRelationActivity.this.mViewModel
+                    .addShoppingListProduct(AddShoppingListProductRelationActivity.this.mShoppingListId, productIds, 1);
+            AddShoppingListProductRelationActivity.this.finishActivity(productIds);
         }
     }
 

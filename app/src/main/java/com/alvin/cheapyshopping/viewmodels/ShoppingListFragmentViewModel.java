@@ -14,6 +14,7 @@ import android.support.annotation.Nullable;
 
 import com.alvin.cheapyshopping.db.entities.pseudo.ShoppingListProduct;
 import com.alvin.cheapyshopping.repositories.AccountRepository;
+import com.alvin.cheapyshopping.repositories.BestPriceRelationRepository;
 import com.alvin.cheapyshopping.repositories.ShoppingListProductRepository;
 import com.alvin.cheapyshopping.repositories.ShoppingListRepository;
 import com.alvin.cheapyshopping.db.entities.Account;
@@ -66,6 +67,14 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
             this.mShoppingListProductRepository = ShoppingListProductRepository.getInstance(this.getApplication());
         }
         return this.mShoppingListProductRepository;
+    }
+
+    private BestPriceRelationRepository mBestPriceRelationRepository;
+    private BestPriceRelationRepository getBestPriceRelationRepository() {
+        if (this.mBestPriceRelationRepository == null) {
+            this.mBestPriceRelationRepository = BestPriceRelationRepository.getInstance(this.getApplication());
+        }
+        return this.mBestPriceRelationRepository;
     }
 
 
@@ -265,6 +274,17 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
             return repository.updateAccount(account);
         }
 
+    }
+
+
+    /*
+    ************************************************************************************************
+    * set active shopping list
+    ************************************************************************************************
+     */
+
+    public void refreshBestPriceRelations(long shoppingListId) {
+        this.getBestPriceRelationRepository().refreshBestPriceRelation(shoppingListId);
     }
 
 }

@@ -16,17 +16,17 @@ import java.util.List;
  * Created by Alvin on 21/11/2017.
  */
 
-public class AddShoppingListProductActivityViewModel extends AndroidViewModel {
+public class AddShoppingListProductRelationActivityViewModel extends AndroidViewModel {
 
-    public AddShoppingListProductActivityViewModel(Application application) {
+    public AddShoppingListProductRelationActivityViewModel(Application application) {
         super(application);
     }
 
 
 
 
-    public void addShoppingListProduct(long shoppingListId, List<Long> productIds) {
-        new ShoppingListProductAdder(this.getApplication(), shoppingListId, productIds).execute();
+    public void addShoppingListProduct(long shoppingListId, List<Long> productIds, int quantity) {
+        new ShoppingListProductAdder(this.getApplication(), shoppingListId, productIds, quantity).execute();
     }
 
     private static class ShoppingListProductAdder extends AsyncTask<Void, Void, long[]> {
@@ -35,11 +35,13 @@ public class AddShoppingListProductActivityViewModel extends AndroidViewModel {
         private final Context mContext;
         private final long mShoppingListId;
         private final List<Long> mProductIds;
+        private final int mQuantity;
 
-        private ShoppingListProductAdder(Context context, long shoppingListId, List<Long> productIds) {
+        private ShoppingListProductAdder(Context context, long shoppingListId, List<Long> productIds, int quantity) {
             this.mContext = context.getApplicationContext();
             this.mShoppingListId = shoppingListId;
             this.mProductIds = productIds;
+            this.mQuantity = quantity;
         }
 
         @Override
@@ -49,6 +51,7 @@ public class AddShoppingListProductActivityViewModel extends AndroidViewModel {
                 ShoppingListProductRelation relation = new ShoppingListProductRelation();
                 relation.setForeignShoppingListId(mShoppingListId);
                 relation.setForeignProductId(productId);
+                relation.setQuantity(this.mQuantity);
                 listProducts.add(relation);
             }
             return ShoppingListProductRelationRepository.getInstance(this.mContext)
