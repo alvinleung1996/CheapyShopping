@@ -175,7 +175,7 @@ public class SelectStoreFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_item_add:
+            case R.id.item_add:
                 this.onAddStoreOptionItemSelected(item);
                 return true;
             default:

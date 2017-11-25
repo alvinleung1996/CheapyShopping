@@ -10,6 +10,7 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.ArrayMap;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -228,7 +229,21 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
         this.mViewModel.findCurrentAccountActiveShoppingList().observe(this, new Observer<ShoppingList>() {
             @Override
             public void onChanged(@Nullable ShoppingList shoppingList) {
-                ShoppingListFragment.this.mCurrentAccountActiveShoppingList = shoppingList;
+                final ShoppingListFragment fragment = ShoppingListFragment.this;
+                fragment.mCurrentAccountActiveShoppingList = shoppingList;
+
+                if (fragment.mShoppingListIdMenuItemMap != null) {
+                    for (MenuItem item : fragment.mShoppingListIdMenuItemMap.values()) {
+                        item.setChecked(false);
+                    }
+                    if (shoppingList != null
+                        && fragment.mShoppingListIdMenuItemMap.containsKey(shoppingList.getShoppingListId())) {
+
+                        fragment.mShoppingListIdMenuItemMap
+                                .get(shoppingList.getShoppingListId())
+                                .setChecked(true);
+                    }
+                }
             }
         });
 
@@ -248,36 +263,55 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
     ************************************************************************************************
      */
 
-    private static final int MENU_GROUP_ID = 1;
-
-    private Map<MenuItem, Long> mShoppingListMenuItemIds;
+    private Map<Long, MenuItem> mShoppingListIdMenuItemMap;
+    private Map<MenuItem, Long> mMenuItemShoppingListIdMap;
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
+
         inflater.inflate(R.menu.shopping_list_fragment_menu, menu);
 
+        MenuItem searchItem = menu.findItem(R.id.item_search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        // TODO: Add listener to search view
+
+        MenuItem itemToCheck = null;
+
+        this.mShoppingListIdMenuItemMap = new ArrayMap<>();
+        this.mMenuItemShoppingListIdMap = new ArrayMap<>();
         if (this.mCurrentAccountShoppingLists != null) {
-            this.mShoppingListMenuItemIds = new ArrayMap<>();
 
             for (ShoppingList list : this.mCurrentAccountShoppingLists) {
-                MenuItem item = menu.add(MENU_GROUP_ID, (int)list.getShoppingListId(), Menu.NONE, list.getName());
-                item.setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
-                this.mShoppingListMenuItemIds.put(item, list.getShoppingListId());
+
+                MenuItem item = menu.add(R.id.group_shopping_lists, Menu.NONE, Menu.NONE, list.getName());
+
+                this.mShoppingListIdMenuItemMap.put(list.getShoppingListId(), item);
+                this.mMenuItemShoppingListIdMap.put(item, list.getShoppingListId());
+
+                if (this.mCurrentAccountActiveShoppingList != null
+                        && list.getShoppingListId() == this.mCurrentAccountActiveShoppingList.getShoppingListId()) {
+                    itemToCheck = item;
+                }
             }
+        }
+
+        menu.setGroupCheckable(R.id.group_shopping_lists, true, true);
+        if (itemToCheck != null) {
+            itemToCheck.setChecked(true);
         }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.menu_item_add:
+            case R.id.item_add_shopping_list:
                 this.onAddShoppingListOptionSelected(item);
                 return true;
         }
 
-        if (this.mShoppingListMenuItemIds != null && this.mShoppingListMenuItemIds.containsKey(item)) {
-            this.onShoppingListOptionSelected(item, this.mShoppingListMenuItemIds.get(item));
+        if (this.mMenuItemShoppingListIdMap != null && this.mMenuItemShoppingListIdMap.containsKey(item)) {
+            this.onShoppingListOptionSelected(item, this.mMenuItemShoppingListIdMap.get(item));
             return true;
         }
 
@@ -294,6 +328,7 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
 
     private void onShoppingListOptionSelected(MenuItem item, long shoppingListId) {
         if (this.mCurrentAccount.getActiveShoppingListId() != shoppingListId) {
+            item.setChecked(true);
             this.mViewModel.setShoppingListId(shoppingListId);
         }
     }

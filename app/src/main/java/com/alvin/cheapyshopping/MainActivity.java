@@ -10,7 +10,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -125,11 +124,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        this.getMenuInflater().inflate(R.menu.toolbar_menu, menu);
-
-        MenuItem searchItem = menu.findItem(R.id.item_search);
-        SearchView searchView = (SearchView) searchItem.getActionView();
-        // TODO: Add listener to search view
+        this.getMenuInflater().inflate(R.menu.main_activity_toolbar_menu, menu);
 
         return super.onCreateOptionsMenu(menu);
     }
