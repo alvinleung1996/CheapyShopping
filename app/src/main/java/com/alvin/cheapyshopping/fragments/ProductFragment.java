@@ -1,8 +1,10 @@
 package com.alvin.cheapyshopping.fragments;
 
 
+import android.app.AlertDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
 import android.databinding.DataBindingUtil;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -16,22 +18,20 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 
 import com.alvin.cheapyshopping.R;
 import com.alvin.cheapyshopping.databinding.ProductFragmentBinding;
 import com.alvin.cheapyshopping.databinding.ProductStorePriceItemBinding;
-import com.alvin.cheapyshopping.db.entities.Price;
 import com.alvin.cheapyshopping.db.entities.Product;
-import com.alvin.cheapyshopping.db.entities.Store;
+import com.alvin.cheapyshopping.db.entities.ShoppingList;
 import com.alvin.cheapyshopping.db.entities.pseudo.StorePrice;
 import com.alvin.cheapyshopping.viewmodels.ProductFragmentViewModel;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by cheng on 11/21/2017.
@@ -70,7 +70,7 @@ public class ProductFragment extends Fragment {
             ProductStorePriceListItemViewHolder viewHolder = new ProductStorePriceListItemViewHolder(view);
             return viewHolder;
         }
-//
+        //
         @Override
         public void onBindViewHolder(ProductStorePriceListItemViewHolder holder, int position) {
             holder.mBinding.setStorePrice(mStorePrices.get(position));
@@ -110,13 +110,12 @@ public class ProductFragment extends Fragment {
     private ProductFragmentViewModel mViewModel;
 
     private long mCurrentProductID;
-    private StorePrice mCurrentBestProductStorePrice;
     private Product mCurrentProduct;
-    private Map<Price, Store> mPriceStoreMap;
+    private StorePrice mCurrentBestProductStorePrice;
+    private List<ShoppingList> mShoppingLists;
 
     private ProductStorePriceListAdapter mProductStorePriceItemListAdapter;
 
-//    private InteractionListener mInteractionListener;
 
     public ProductFragment(){
         // Required empty public constructor
@@ -212,6 +211,8 @@ public class ProductFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.item_save:
+                Log.d("Debug", "test");
+                selectShoppingListDialog();
                 return true;
             case R.id.item_edit:
                 return true;
@@ -219,6 +220,95 @@ public class ProductFragment extends Fragment {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+
+    /*
+    ************************************************************************************************
+    * Dialog for selecting shopping list
+    ************************************************************************************************
+     */
+
+    public void selectShoppingListDialog() {
+        final List<ShoppingList> mDialogShoppingLists = new ArrayList<>();
+        final List<String> shoppinglistNames = new ArrayList<>();
+        final List<Integer> mSelecteditems = new ArrayList<>();
+
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ProductFragment.this.getContext());
+
+        // Set dialog title
+        alertDialogBuilder.setTitle("Save Product");
+
+
+        // Set dialog main message
+        alertDialogBuilder.setTitle("Please select the shopping list");
+
+        // Get shopping lists and select
+        mViewModel.findCurrentAccountShoppingLists().observe(this, new Observer<List<ShoppingList>>() {
+            @Override
+            public void onChanged(@Nullable List<ShoppingList> shoppingLists) {
+                if (shoppingLists != null){
+
+                    // Add shopping list names
+                    for (int i = 0; i < shoppingLists.size(); i++){
+                        shoppinglistNames.add(shoppingLists.get(i).getName());
+                        mDialogShoppingLists.add(shoppingLists.get(i));
+                    }
+
+                    // Convert List<String> to Array
+                    String[] items = shoppinglistNames.toArray(new String[0]);
+
+                    // Set items for the alert dialog
+                    alertDialogBuilder.setMultiChoiceItems(items, null, new DialogInterface.OnMultiChoiceClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int index, boolean isChecked) {
+                            if (isChecked) {
+                                // If the user checked the item, add it to the selected items
+                                mSelecteditems.add(index);
+                            } else if (mSelecteditems.contains(index)) {
+                                // Else, if the item is already in the array, remove it
+                                mSelecteditems.remove(Integer.valueOf(index));
+                            }
+
+                        }
+                    });
+                }
+            }
+        });
+
+
+        // Set the action buttons
+        alertDialogBuilder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int index) {
+
+                // Filter for checked shoppinglist from ArrayList
+                List<ShoppingList> mSelectedShoppingLists = new ArrayList<>();
+                for(int i = 0; i < mSelecteditems.size(); i++){
+                    mSelectedShoppingLists.add(mDialogShoppingLists.get(mSelecteditems.get(i)));
+                }
+
+                saveProductToShopplingLists(mSelectedShoppingLists);
+
+
+            }
+        });
+
+        alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+
+        alertDialogBuilder.show();
+
+    }
+
+    private void saveProductToShopplingLists(List<ShoppingList> shoppingLists){
+        Toast.makeText(ProductFragment.this.getContext() ,
+                "Faked: Added to  " + shoppingLists.size() + " shopping list(s)",
+                Toast.LENGTH_LONG).show();
     }
 
 
