@@ -1,15 +1,21 @@
 package com.alvin.cheapyshopping.viewmodels;
 
 import android.app.Application;
+import android.arch.core.util.Function;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Transformations;
 import android.util.Log;
 
+import com.alvin.cheapyshopping.db.entities.Account;
 import com.alvin.cheapyshopping.db.entities.Product;
+import com.alvin.cheapyshopping.db.entities.ShoppingList;
 import com.alvin.cheapyshopping.db.entities.Store;
 import com.alvin.cheapyshopping.db.entities.pseudo.StorePrice;
+import com.alvin.cheapyshopping.repositories.AccountRepository;
 import com.alvin.cheapyshopping.repositories.PriceRepository;
 import com.alvin.cheapyshopping.repositories.ProductRepository;
+import com.alvin.cheapyshopping.repositories.ShoppingListRepository;
 import com.alvin.cheapyshopping.repositories.StorePriceRepository;
 import com.alvin.cheapyshopping.repositories.StoreRepository;
 
@@ -37,6 +43,8 @@ public class ProductFragmentViewModel extends AndroidViewModel {
     private StoreRepository mStoreRepository;
     private PriceRepository mPriceRepository;
     private StorePriceRepository mStorePriceRepository;
+    private AccountRepository mAccountRepository;
+    private ShoppingListRepository mShoppingListRepository;
 
     private ProductRepository getProductRepository() {
         if (this.mProductRepository == null) {
@@ -64,6 +72,20 @@ public class ProductFragmentViewModel extends AndroidViewModel {
             this.mStorePriceRepository = StorePriceRepository.getInstance(this.getApplication());
         }
         return mStorePriceRepository;
+    }
+
+    private  AccountRepository getAccountRepository(){
+        if (this.mAccountRepository == null){
+            this.mAccountRepository = AccountRepository.getInstance(this.getApplication());
+        }
+        return mAccountRepository;
+    }
+
+    private  ShoppingListRepository getShoppingListRepository(){
+        if (this.mShoppingListRepository == null){
+            this.mShoppingListRepository = ShoppingListRepository.getInstance(this.getApplication());
+        }
+        return  mShoppingListRepository;
     }
 
     /*
@@ -111,4 +133,65 @@ public class ProductFragmentViewModel extends AndroidViewModel {
         }
         return this.mBestStorePrice;
     }
+
+    /*
+    ************************************************************************************************
+    * current account information
+    ************************************************************************************************
+     */
+
+    private LiveData<Account> mCurrentAccount;
+    public LiveData<Account> findCurrentAccount() {
+        if (this.mCurrentAccount == null) {
+            this.mCurrentAccount = this.getAccountRepository().getCurrentAccount();
+        }
+        return this.mCurrentAccount;
+    }
+
+
+    private Account mCurrentAccountNow;
+
+    public Account getCurrentAccountNow () {
+        if (this.mCurrentAccountNow == null) {
+            this.mCurrentAccountNow = this.getAccountRepository().getCurrentAccountNow();
+        }
+        return this.mCurrentAccountNow;
+    }
+
+    /*
+    ************************************************************************************************
+    * get Shopping Lists: depend on current account
+    ************************************************************************************************
+     */
+
+    private LiveData<List<ShoppingList>> mCurrentAccountShoppingLists;
+    public LiveData<List<ShoppingList>> findCurrentAccountShoppingLists() {
+        if (this.mCurrentAccountShoppingLists == null) {
+            this.mCurrentAccountShoppingLists = Transformations.switchMap(
+                    this.getAccountRepository().getCurrentAccount(),
+                    new Function<Account, LiveData<List<ShoppingList>>>() {
+                        @Override
+                        public LiveData<List<ShoppingList>> apply(Account input) {
+                            return input == null ? null : ProductFragmentViewModel.this.getShoppingListRepository()
+                                    .findAccountShoppingLists(input.getAccountId());
+                        }
+                    }
+            );
+        }
+        return this.mCurrentAccountShoppingLists;
+    }
+
+
+
+    private List<ShoppingList> mCurrentAccountShoppingListsNow;
+
+    public List<ShoppingList> getCurrentAccountShoppingListsNow() {
+        if (this.mCurrentAccountShoppingListsNow == null) {
+            mCurrentAccountShoppingListsNow = this.getShoppingListRepository().
+                    findAccountShoppingListsNow(this.getCurrentAccountNow().getAccountId());
+        }
+        return this.mCurrentAccountShoppingListsNow;
+    }
+
+
 }
