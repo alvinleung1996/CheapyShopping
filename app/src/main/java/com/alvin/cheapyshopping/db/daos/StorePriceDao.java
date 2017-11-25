@@ -33,6 +33,14 @@ public interface StorePriceDao {
     LiveData<List<StorePrice>> findShoppingListProductBestStorePrices(long shoppingListId, long productId);
 
 
+    // Get the best StorePrice with min unit price (QTY: 1) and latest creation time
+    @Query("SELECT * " +
+            "FROM Price P INNER JOIN STORE S ON P.foreign_store_id = S.store_id " +
+            "WHERE P.foreign_product_id = :productId " +
+            "ORDER BY P.total ASC, P.creation_time DESC " +
+            "LIMIT 1")
+    LiveData<StorePrice> findBestProductStorePrice(long productId);
+
     /*
     ************************************************************************************************
     * Query, Sync

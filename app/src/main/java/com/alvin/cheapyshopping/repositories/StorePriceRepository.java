@@ -85,6 +85,14 @@ public class StorePriceRepository {
     }
 
 
+    private LiveData<StorePrice> mBestProductStorePrice;
+    public LiveData<StorePrice> findBestProductStorePrice(long productId){
+        if (mBestProductStorePrice == null){
+            mBestProductStorePrice = this.getStorePriceDao().findBestProductStorePrice(productId);
+        }
+        return this.mBestProductStorePrice;
+    }
+
     /*
     ************************************************************************************************
     * Query, Sync

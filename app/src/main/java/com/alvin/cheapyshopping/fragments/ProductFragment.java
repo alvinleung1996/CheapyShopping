@@ -1,26 +1,37 @@
 package com.alvin.cheapyshopping.fragments;
 
 
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
+import android.databinding.DataBindingUtil;
 import android.support.annotation.Nullable;
-import android.support.constraint.ConstraintLayout;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 
 import com.alvin.cheapyshopping.R;
+import com.alvin.cheapyshopping.databinding.ProductFragmentBinding;
+import com.alvin.cheapyshopping.databinding.ProductStorePriceItemBinding;
+import com.alvin.cheapyshopping.db.entities.Price;
+import com.alvin.cheapyshopping.db.entities.Product;
+import com.alvin.cheapyshopping.db.entities.Store;
+import com.alvin.cheapyshopping.db.entities.pseudo.StorePrice;
+import com.alvin.cheapyshopping.viewmodels.ProductFragmentViewModel;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by cheng on 11/21/2017.
@@ -29,108 +40,59 @@ import java.util.List;
 public class ProductFragment extends Fragment {
 
 
-//    public interface InteractionListener {
-//
-//        void onStoreSelected(ProductFragment fragment, StoreModel store);
-//
-//        void onPriceSelected(ProductFragment fragment, PriceModel price);
-//
-//    }
+    public static final String EXTRA_PRODUCT_ID = "com.alvin.cheapyshopping.fragments.ProductFragment.EXTRA_PRODUCT_ID";
 
 
-//    private class ProductPriceItem {
-//
-//        private StoreModel store;
-//        private PriceModel price;
-//
-//        private ProductPriceItem(PriceModel price, StoreModel store) {
-//            this.store = store;
-//            this.price = price;
-//        }
-//    }
+    private class ProductStorePriceListAdapter extends RecyclerView.Adapter<ProductStorePriceListAdapter.ProductStorePriceListItemViewHolder> {
 
-//    private class ProductPriceListAdapter extends RecyclerView.Adapter<ProductPriceListAdapter.ProductPriceListItemViewHolder> {
+        private List<StorePrice> mStorePrices;
+
+        private ProductStorePriceListAdapter() {
+            this.mStorePrices = new ArrayList<>();
+        }
+
+        public int getItemCount() {
+            return mStorePrices.size();
+        }
+
+        public class ProductStorePriceListItemViewHolder extends RecyclerView.ViewHolder {
+            private ProductStorePriceItemBinding mBinding;
+
+            private ProductStorePriceListItemViewHolder(View v) {
+                super(v);
+                this.mBinding = DataBindingUtil.getBinding(this.itemView);
+            }
+        }
+
+        @Override
+        public ProductStorePriceListItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View view = ProductStorePriceItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false).getRoot();
+            ProductStorePriceListItemViewHolder viewHolder = new ProductStorePriceListItemViewHolder(view);
+            return viewHolder;
+        }
 //
-//
-//        private List<ProductPriceItem> mPriceList;
-//
-//        private ProductPriceListAdapter() {
-//            this.mPriceList = new ArrayList<>();
-//        }
-//
-//        public class ProductPriceListItemViewHolder extends RecyclerView.ViewHolder {
-//            private StoreModel mStore;
-//
-//            private TextView mStoreName;
-//            private TextView mPrice;
-//            private TextView mPriceID;
-//            private TextView mStoreLocation;
-//            private TextView mPriceUpdateDate;
-//            private ConstraintLayout mStoreLayout;
-//            private ConstraintLayout mStoreProductPriceLayout;
-//
-//            private ProductPriceListItemViewHolder(View v) {
-//                super(v);
-//                View view = this.itemView;
-//                mStoreName = view.findViewById(R.id.text_store_name);
-//                mPrice = view.findViewById(R.id.text_store_price);
-//                mPriceID = view.findViewById(R.id.text_price_id);
-//                mStoreLocation = view.findViewById(R.id.text_store_location);
-//                mPriceUpdateDate = view.findViewById(R.id.text_price_date);
-//                mStoreLayout = view.findViewById(R.id.layout_store_info);
-//                mStoreProductPriceLayout = view.findViewById(R.id.layout_store_product_price_info);
-//
-//                mStoreLayout.setOnClickListener(new View.OnClickListener(){
-//                    @Override
-//                    public void onClick(View view) {
-//                        ProductFragment.this.onStoreItemClick(view, ProductPriceListItemViewHolder.this.mStore);
-//                    }
-//                });
-//            }
-//        }
-//
-//
-//        @Override
-//        public ProductPriceListItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-//            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-//            View view = inflater.inflate(R.layout.item_product_price, parent, false);
-//            ProductPriceListItemViewHolder viewHolder = new ProductPriceListItemViewHolder(view);
-//            return viewHolder;
-//        }
-//
-//        @Override
-//        public void onBindViewHolder(ProductPriceListItemViewHolder holder, int position) {
-//            holder.mStoreName.setText(mPriceList.get(position).store.name);
-//            holder.mStoreLocation.setText(mPriceList.get(position).store.location);
-//            holder.mPrice.setText(Double.toString(mPriceList.get(position).price.price));
-//            holder.mPriceID.setText("Price id: " + mPriceList.get(position).price.priceId);
-//
-//            holder.mStore = mPriceList.get(position).store;
-//
-//            // Set price updateAccount date & time
-//            SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy     HH:mm:ss");
-//            String updateDate = formatter.format(mPriceList.get(position).price.time);
-//            holder.mPriceUpdateDate.setText(updateDate);
-//        }
-//
-//        @Override
-//        public void onViewRecycled(ProductPriceListItemViewHolder holder) {
-//            super.onViewRecycled(holder);
-//            //holder.onRecycled();
-//
-//        }
-//
-//        public int getItemCount() {
-//            return mPriceList.size();
-//        }
-//
-//
-//        private void updateProductPriceItem(List<ProductPriceItem> items){
-//            this.mPriceList = items;
-//            this.notifyDataSetChanged();
-//        }
-//
-//    } // End of ProductPriceListAdapter
+        @Override
+        public void onBindViewHolder(ProductStorePriceListItemViewHolder holder, int position) {
+            holder.mBinding.setStorePrice(mStorePrices.get(position));
+
+            // Set price update date & time
+            SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy     HH:mm:ss");
+            String updateDate = formatter.format(mStorePrices.get(position).getCreationTime());
+            holder.mBinding.setDate(updateDate);
+        }
+
+
+        private void setStorePriceItems(List<StorePrice> items){
+            this.mStorePrices = items;
+            this.notifyDataSetChanged();
+        }
+
+        @Override
+        public void onViewRecycled(ProductStorePriceListItemViewHolder holder) {
+            super.onViewRecycled(holder);
+            holder.mBinding.setStorePrice(null);
+        }
+    } // End of ProductStorePriceListAdapter
 
 
 
@@ -138,157 +100,126 @@ public class ProductFragment extends Fragment {
         ProductFragment fragment = new ProductFragment();
 
         Bundle args = new Bundle();
-        args.putLong("productID", productID);
+        args.putLong(EXTRA_PRODUCT_ID, productID);
         fragment.setArguments(args);
         return fragment;
     }
 
 
-    private RecyclerView mProductPriceItemList;
+    private ProductFragmentBinding mBinding;
+    private ProductFragmentViewModel mViewModel;
 
-//    ProductPriceListAdapter mAdapter;
+    private long mCurrentProductID;
+    private StorePrice mCurrentBestProductStorePrice;
+    private Product mCurrentProduct;
+    private Map<Price, Store> mPriceStoreMap;
 
-    TextView mProductName;
-    TextView mProductDescription;
-    TextView mProductBestPrice;
-    TextView mProductBestPriceDate;
+    private ProductStorePriceListAdapter mProductStorePriceItemListAdapter;
 
-//    private ProductModel mProduct;
-//
 //    private InteractionListener mInteractionListener;
 
     public ProductFragment(){
         // Required empty public constructor
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        this.setHasOptionsMenu(true);
+
+        // Get Product ID
+        Bundle args = getArguments();
+        mCurrentProductID= args.getLong(EXTRA_PRODUCT_ID, 0);
+
+    }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_product_price, container, false);
 
-        // Recycler View
-        mProductPriceItemList = view.findViewById(R.id.list_product_price_items);
-        mProductName = view.findViewById(R.id.text_product_name);
-        mProductDescription = view.findViewById(R.id.text_product_description);
-        mProductBestPrice = view.findViewById(R.id.text_best_price);
-        mProductBestPriceDate = view.findViewById(R.id.text_best_price_date);
+        this.mBinding = ProductFragmentBinding.inflate(inflater, container, false);
 
-        return view;
+        return mBinding.getRoot();
     }
-
-
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // Setup Product Model
-//        Bundle args = getArguments();
-//        long productID = args.getLong("productID", 0);
-//        mProduct = ProductModel.manager.get(this.getContext(), productID);
-//        setupProductBasicInfo(mProduct);
-//
-//        mProductPriceItemList.setLayoutManager(new LinearLayoutManager(this.getContext()));
-//        mProductPriceItemList.setNestedScrollingEnabled(false);  // For smoother scrolling
-//        mAdapter = new ProductPriceListAdapter();
-//        mProductPriceItemList.setAdapter(mAdapter);
-//
-//        this.updateProductPriceItemList();
+        // Setup viewModel
+        this.mViewModel = ViewModelProviders.of(this).get(ProductFragmentViewModel.class);
+
+        // Setup recycler view
+        this.mBinding.listProductPriceItems.setLayoutManager(new LinearLayoutManager(this.getContext()));
+        this.mBinding.listProductPriceItems.setNestedScrollingEnabled(false); // For smoother scrolling
+        this.mProductStorePriceItemListAdapter = new ProductStorePriceListAdapter();
+        mBinding.listProductPriceItems.setAdapter(mProductStorePriceItemListAdapter);
+
+
+        // Get Product
+        this.mViewModel.getProduct(mCurrentProductID).observe(this, new Observer<Product>() {
+            @Override
+            public void onChanged(@Nullable Product product) {
+                ProductFragment.this.mCurrentProduct = product;
+
+                // Setup Product Basic Info
+                mBinding.setProduct(mCurrentProduct);
+            }
+        });
+
+        // Get StorePrice list
+        this.mViewModel.getStorePrices(mCurrentProductID).observe(this, new Observer<List<StorePrice>>() {
+            @Override
+            public void onChanged(@Nullable List<StorePrice> storePrices) {
+                ProductFragment.this.mProductStorePriceItemListAdapter.setStorePriceItems(storePrices);
+            }
+        });
+
+        // Get best StorePrice
+        this.mViewModel.getBestStorePrice(mCurrentProductID).observe(this, new Observer<StorePrice>() {
+            @Override
+            public void onChanged(@Nullable StorePrice storePrice) {
+                ProductFragment.this.mCurrentBestProductStorePrice = storePrice;
+                ProductFragment.this.mBinding.setBestPrice(storePrice);
+
+                // Set price update date & time
+                SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
+                String updateDate = formatter.format(storePrice.getCreationTime());
+                ProductFragment.this.mBinding.setBestPriceDate(updateDate);
+
+            }
+        });
+
+
     }
 
 
-//    public void setInteractionListener(InteractionListener listener) {
-//        this.mInteractionListener = listener;
-//    }
-//
-//
-//
-//    public void updateProductPriceItemList(){
-//        List<ProductPriceItem> items = getPriceList(mProduct);
-//        this.mAdapter.updateProductPriceItem(items);
-//    }
-//
-//
-//
-//    public void setupProductBasicInfo(ProductModel mProduct){
-//        mProductName.setText(mProduct.name);
-//        mProductDescription.setText(mProduct.description);
-//        setProductBestPrice(this.getContext(), mProduct);
-//    }
-//
-//
-//    private void onStoreItemClick(View view, StoreModel model) {
-//        if (this.mInteractionListener != null) {
-//            this.mInteractionListener.onStoreSelected(this, model);
-//        }
-//    }
-//
-//
-//
-//    public void setProductBestPrice(Context context, ProductModel mProduct){
-//        PriceModel Price = new PriceModel(context);
-//
-//        // Get best price from database
-//        String tablename = PriceModel.manager.getTableName();
-//        String selection = PriceModel.COLUMN_FOREIGN_PRODUCT_ID + " = ?";
-//        String[] selectionArgs = { String.valueOf(mProduct.productId) };
-//        String limit = "1";
-//        SQLiteDatabase db = DatabaseHelper.getInstance(context).getDatabase();
-//        Cursor cursor = db.query(
-//                tablename,
-//                null,
-//                selection,
-//                selectionArgs,
-//                null,
-//                null,
-//                "price ASC",
-//                limit
-//        );
-//        if (cursor.moveToFirst()) {
-//            Price = PriceModel.manager.get(context,cursor);
-//        }
-//        cursor.close();
-//
-//        // Setup Textview for best price information
-//        mProductBestPrice.setText("$" + Double.toString(Price.price));
-//        SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
-//        String updateDate = formatter.format(Price.time);
-//        mProductBestPriceDate.setText("("+ updateDate + ")");
-//
-//    }
-//
-//
-//    private List<ProductPriceItem> getPriceList(ProductModel Product) {
-//        List<ProductPriceItem> PriceList = new ArrayList<>();
-//        PriceModel Price;
-//
-//        String tablename = PriceModel.manager.getTableName();
-//        String selection = PriceModel.COLUMN_FOREIGN_PRODUCT_ID + " = ?";
-//        String[] selectionArgs = {String.valueOf(Product.productId)};
-//        SQLiteDatabase db = DatabaseHelper.getInstance(this.getContext()).getDatabase();
-//        Cursor cursor = db.query(
-//                tablename,
-//                null,
-//                selection,
-//                selectionArgs,
-//                null,
-//                null,
-//                "price ASC"
-//        );
-//
-//        if (cursor.moveToFirst()) {
-//            do {
-//                Price = PriceModel.manager.get(this.getContext(), cursor);
-//
-//                // Get corresponding StoreModel
-//                StoreModel Store = StoreModel.manager.get(this.getContext(), Price.foreignStoreId);
-//                PriceList.add(new ProductPriceItem(Price, Store));
-//            } while (cursor.moveToNext());
-//        }
-//        cursor.close();
-//
-//        return PriceList;
-//    }
+    /*
+    ************************************************************************************************
+    * Menu
+    ************************************************************************************************
+     */
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.toolbar_menu_product, menu);
+    }
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.item_save:
+                return true;
+            case R.id.item_edit:
+                return true;
+            case R.id.item_add_price:
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
 }

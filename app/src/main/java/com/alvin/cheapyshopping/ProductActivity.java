@@ -53,20 +53,12 @@ public class ProductActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        this.getMenuInflater().inflate(R.menu.toolbar_menu_product, menu);
-
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-//            case R.id.action_save:
-//                return true;
-//            case R.id.action_edit:
-//                return true;
-//            case R.id.action_add_price:
-//                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }

@@ -13,6 +13,7 @@ import com.alvin.cheapyshopping.db.entities.ShoppingListProductRelation;
 import com.alvin.cheapyshopping.db.entities.Store;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -92,10 +93,20 @@ public class AppDatabaseCallback extends RoomDatabase.Callback {
                     Price price = new Price();
                     price.setType(Price.TYPE_SINGLE);
                     price.setTotal(100);
+                    price.setCreationTime(Calendar.getInstance().getTime());
                     price.setForeignProductId(product.getProductId());
                     price.setForeignStoreId(stores.get((stores.size() + prices.size()) / stores.size()).getStoreId());
                     prices.add(price);
                 }
+
+                Price price = new Price();
+                price.setType(Price.TYPE_SINGLE);
+                price.setTotal(300);
+                price.setForeignProductId(1);
+                price.setForeignStoreId(3);
+                price.setCreationTime(Calendar.getInstance().getTime());
+                prices.add(price);
+
                 appDb.getPriceDao()
                         .insertPrice(prices.toArray(new Price[prices.size()]));
 
