@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 
 import com.alvin.cheapyshopping.AddProductActivity;
 import com.alvin.cheapyshopping.MainActivity;
+import com.alvin.cheapyshopping.ProductActivity;
 import com.alvin.cheapyshopping.databinding.ProductDetailItemBinding;
 import com.alvin.cheapyshopping.databinding.ProductListFragmentBinding;
 import com.alvin.cheapyshopping.db.entities.Product;
@@ -162,7 +163,10 @@ public class ProductListFragment extends Fragment implements MainActivity.Floati
     ************************************************************************************************
      */
 
-    public void onProductItemClick(View view, Product store) {
+    public void onProductItemClick(View view, Product product) {
+        Intent intent = new Intent(this.getContext(), ProductActivity.class);
+        intent.putExtra(ProductActivity.EXTRA_PRODUCT_ID, product.getProductId());
+        this.startActivity(intent);
 
     }
 
