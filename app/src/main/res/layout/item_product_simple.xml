@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data class="ProductItemBinding">
+    <data class="SimpleProductItemBinding">
         <variable
             name="product"
             type="com.alvin.cheapyshopping.db.entities.Product"/>
@@ -54,7 +54,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/image_product_photo"
                 app:layout_constraintTop_toTopOf="parent"
-                android:text="@{product.name}"/>
+                android:text="@{product.name + `simple`}"/>
 
             <TextView
                 android:id="@+id/text_product_id"

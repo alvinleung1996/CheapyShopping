@@ -3,6 +3,7 @@ package com.alvin.cheapyshopping;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -20,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.alvin.cheapyshopping.databinding.MainActivityBinding;
 import com.alvin.cheapyshopping.fragments.ProductListFragment;
 import com.alvin.cheapyshopping.fragments.ShoppingListFragment;
 import com.alvin.cheapyshopping.fragments.StoreListFragment;
@@ -46,18 +48,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-    private DrawerLayout mDrawerLayout;
-    private NavigationView mDrawer;
-    private Toolbar mToolbar;
-    private FloatingActionButton mFab;
+    private MainActivityBinding mBinding;
 
     private ActionBarDrawerToggle mDrawerToggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+
+        this.mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         this.getSupportFragmentManager().registerFragmentLifecycleCallbacks(new FragmentLifecycleCallbacks(), false);
 
@@ -65,23 +64,15 @@ public class MainActivity extends AppCompatActivity {
             this.getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, ShoppingListFragment.newInstance(), FRAGMENT_SHOPPING_LIST)
                     .commit();
-
-//            this.getSupportFragmentManager().beginTransaction()
-//                    .add(R.id.fragment_container_popular_products, PopularProductsFragment.newInstance())
-//                    .commit();
         }
-
-        this.mDrawerLayout = findViewById(R.id.drawer_layout);
-        this.mDrawer = findViewById(R.id.drawer);
-        this.mToolbar = findViewById(R.id.toolbar);
 
 
         // Toolbar
-        this.setSupportActionBar(this.mToolbar);
+        this.setSupportActionBar((Toolbar) this.mBinding.toolbar);
         this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Drawer
-        this.mDrawer.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+        this.mBinding.drawer.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 return MainActivity.this.onDrawerMenuItemSelected(item);
@@ -89,8 +80,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         //Floating action buttons
-        this.mFab = findViewById(R.id.fab_plus);
-        this.mFab.setOnClickListener(new View.OnClickListener() {
+        this.mBinding.fabPlus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 MainActivity.this.onFabClick((FloatingActionButton) view);
@@ -98,8 +88,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Drawer Toggle
-        this.mDrawerToggle = new ActionBarDrawerToggle(this, this.mDrawerLayout, R.string.message_drawer_open, R.string.message_drawer_close);
-        this.mDrawerLayout.addDrawerListener(this.mDrawerToggle);
+        this.mDrawerToggle = new ActionBarDrawerToggle(this, this.mBinding.drawerLayout, R.string.message_drawer_open, R.string.message_drawer_close);
+        this.mBinding.drawerLayout.addDrawerListener(this.mDrawerToggle);
 
     }
 
@@ -123,8 +113,8 @@ public class MainActivity extends AppCompatActivity {
          * No need to call fragment manager to pop back stack,
          * the super class method has already take care of it
          */
-        if (this.mDrawerLayout.isDrawerVisible(this.mDrawer)) {
-            this.mDrawerLayout.closeDrawer(this.mDrawer);
+        if (this.mBinding.drawerLayout.isDrawerVisible(this.mBinding.drawer)) {
+            this.mBinding.drawerLayout.closeDrawer(this.mBinding.drawer);
 
         }  else {
             super.onBackPressed();
@@ -187,13 +177,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void configureFab() {
         if (this.mActiveFragment != null && this.mActiveFragment instanceof FloatingActionButtonInteractionListener) {
-            ((FloatingActionButtonInteractionListener) this.mActiveFragment).onConfigureFloatingActionButton(this.mFab);
+            ((FloatingActionButtonInteractionListener) this.mActiveFragment)
+                    .onConfigureFloatingActionButton(this.mBinding.fabPlus);
         }
     }
 
     private void onFabClick(FloatingActionButton button) {
         if (this.mActiveFragment != null && this.mActiveFragment instanceof FloatingActionButtonInteractionListener) {
-            ((FloatingActionButtonInteractionListener) this.mActiveFragment).onFloatingActionButtonClick(button);
+            ((FloatingActionButtonInteractionListener) this.mActiveFragment)
+                    .onFloatingActionButtonClick(button);
         }
     }
 
@@ -232,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
             } else if (f instanceof ProductListFragment){
                 itemId = R.id.item_product_list;
             }
-            if (itemId != 0) MainActivity.this.mDrawer.setCheckedItem(itemId);
+            if (itemId != 0) MainActivity.this.mBinding.drawer.setCheckedItem(itemId);
 
             MainActivity.this.configureFab();
         }
@@ -269,7 +261,7 @@ public class MainActivity extends AppCompatActivity {
         if (!item.isChecked()) {
             this.getSupportFragmentManager().popBackStack();
         }
-        this.mDrawerLayout.closeDrawer(this.mDrawer);
+        this.mBinding.drawerLayout.closeDrawer(this.mBinding.drawer);
         return true;
     }
 
@@ -287,7 +279,7 @@ public class MainActivity extends AppCompatActivity {
                     .addToBackStack(null)
                     .commit();
         }
-        this.mDrawerLayout.closeDrawer(this.mDrawer);
+        this.mBinding.drawerLayout.closeDrawer(this.mBinding.drawer);
         return true;
     }
 
@@ -319,7 +311,7 @@ public class MainActivity extends AppCompatActivity {
                     .addToBackStack(null)
                     .commit();
         }
-        this.mDrawerLayout.closeDrawer(this.mDrawer);
+        this.mBinding.drawerLayout.closeDrawer(this.mBinding.drawer);
         return true;
     }
 

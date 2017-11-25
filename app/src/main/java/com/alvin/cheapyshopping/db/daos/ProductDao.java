@@ -28,10 +28,10 @@ public interface ProductDao {
     LiveData<List<Product>> getAllProducts();
 
 
-    @Query("SELECT DISTINCT Product.* FROM Product LEFT OUTER JOIN ShoppingListProduct"
-            + "Relation ON Product.product_id = ShoppingListProductRelation.foreign_product_id"
-            + " WHERE ShoppingListProductRelation.foreign_shopping_list_id != :shoppingListId")
-    LiveData<List<Product>> findAllProductsNotInShoppingList(long shoppingListId);
+    @Query("SELECT DISTINCT P.* FROM Product P LEFT OUTER JOIN ShoppingListProductRelation R"
+            + " ON P.product_id = R.foreign_product_id"
+            + " WHERE R.foreign_shopping_list_id IS NULL OR R.foreign_shopping_list_id != :shoppingListId")
+    LiveData<List<Product>> findProductsNotInShoppingList(long shoppingListId);
 
 
     @Query("SELECT * FROM Product WHERE product_id = :productId")
@@ -48,10 +48,10 @@ public interface ProductDao {
     List<Product> getAllProductsNow();
 
 
-    @Query("SELECT DISTINCT Product.* FROM Product LEFT OUTER JOIN ShoppingListProduct"
-            + "Relation ON Product.product_id = ShoppingListProductRelation.foreign_product_id"
-            + " WHERE ShoppingListProductRelation.foreign_shopping_list_id != :shoppingListId")
-    List<Product> findAllProductsNotInShoppingListNow(long shoppingListId);
+    @Query("SELECT DISTINCT P.* FROM Product P LEFT OUTER JOIN ShoppingListProductRelation R"
+            + " ON P.product_id = R.foreign_product_id"
+            + " WHERE R.foreign_shopping_list_id IS NULL OR R.foreign_shopping_list_id != :shoppingListId")
+    List<Product> findProductsNotInShoppingListNow(long shoppingListId);
 
 
     @Query("SELECT * FROM Product WHERE product_id = :productId")

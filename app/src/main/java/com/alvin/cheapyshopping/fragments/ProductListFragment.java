@@ -3,6 +3,7 @@ package com.alvin.cheapyshopping.fragments;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -16,7 +17,7 @@ import android.view.ViewGroup;
 import com.alvin.cheapyshopping.AddProductActivity;
 import com.alvin.cheapyshopping.MainActivity;
 import com.alvin.cheapyshopping.ProductActivity;
-import com.alvin.cheapyshopping.databinding.ProductDetailItemBinding;
+import com.alvin.cheapyshopping.databinding.DetailProductItemBinding;
 import com.alvin.cheapyshopping.databinding.ProductListFragmentBinding;
 import com.alvin.cheapyshopping.db.entities.Product;
 import com.alvin.cheapyshopping.viewmodels.ProductListFragmentViewModel;
@@ -42,8 +43,7 @@ public class ProductListFragment extends Fragment implements MainActivity.Floati
 
         @Override
         public ProductItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            ProductDetailItemBinding binding = ProductDetailItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
-            return new ProductItemHolder(binding.getRoot(), binding);
+            return new ProductItemHolder(parent);
         }
 
         @Override
@@ -66,17 +66,11 @@ public class ProductListFragment extends Fragment implements MainActivity.Floati
 
     private class ProductItemHolder extends RecyclerView.ViewHolder {
 
-        private final ProductDetailItemBinding mBinding;
+        private final DetailProductItemBinding mBinding;
 
-        private ProductItemHolder(View view, ProductDetailItemBinding binding) {
-            super(view);
-            this.mBinding = binding;
-            this.mBinding.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    ProductListFragment.this.onProductItemClick(view, ProductListFragment.ProductItemHolder.this.mBinding.getProduct());
-                }
-            });
+        private ProductItemHolder(ViewGroup parent) {
+            super(DetailProductItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false).getRoot());
+            this.mBinding = DataBindingUtil.getBinding(this.itemView);
         }
 
         private void onBind(Product store) {
@@ -132,7 +126,7 @@ public class ProductListFragment extends Fragment implements MainActivity.Floati
         this.mProductListAdapter = new ProductListAdapter();
         this.mBinding.listProducts.setAdapter(this.mProductListAdapter);
 
-        this.mViewModel.getLiveProducts().observe(this, new Observer<List<Product>>() {
+        this.mViewModel.getAllProducts().observe(this, new Observer<List<Product>>() {
             @Override
             public void onChanged(@Nullable List<Product> stores) {
                 ProductListFragment.this.mProductListAdapter.setProducts(stores);

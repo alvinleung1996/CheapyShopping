@@ -13,7 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.alvin.cheapyshopping.MainActivity;
-import com.alvin.cheapyshopping.databinding.StoreDetailItemBinding;
+import com.alvin.cheapyshopping.databinding.DetailStoreItemBinding;
 import com.alvin.cheapyshopping.databinding.StoreListFragmentBinding;
 import com.alvin.cheapyshopping.db.entities.Store;
 import com.alvin.cheapyshopping.viewmodels.StoreListFragmentViewModel;
@@ -47,7 +47,7 @@ public class StoreListFragment extends Fragment implements MainActivity.Floating
 
         @Override
         public StoreItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            StoreDetailItemBinding binding = StoreDetailItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
+            DetailStoreItemBinding binding = DetailStoreItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false);
             return new StoreItemHolder(binding.getRoot(), binding);
         }
 
@@ -71,9 +71,9 @@ public class StoreListFragment extends Fragment implements MainActivity.Floating
 
     private class StoreItemHolder extends RecyclerView.ViewHolder {
 
-        private final StoreDetailItemBinding mBinding;
+        private final DetailStoreItemBinding mBinding;
 
-        private StoreItemHolder(View view, StoreDetailItemBinding binding) {
+        private StoreItemHolder(View view, DetailStoreItemBinding binding) {
             super(view);
             this.mBinding = binding;
             this.mBinding.setOnClickListener(new View.OnClickListener() {
@@ -139,7 +139,7 @@ public class StoreListFragment extends Fragment implements MainActivity.Floating
         this.mStoreListAdapter = new StoreListAdapter();
         this.mBinding.listStores.setAdapter(this.mStoreListAdapter);
 
-        this.mViewModel.getStores().observe(this, new Observer<List<Store>>() {
+        this.mViewModel.getAllStores().observe(this, new Observer<List<Store>>() {
             @Override
             public void onChanged(@Nullable List<Store> stores) {
                 StoreListFragment.this.mStoreListAdapter.setStores(stores);

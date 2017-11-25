@@ -4,18 +4,18 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 
-import com.alvin.cheapyshopping.repositories.StoreRepository;
 import com.alvin.cheapyshopping.db.entities.Store;
+import com.alvin.cheapyshopping.repositories.StoreRepository;
 
 import java.util.List;
 
 /**
- * Created by Alvin on 19/11/2017.
+ * Created by Alvin on 25/11/2017.
  */
 
-public class StoreListFragmentViewModel extends AndroidViewModel {
+public class SelectStoreFragmentViewModel extends AndroidViewModel {
 
-    public StoreListFragmentViewModel(Application application) {
+    public SelectStoreFragmentViewModel(Application application) {
         super(application);
     }
 
@@ -37,7 +37,7 @@ public class StoreListFragmentViewModel extends AndroidViewModel {
 
     /*
     ************************************************************************************************
-    * get all stores
+    * Repository
     ************************************************************************************************
      */
 

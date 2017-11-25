@@ -2,21 +2,26 @@ package com.alvin.cheapyshopping;
 
 import android.content.Context;
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.alvin.cheapyshopping.databinding.AddStoreActivityBinding;
 import com.alvin.cheapyshopping.fragments.AddStoreFragment;
 
 public class AddStoreActivity extends AppCompatActivity {
 
     public static final String EXTRA_ADDED_STORE_ID = "com.alvin.cheapyshopping.AddStoreActivity.EXTRA_ADDED_STORE_ID";
 
+    private AddStoreActivityBinding mBinding;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_store);
+
+        this.mBinding = DataBindingUtil.setContentView(this, R.layout.activity_add_store);
 
         this.getSupportFragmentManager().registerFragmentLifecycleCallbacks(new FragmentLifecycleCallbacks(), false);
 

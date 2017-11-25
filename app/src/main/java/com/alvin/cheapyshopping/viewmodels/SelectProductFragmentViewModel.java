@@ -3,11 +3,13 @@ package com.alvin.cheapyshopping.viewmodels;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
+import android.util.ArrayMap;
 
 import com.alvin.cheapyshopping.repositories.ProductRepository;
 import com.alvin.cheapyshopping.db.entities.Product;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Alvin on 21/11/2017.
@@ -19,6 +21,13 @@ public class SelectProductFragmentViewModel extends AndroidViewModel {
         super(application);
     }
 
+
+    /*
+    ************************************************************************************************
+    * Repository
+    ************************************************************************************************
+     */
+
     private ProductRepository mProductRepository;
     private ProductRepository getProductRepository() {
         if (this.mProductRepository == null) {
@@ -28,16 +37,32 @@ public class SelectProductFragmentViewModel extends AndroidViewModel {
     }
 
 
+    /*
+    ************************************************************************************************
+    * get products
+    ************************************************************************************************
+     */
+
+    private LiveData<List<Product>> mAllProductsCache;
     public LiveData<List<Product>> getProducts() {
-        // Cached by the repository
-        return this.getProductRepository().getAllProducts();
+        if (this.mAllProductsCache == null) {
+            this.mAllProductsCache = this.getProductRepository().getAllProducts();
+        }
+        return this.mAllProductsCache;
     }
 
 
-
-    public LiveData<List<Product>> getProductsNotInShoppingList(long shoppingListId) {
-        // Cached by the repository
-        return this.getProductRepository().findAllProductsNotInShoppingList(shoppingListId);
+    private Map<Long, LiveData<List<Product>>> mFilteredProductsCache;
+    public LiveData<List<Product>> findProductsNotInShoppingList(long shoppingListId) {
+        if (this.mFilteredProductsCache == null) {
+            this.mFilteredProductsCache = new ArrayMap<>();
+        }
+        if (!this.mFilteredProductsCache.containsKey(shoppingListId)) {
+            this.mFilteredProductsCache.put(shoppingListId, this.getProductRepository()
+                    .findProductsNotInShoppingList(shoppingListId));
+        }
+        return this.mFilteredProductsCache.get(shoppingListId);
+        // Cached by the repository;
     }
 
 }

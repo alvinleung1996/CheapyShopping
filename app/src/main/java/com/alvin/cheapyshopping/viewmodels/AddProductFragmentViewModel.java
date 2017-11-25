@@ -1,8 +1,10 @@
 package com.alvin.cheapyshopping.viewmodels;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.arch.core.util.Function;
 import android.arch.lifecycle.AndroidViewModel;
+import android.content.Context;
 import android.os.AsyncTask;
 
 import com.alvin.cheapyshopping.repositories.ProductRepository;
@@ -14,34 +16,40 @@ import com.alvin.cheapyshopping.db.entities.Product;
 
 public class AddProductFragmentViewModel extends AndroidViewModel {
 
-    private final ProductRepository mProductRepository;
-
     public AddProductFragmentViewModel(Application application) {
         super(application);
-        this.mProductRepository = ProductRepository.getInstance(application);
     }
+
+
+    /*
+    ************************************************************************************************
+    * Add product
+    ************************************************************************************************
+     */
 
     public void addProduct(String name, String description, Function<long[], Void> callback) {
         Product product = new Product();
         product.setName(name);
         product.setDescription(description);
-        new InsertProductTask(this.mProductRepository, callback).execute(product);
+        new InsertProductTask(this.getApplication(), product, callback).execute();
     }
 
+    private static class InsertProductTask extends AsyncTask<Void, Void, long[]> {
 
-    private class InsertProductTask extends AsyncTask<Product, Void, long[]> {
-
-        private ProductRepository mProductRepository;
+        @SuppressLint("StaticFieldLeak")
+        private Context mContext;
+        private Product mProduct;
         private Function<long[], Void> mCallback;
 
-        private InsertProductTask(ProductRepository productRepository, Function<long[], Void> mCallback) {
-            this.mProductRepository = productRepository;
+        private InsertProductTask(Context context, Product product, Function<long[], Void> mCallback) {
+            this.mContext = context.getApplicationContext();
+            this.mProduct = product;
             this.mCallback = mCallback;
         }
 
         @Override
-        protected long[] doInBackground(Product... products) {
-            return this.mProductRepository.insertProduct(products);
+        protected long[] doInBackground(Void... voids) {
+            return ProductRepository.getInstance(this.mContext).insertProduct(this.mProduct);
         }
 
         @Override

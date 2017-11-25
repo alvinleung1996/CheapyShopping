@@ -3,11 +3,13 @@ package com.alvin.cheapyshopping;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.alvin.cheapyshopping.databinding.AddShoppingListProductActivityBinding;
 import com.alvin.cheapyshopping.fragments.SelectProductFragment;
 import com.alvin.cheapyshopping.viewmodels.AddShoppingListProductActivityViewModel;
 
@@ -22,13 +24,16 @@ public class AddShoppingListProductActivity extends AppCompatActivity {
 
     private AddShoppingListProductActivityViewModel mViewModel;
 
+    private AddShoppingListProductActivityBinding mBinding;
+
     private long mShoppingListId;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_shopping_list_item);
+
+        this.mBinding = DataBindingUtil.setContentView(this, R.layout.activity_add_shopping_product);
 
         this.mViewModel = ViewModelProviders.of(this).get(AddShoppingListProductActivityViewModel.class);
 

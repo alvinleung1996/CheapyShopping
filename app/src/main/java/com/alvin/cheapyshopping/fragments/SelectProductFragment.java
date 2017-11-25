@@ -18,7 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.alvin.cheapyshopping.R;
-import com.alvin.cheapyshopping.databinding.ProductItemBinding;
+import com.alvin.cheapyshopping.databinding.SimpleProductItemBinding;
 import com.alvin.cheapyshopping.databinding.SelectProductFragmentBinding;
 import com.alvin.cheapyshopping.db.entities.Product;
 import com.alvin.cheapyshopping.viewmodels.SelectProductFragmentViewModel;
@@ -102,10 +102,10 @@ public class SelectProductFragment extends Fragment {
 
     private class ViewHolder extends RecyclerView.ViewHolder {
 
-        private ProductItemBinding mBinding;
+        private SimpleProductItemBinding mBinding;
 
         private ViewHolder(ViewGroup parent) {
-            super(ProductItemBinding.inflate(SelectProductFragment.this.getLayoutInflater(), parent, false).getRoot());
+            super(SimpleProductItemBinding.inflate(SelectProductFragment.this.getLayoutInflater(), parent, false).getRoot());
             this.mBinding = DataBindingUtil.getBinding(this.itemView);
         }
 
@@ -174,7 +174,7 @@ public class SelectProductFragment extends Fragment {
         this.mBinding.listProducts.setAdapter(this.mProductListAdapter);
 
         LiveData<List<Product>> products = this.exludeShoppingListId != null ?
-                this.mViewModel.getProductsNotInShoppingList(this.exludeShoppingListId)
+                this.mViewModel.findProductsNotInShoppingList(this.exludeShoppingListId)
                 : this.mViewModel.getProducts();
         products.observe(this, new Observer<List<Product>>() {
             @Override

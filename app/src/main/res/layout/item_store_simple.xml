@@ -4,22 +4,21 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data class="DetailProductItemBinding">
+    <data class="SimpleStoreItemBinding">
         <variable
-            name="product"
-            type="com.alvin.cheapyshopping.db.entities.Product"/>
+            name="store"
+            type="com.alvin.cheapyshopping.db.entities.Store"/>
         <variable
             name="onClickListener"
             type="android.view.View.OnClickListener"/>
     </data>
-    
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:background="@drawable/list_item_background"
-        android:elevation="4dp"
-        android:onClick="@{onClickListener::onClick}">
+        android:elevation="2dp">
 
         <View
             android:layout_width="match_parent"
@@ -33,43 +32,53 @@
             android:minHeight="72dp">
 
             <ImageView
-                android:id="@+id/image_product"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginStart="16dp"
+                android:id="@+id/image_store_photo"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
                 android:layout_marginTop="16dp"
+                android:layout_marginStart="16dp"
+                android:contentDescription="Store photo"
+                android:src="@drawable/ic_store_black_24dp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_product_black_24dp" />
+                app:layout_constraintTop_toTopOf="parent"/>
 
             <TextView
-                android:id="@+id/text_product_name"
+                android:id="@+id/text_store_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:text="@{product.name}"
-                android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Title"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/image_product"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintStart_toEndOf="@+id/image_store_photo"
+                app:layout_constraintTop_toTopOf="parent"
+                android:text="@{store.name}"/>
 
             <TextView
-                android:id="@+id/text_product_location"
+                android:id="@+id/text_store_location"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintTop_toBottomOf="@+id/text_store_name"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/text_store_name"
+                android:text="@{store.location + `simple`}"/>
+
+            <TextView
+                android:id="@+id/text_store_id"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="8dp"
-                android:text="@{product.description + `detail`}"
-                android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Subtitle"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/text_product_name"
-                app:layout_constraintTop_toBottomOf="@+id/text_product_name" />
+                app:layout_constraintTop_toBottomOf="@+id/text_store_name"
+                android:text="@{Long.toString(store.storeId)}"/>
+
         </android.support.constraint.ConstraintLayout>
 
     </LinearLayout>
-
 </layout>

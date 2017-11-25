@@ -1,7 +1,9 @@
 package com.alvin.cheapyshopping.fragments;
 
 
-import android.content.Context;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,9 +15,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.alvin.cheapyshopping.R;
+import com.alvin.cheapyshopping.databinding.SelectStoreFragmentBinding;
+import com.alvin.cheapyshopping.databinding.SimpleStoreItemBinding;
+import com.alvin.cheapyshopping.db.entities.Store;
+import com.alvin.cheapyshopping.viewmodels.SelectStoreFragmentViewModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -25,13 +33,13 @@ import com.alvin.cheapyshopping.R;
  */
 public class SelectStoreFragment extends Fragment {
 
-//    public static interface SelectStoreFragmentListener {
-//
-//        public void onAddStoreOptionSelected(SelectStoreFragment fragment);
-//
-//        public void onStoreItemSelected(SelectStoreFragment fragment, StoreModel model);
-//
-//    }
+    public interface InteractionListener {
+
+        void onAddStoreOptionSelected(SelectStoreFragment fragment);
+
+        void onStoreItemSelected(SelectStoreFragment fragment, Store store);
+
+    }
 
 
     private static final String ARGUMENT_CREATE_OPTIONS_MENU = "com.alvin.cheapyshopping.fragments.SelectStoreFragment.ARGUMENT_CREATE_OPTIONS_MENU";
@@ -52,76 +60,74 @@ public class SelectStoreFragment extends Fragment {
 
 
 
-//    public class StoreListAdapter extends RecyclerView.Adapter<StoreListAdapter.ViewHolder> {
-//
-//        public class ViewHolder extends RecyclerView.ViewHolder {
-////            private StoreModel model;
-//            private TextView storeNameTextView;
-//            private TextView storeLocationTextView;
-//            private TextView storeIdTextView;
-//            private ViewHolder(View v) {
-//                super(v);
-//                this.storeNameTextView = v.findViewById(R.id.text_store_name);
-//                this.storeLocationTextView = v.findViewById(R.id.text_store_location);
-//                this.storeIdTextView = v.findViewById(R.id.text_store_id);
-//                v.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View view) {
-//                        SelectStoreFragment.this.onStoreItemClick(view, ViewHolder.this.model);
-//                    }
-//                });
-//            }
-//        }
-//
-//        private StoreListAdapter(List<StoreModel> stores) {
-//            super();
-//            this.mStores = stores;
-//        }
-//
-//        private List<StoreModel> mStores;
-//
-//        @Override
-//        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-//            View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item_store, parent, false);
-//            return new ViewHolder(v);
-//        }
-//
-//        @Override
-//        public void onBindViewHolder(ViewHolder holder, int position) {
-//            StoreModel model = this.mStores.get(position);
-//            holder.model = model;
-//            holder.storeNameTextView.setText(model.name);
-//            holder.storeLocationTextView.setText(model.location);
-//            holder.storeIdTextView.setText("id:" + model.storeId);
-//        }
-//
-//        @Override
-//        public int getItemCount() {
-//            return this.mStores.size();
-//        }
-//    }
+    public class StoreListAdapter extends RecyclerView.Adapter<StoreItemHolder> {
+
+        private StoreListAdapter() {
+            super();
+            this.mStores = new ArrayList<>();
+        }
+
+        private List<Store> mStores;
+
+        @Override
+        public int getItemCount() {
+            return this.mStores.size();
+        }
+
+        @Override
+        public StoreItemHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            return new StoreItemHolder(parent);
+        }
+
+        @Override
+        public void onBindViewHolder(StoreItemHolder holder, int position) {
+            Store model = this.mStores.get(position);
+            holder.onBind(model);
+        }
+
+        private void setStores(List<Store> stores) {
+            this.mStores = stores != null ? stores : new ArrayList<Store>();
+            this.notifyDataSetChanged();
+        }
+    }
+
+    private class StoreItemHolder extends RecyclerView.ViewHolder {
+
+        private final SimpleStoreItemBinding mBinding;
+
+        private StoreItemHolder(ViewGroup parent) {
+            super(SimpleStoreItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false).getRoot());
+            this.mBinding = DataBindingUtil.getBinding(this.itemView);
+        }
+
+        private void onBind(Store store) {
+            this.mBinding.setStore(store);
+            this.mBinding.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    SelectStoreFragment.this.onStoreItemClick(view, StoreItemHolder.this.mBinding.getStore());
+                }
+            });
+        }
+
+        private void onRecycled() {
+            this.mBinding.setStore(null);
+            this.mBinding.setOnClickListener(null);
+        }
+    }
+
+
+    private SelectStoreFragmentViewModel mViewModel;
+    private SelectStoreFragmentBinding mBinding;
+    private StoreListAdapter mStoreListAdapter;
+
+    private InteractionListener mInteractionListener;
 
 
     public SelectStoreFragment() {
 
     }
 
-
-    private RecyclerView mStoreList;
-
-//    private SelectStoreFragmentListener mSelectStoreFragmentListener;
-
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-//        if (context instanceof SelectStoreFragmentListener) {
-//            this.mSelectStoreFragmentListener = (SelectStoreFragmentListener) context;
-//        } else {
-//            throw new RuntimeException(context.toString()
-//                    + " must implement SelectStoreFragmentListener");
-//        }
-    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -136,24 +142,28 @@ public class SelectStoreFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_select_store, container, false);
-        this.mStoreList = v.findViewById(R.id.list_stores);
-        return v;
+        this.mBinding = SelectStoreFragmentBinding.inflate(inflater, container, false);
+        return this.mBinding.getRoot();
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        this.mStoreList.setLayoutManager(new LinearLayoutManager(this.getContext()));
-//        this.mStoreList.setAdapter(new StoreListAdapter(StoreModel.manager.getAllProducts(this.getContext())));
+        this.mViewModel = ViewModelProviders.of(this).get(SelectStoreFragmentViewModel.class);
+
+        this.mBinding.listStores.setLayoutManager(new LinearLayoutManager(this.getContext()));
+        this.mStoreListAdapter = new StoreListAdapter();
+        this.mBinding.listStores.setAdapter(this.mStoreListAdapter);
+
+        this.mViewModel.getAllStores().observe(this, new Observer<List<Store>>() {
+            @Override
+            public void onChanged(@Nullable List<Store> stores) {
+                SelectStoreFragment.this.mStoreListAdapter.setStores(stores);
+            }
+        });
     }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-//        this.mSelectStoreFragmentListener = null;
-    }
 
 
     @Override
@@ -174,16 +184,23 @@ public class SelectStoreFragment extends Fragment {
     }
 
 
-    private void onAddStoreOptionItemSelected(MenuItem item) {
-//        if (this.mSelectStoreFragmentListener != null) {
-//            this.mSelectStoreFragmentListener.onAddStoreOptionSelected(this);
-//        }
+
+    public void setInteractionListener(InteractionListener listener) {
+        this.mInteractionListener = listener;
     }
 
-//    private void onStoreItemClick(View view, StoreModel model) {
-////        if (this.mSelectStoreFragmentListener != null) {
-////            this.mSelectStoreFragmentListener.onStoreItemSelected(this, model);
-////        }
-//    }
+
+
+    private void onAddStoreOptionItemSelected(MenuItem item) {
+        if (this.mInteractionListener != null) {
+            this.mInteractionListener.onAddStoreOptionSelected(this);
+        }
+    }
+
+    private void onStoreItemClick(View view, Store model) {
+        if (this.mInteractionListener != null) {
+            this.mInteractionListener.onStoreItemSelected(this, model);
+        }
+    }
 
 }

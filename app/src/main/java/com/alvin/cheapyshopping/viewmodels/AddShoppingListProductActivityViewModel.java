@@ -23,19 +23,7 @@ public class AddShoppingListProductActivityViewModel extends AndroidViewModel {
     }
 
 
-    /*
-    ************************************************************************************************
-    * Repository
-    ************************************************************************************************
-     */
 
-    private ShoppingListProductRelationRepository mListProductRepository;
-    private ShoppingListProductRelationRepository getListProductRepository() {
-        if (this.mListProductRepository == null) {
-            this.mListProductRepository = ShoppingListProductRelationRepository.getInstance(this.getApplication());
-        }
-        return this.mListProductRepository;
-    }
 
     public void addShoppingListProduct(long shoppingListId, List<Long> productIds) {
         new ShoppingListProductAdder(this.getApplication(), shoppingListId, productIds).execute();

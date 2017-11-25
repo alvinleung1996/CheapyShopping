@@ -1,60 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<android.support.v4.widget.DrawerLayout
+<layout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    android:id="@+id/drawer_layout"
-    tools:context="com.alvin.cheapyshopping.MainActivity">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <android.support.constraint.ConstraintLayout
+    <data class="MainActivityBinding"/>
+
+    <android.support.v4.widget.DrawerLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-        <include
-            android:id="@+id/toolbar"
-            layout="@layout/toolbar"
-            android:layout_width="0dp"
-            android:layout_height="?attr/actionBarSize"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <FrameLayout
-            android:id="@+id/fragment_container"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/toolbar">
-        </FrameLayout>
-
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/fab_plus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_add_white_24dp"
-            android:elevation="6dp"
-            android:layout_marginBottom="30dp"
-            android:layout_marginEnd="20dp"
-            app:pressedTranslationZ="12dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"/>
-
-    </android.support.constraint.ConstraintLayout>
-
-    <!-- Navigation drawer -->
-    <android.support.design.widget.NavigationView
-        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:layout_gravity="start"
-        android:id="@+id/drawer"
-        app:menu="@menu/drawer_menu"
-        app:headerLayout="@layout/drawer_header">
-    </android.support.design.widget.NavigationView>
+        android:fitsSystemWindows="true"
+        android:id="@+id/drawer_layout"
+        tools:context="com.alvin.cheapyshopping.MainActivity">
 
-</android.support.v4.widget.DrawerLayout>
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <include
+                android:id="@+id/toolbar"
+                layout="@layout/toolbar"
+                android:layout_width="0dp"
+                android:layout_height="?attr/actionBarSize"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <FrameLayout
+                android:id="@+id/fragment_container"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/toolbar">
+            </FrameLayout>
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fab_plus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_add_white_24dp"
+                android:elevation="6dp"
+                android:layout_marginBottom="30dp"
+                android:layout_marginEnd="20dp"
+                app:pressedTranslationZ="12dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+        </android.support.constraint.ConstraintLayout>
+
+        <!-- Navigation drawer -->
+        <android.support.design.widget.NavigationView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:id="@+id/drawer"
+            app:menu="@menu/drawer_menu"
+            app:headerLayout="@layout/drawer_header">
+        </android.support.design.widget.NavigationView>
+
+    </android.support.v4.widget.DrawerLayout>
+
+</layout>

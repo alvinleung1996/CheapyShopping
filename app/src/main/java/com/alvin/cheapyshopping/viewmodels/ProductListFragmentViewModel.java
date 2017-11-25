@@ -15,20 +15,38 @@ import java.util.List;
 
 public class ProductListFragmentViewModel extends AndroidViewModel {
 
-    private final ProductRepository mProductRepository;
-
-    private LiveData<List<Product>> mLiveProducts;
-
     public ProductListFragmentViewModel(Application application) {
         super(application);
-        this.mProductRepository = ProductRepository.getInstance(application);
     }
 
-    public LiveData<List<Product>> getLiveProducts() {
-        if (this.mLiveProducts == null) {
-            this.mLiveProducts = this.mProductRepository.getAllProducts();
+
+    /*
+    ************************************************************************************************
+    * Repository
+    ************************************************************************************************
+     */
+
+    private ProductRepository mProductRepository;
+    private ProductRepository getProductRepository() {
+        if (this.mProductRepository == null) {
+            this.mProductRepository = ProductRepository.getInstance(this.getApplication());
         }
-        return this.mLiveProducts;
+        return this.mProductRepository;
+    }
+
+
+    /*
+    ************************************************************************************************
+    * get all products
+    ************************************************************************************************
+     */
+
+    private LiveData<List<Product>> mAllProductsCache;
+    public LiveData<List<Product>> getAllProducts() {
+        if (this.mAllProductsCache == null) {
+            this.mAllProductsCache = this.getProductRepository().getAllProducts();
+        }
+        return this.mAllProductsCache;
     }
 
 }

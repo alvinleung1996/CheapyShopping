@@ -65,17 +65,17 @@ public class ProductRepository {
     }
 
 
-    private Map<Long, LiveData<List<Product>>> mAllProductsNotInShoppingListCache;
-    public LiveData<List<Product>> findAllProductsNotInShoppingList(long shoppingListId) {
-        if (this.mAllProductsNotInShoppingListCache == null) {
-            this.mAllProductsNotInShoppingListCache = new ArrayMap<>();
+    private Map<Long, LiveData<List<Product>>> mProductsNotInShoppingListCache;
+    public LiveData<List<Product>> findProductsNotInShoppingList(long shoppingListId) {
+        if (this.mProductsNotInShoppingListCache == null) {
+            this.mProductsNotInShoppingListCache = new ArrayMap<>();
         }
-        if (!this.mAllProductsNotInShoppingListCache.containsKey(shoppingListId)) {
-            this.mAllProductsNotInShoppingListCache
+        if (!this.mProductsNotInShoppingListCache.containsKey(shoppingListId)) {
+            this.mProductsNotInShoppingListCache
                     .put(shoppingListId, this.getProductDao()
-                            .findAllProductsNotInShoppingList(shoppingListId));
+                            .findProductsNotInShoppingList(shoppingListId));
         }
-        return this.mAllProductsNotInShoppingListCache.get(shoppingListId);
+        return this.mProductsNotInShoppingListCache.get(shoppingListId);
     }
 
     private Map<Long, LiveData<Product>> mProductCache;
@@ -100,8 +100,8 @@ public class ProductRepository {
         return this.getProductDao().getAllProductsNow();
     }
 
-    public List<Product> findAllProductsNotInShoppingListNow(long shoppingListId) {
-        return this.getProductDao().findAllProductsNotInShoppingListNow(shoppingListId);
+    public List<Product> findProductsNotInShoppingListNow(long shoppingListId) {
+        return this.getProductDao().findProductsNotInShoppingListNow(shoppingListId);
     }
 
     public Product findProductByProductIdNow(long productId) {
