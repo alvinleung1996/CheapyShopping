@@ -283,6 +283,9 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onStoreSelected(StoreListFragment fragment, Store store) {
             Toast.makeText(MainActivity.this, "Store Selected: " + store.getName(), Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(MainActivity.this, StoreActivity.class);
+            intent.putExtra(StoreActivity.EXTRA_STORE_ID, store.getStoreId());
+            MainActivity.this.startActivity(intent);
         }
 
         @Override

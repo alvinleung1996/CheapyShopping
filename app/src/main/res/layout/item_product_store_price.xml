@@ -11,6 +11,9 @@
         <variable
             name="date"
             type="String"/>
+        <variable
+            name="onClickListener"
+            type="android.view.View.OnClickListener"/>
     </data>
 
     <LinearLayout
@@ -35,7 +38,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/layout_store_info"
-                android:paddingBottom="5dp">
+                android:paddingBottom="5dp"
+                android:onClick="@{onClickListener::onClick}">
                 <ImageView
                     android:id="@+id/image_store_photo"
                     android:layout_width="40dp"

@@ -30,6 +30,9 @@
             android:name=".ProductActivity"
             android:theme="@style/AppTheme.ProductActivity" />
         <activity
+            android:name=".StoreActivity"
+            android:theme="@style/AppTheme.ProductActivity" />
+        <activity
             android:name=".AddStoreActivity"
             android:label="Add Store">
         </activity>

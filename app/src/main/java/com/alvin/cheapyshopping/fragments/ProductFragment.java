@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -22,10 +23,12 @@ import android.widget.Toast;
 
 
 import com.alvin.cheapyshopping.R;
+import com.alvin.cheapyshopping.StoreActivity;
 import com.alvin.cheapyshopping.databinding.ProductFragmentBinding;
 import com.alvin.cheapyshopping.databinding.ProductStorePriceItemBinding;
 import com.alvin.cheapyshopping.db.entities.Product;
 import com.alvin.cheapyshopping.db.entities.ShoppingList;
+import com.alvin.cheapyshopping.db.entities.Store;
 import com.alvin.cheapyshopping.db.entities.pseudo.StorePrice;
 import com.alvin.cheapyshopping.viewmodels.ProductFragmentViewModel;
 
@@ -72,8 +75,15 @@ public class ProductFragment extends Fragment {
         }
         //
         @Override
-        public void onBindViewHolder(ProductStorePriceListItemViewHolder holder, int position) {
+        public void onBindViewHolder(ProductStorePriceListItemViewHolder holder, final int position) {
             holder.mBinding.setStorePrice(mStorePrices.get(position));
+
+            holder.mBinding.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View view) {
+                    ProductFragment.this.onStoreClick(view, mStorePrices.get(position).getStore());
+                }
+            });
 
             // Set price update date & time
             SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy     HH:mm:ss");
@@ -211,7 +221,6 @@ public class ProductFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.item_save:
-                Log.d("Debug", "test");
                 selectShoppingListDialog();
                 return true;
             case R.id.item_edit:
@@ -306,9 +315,27 @@ public class ProductFragment extends Fragment {
     }
 
     private void saveProductToShopplingLists(List<ShoppingList> shoppingLists){
+
+        // check if the product is already in the shopping list
+
+
+
         Toast.makeText(ProductFragment.this.getContext() ,
-                "Faked: Added to  " + shoppingLists.size() + " shopping list(s)",
+                "Added to  " + shoppingLists.size() + " shopping list(s)",
                 Toast.LENGTH_LONG).show();
+    }
+
+
+    /*
+    ************************************************************************************************
+    * On Click
+    ************************************************************************************************
+     */
+
+    private void onStoreClick(View view, Store store) {
+        Intent intent = new Intent(this.getContext(), StoreActivity.class);
+        intent.putExtra(StoreActivity.EXTRA_STORE_ID, store.getStoreId());
+        this.startActivity(intent);
     }
 
 

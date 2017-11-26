@@ -101,7 +101,7 @@ public class AppDatabaseCallback extends RoomDatabase.Callback {
 
                 Price price = new Price();
                 price.setType(Price.TYPE_SINGLE);
-                price.setTotal(300);
+                price.setTotal(30);
                 price.setForeignProductId(1);
                 price.setForeignStoreId(3);
                 price.setCreationTime(Calendar.getInstance().getTime());
