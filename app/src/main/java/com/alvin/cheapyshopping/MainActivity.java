@@ -21,6 +21,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.alvin.cheapyshopping.databinding.MainActivityBinding;
+import com.alvin.cheapyshopping.fragments.AccountFragment;
 import com.alvin.cheapyshopping.fragments.ProductListFragment;
 import com.alvin.cheapyshopping.fragments.ShoppingListFragment;
 import com.alvin.cheapyshopping.fragments.StoreListFragment;
@@ -35,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String FRAGMENT_SHOPPING_LIST = "com.alvin.cheapyshopping.MainActivity.FRAGMENT_SHOPPING_LIST";
     private static final String FRAGMENT_STORE_LIST = "com.alvin.cheapyshopping.MainActivity.FRAGMENT_STORE_LIST";
     private static final String FRAGMENT_PRODUCT_LIST = "com.alvin.cheapyshopping.MainActivity.FRAGMENT_PRODUCT_LIST";
+    private static final String FRAGMENT_ACCOUNT = "com.alvin.cheapyshopping.MainActivity.FRAGMENT_ACCOUNT";
 
 
 
@@ -158,6 +160,8 @@ public class MainActivity extends AppCompatActivity {
                 return this.onStoreListDrawerMenuItemSelected(item);
             case R.id.item_product_list:
                 return this.onProductListDrawerMenuItemSelected(item);
+            case R.id.item_account:
+                return this.onAccountDrawerMenuItemSelected(item);
         }
 
         return false;
@@ -218,8 +222,18 @@ public class MainActivity extends AppCompatActivity {
                 itemId = R.id.item_store_list;
             } else if (f instanceof ProductListFragment){
                 itemId = R.id.item_product_list;
+            } else if (f instanceof AccountFragment){
+                itemId = R.id.item_account;
             }
             if (itemId != 0) MainActivity.this.mBinding.drawer.setCheckedItem(itemId);
+
+
+            // Hide floating action button for some fragments
+            if (f instanceof AccountFragment){
+                MainActivity.this.mBinding.fabPlus.hide();
+            } else {
+                MainActivity.this.mBinding.fabPlus.show();
+            }
 
             MainActivity.this.configureFab();
         }
@@ -306,6 +320,24 @@ public class MainActivity extends AppCompatActivity {
             this.getSupportFragmentManager().popBackStack();
             this.getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container, ProductListFragment.newInstance(), FRAGMENT_PRODUCT_LIST)
+                    .addToBackStack(null)
+                    .commit();
+        }
+        this.mBinding.drawerLayout.closeDrawer(this.mBinding.drawer);
+        return true;
+    }
+
+    /*
+    ************************************************************************************************
+    * AccountFragment Interactions
+    ************************************************************************************************
+     */
+
+    private boolean onAccountDrawerMenuItemSelected(MenuItem item){
+        if (!item.isChecked()){
+            this.getSupportFragmentManager().popBackStack();
+            this.getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, AccountFragment.newInstance(), FRAGMENT_ACCOUNT)
                     .addToBackStack(null)
                     .commit();
         }

@@ -25,7 +25,6 @@ import com.alvin.cheapyshopping.databinding.StoreProductPriceItemBinding;
 import com.alvin.cheapyshopping.db.entities.Product;
 import com.alvin.cheapyshopping.db.entities.Store;
 import com.alvin.cheapyshopping.db.entities.pseudo.ProductPrice;
-import com.alvin.cheapyshopping.db.entities.pseudo.StorePrice;
 import com.alvin.cheapyshopping.viewmodels.StoreFragmentViewModel;
 
 import java.text.SimpleDateFormat;
