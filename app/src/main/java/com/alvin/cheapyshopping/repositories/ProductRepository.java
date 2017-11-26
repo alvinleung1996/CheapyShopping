@@ -11,7 +11,6 @@ import com.alvin.cheapyshopping.db.entities.Product;
 
 import java.util.List;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 /**
  * Created by Alvin on 19/11/2017.
@@ -83,7 +82,7 @@ public class ProductRepository {
     private Map<Long, LiveData<List<Product>>> mShoppingListProductsCache;
     LiveData<List<Product>> findShoppingListProducts(long shoppingListId) {
         if (this.mShoppingListProductsCache == null) {
-            this.mShoppingListProductsCache = new WeakHashMap<>();
+            this.mShoppingListProductsCache = new ArrayMap<>();
         }
         if (!this.mShoppingListProductsCache.containsKey(shoppingListId)) {
             this.mShoppingListProductsCache.put(shoppingListId, this.getProductDao()

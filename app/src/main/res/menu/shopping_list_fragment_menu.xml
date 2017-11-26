@@ -17,6 +17,10 @@
 
     <group android:id="@+id/group_normal_options">
         <item
+            android:id="@+id/item_sample_map_activity"
+            android:title="sample map"
+            app:showAsAction="never"/>
+        <item
             android:id="@+id/item_add_shopping_list"
             android:title="Add Shopping List"
             android:icon="@drawable/ic_add_white_24dp"

@@ -32,6 +32,11 @@ public interface StoreDao {
     LiveData<Store> findStoreByStoreId(long id);
 
 
+    /* TODO update to add math operation on longitude and latitude */
+    @Query("SELECT * FROM Store")
+    LiveData<List<Store>> findStoresAroundGeoCoordinate();
+
+
     /*
     ************************************************************************************************
     * Query, Sync
@@ -43,6 +48,11 @@ public interface StoreDao {
 
     @Query("SELECT * FROM Store WHERE store_id = :id")
     Store findStoreByStoreIdNow(long id);
+
+
+    /* TODO update to add math operation on longitude and latitude */
+    @Query("SELECT * FROM Store")
+    List<Store> findStoresAroundGeoCoordinateNow();
 
 
     /*

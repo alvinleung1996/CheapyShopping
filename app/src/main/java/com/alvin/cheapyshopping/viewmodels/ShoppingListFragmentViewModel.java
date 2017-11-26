@@ -21,6 +21,7 @@ import com.alvin.cheapyshopping.db.entities.Account;
 import com.alvin.cheapyshopping.db.entities.Product;
 import com.alvin.cheapyshopping.db.entities.ShoppingList;
 import com.alvin.cheapyshopping.db.entities.Store;
+import com.alvin.cheapyshopping.utils.ShoppingListLocationUpdater;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -284,6 +285,7 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
      */
 
     public void refreshBestPriceRelations(long shoppingListId) {
+        ShoppingListLocationUpdater.getsInstance(this.getApplication()).updateShoppingListCenterCoordinate(shoppingListId);
         this.getBestPriceRelationRepository().refreshBestPriceRelation(shoppingListId);
     }
 
