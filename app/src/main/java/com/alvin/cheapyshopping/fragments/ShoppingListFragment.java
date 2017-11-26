@@ -233,7 +233,9 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
             @Override
             public void onChanged(@Nullable ShoppingList shoppingList) {
                 final ShoppingListFragment fragment = ShoppingListFragment.this;
+
                 fragment.mCurrentAccountActiveShoppingList = shoppingList;
+                ShoppingListFragment.this.mBinding.setShoppingList(shoppingList);
 
                 if (fragment.mShoppingListIdMenuItemMap != null) {
                     for (MenuItem item : fragment.mShoppingListIdMenuItemMap.values()) {

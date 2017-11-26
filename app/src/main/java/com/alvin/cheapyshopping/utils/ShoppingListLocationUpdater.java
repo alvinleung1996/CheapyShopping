@@ -12,12 +12,19 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.util.ArraySet;
 import android.widget.Toast;
 
+import com.alvin.cheapyshopping.db.entities.ShoppingList;
+import com.alvin.cheapyshopping.db.entities.ShoppingListProductRelation;
+import com.alvin.cheapyshopping.repositories.ShoppingListProductRelationRepository;
+import com.alvin.cheapyshopping.repositories.ShoppingListRepository;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Executors;
 
 /**
  * Created by Alvin on 26/11/2017.
@@ -43,6 +50,27 @@ public class ShoppingListLocationUpdater {
     }
 
 
+    private ShoppingListRepository mShoppingListRepository;
+    private ShoppingListRepository getShoppingListRepository() {
+        if (this.mShoppingListRepository == null) {
+            this.mShoppingListRepository = ShoppingListRepository.getInstance(this.mContext);
+        }
+        return this.mShoppingListRepository;
+    }
+
+
+    private ShoppingListProductRelationRepository mShoppingListProductRelationRepository;
+    private ShoppingListProductRelationRepository getShoppingListProductRelationRepository() {
+        if (this.mShoppingListProductRelationRepository == null) {
+            this.mShoppingListProductRelationRepository = ShoppingListProductRelationRepository.getInstance(this.mContext);
+        }
+        return this.mShoppingListProductRelationRepository;
+    }
+
+
+
+
+
     private Set<Long> mShoppingListsToUpdate;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private Task<Location> mRunningLocationTask;
@@ -50,29 +78,61 @@ public class ShoppingListLocationUpdater {
         if (this.mShoppingListsToUpdate == null) {
             this.mShoppingListsToUpdate = new ArraySet<>();
         }
+
         this.mShoppingListsToUpdate.add(shoppingListId);
+
+        // TODO refactor below code, it is ugly
+
         if (this.mRunningLocationTask == null || this.mRunningLocationTask.isComplete()) {
+
             if (this.mFusedLocationProviderClient == null) {
                 this.mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this.mContext);
             }
+
             if (ContextCompat.checkSelfPermission(this.mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
                 this.mFusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+
                     @Override
-                    public void onSuccess(Location location) {
+                    public void onSuccess(final Location location) {
                         final ShoppingListLocationUpdater updater = ShoppingListLocationUpdater.this;
+
                         if (location == null) {
                             Toast.makeText(updater.mContext, "Cannot find location!", Toast.LENGTH_SHORT).show();
                             return;
                         }
+
                         String text = "Longtitude: " + location.getLongitude() + ", Latitude: " + location.getLatitude();
                         Toast.makeText(updater.mContext, text, Toast.LENGTH_SHORT).show();
-//                    if (updater.mShoppingListsToUpdate != null) {
-//                        for (Long id : updater.mShoppingListsToUpdate) {
-//
-//                        }
-//                    }
+
+
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                if (updater.mShoppingListsToUpdate != null) {
+
+                                    List<ShoppingList> listToUpdate = new ArrayList<>();
+
+                                    for (Long id : updater.mShoppingListsToUpdate) {
+                                        ShoppingList shoppingList = ShoppingListLocationUpdater.this.getShoppingListRepository()
+                                                .findShoppingListNow(id);
+
+                                        shoppingList.setCenterLongitude(location.getLongitude());
+                                        shoppingList.setCenterLatitude(location.getLatitude());
+
+                                        listToUpdate.add(shoppingList);
+                                    }
+
+                                    ShoppingListLocationUpdater.this.getShoppingListRepository().updateShoppingList(
+                                            listToUpdate.toArray(new ShoppingList[listToUpdate.size()]));
+                                }
+
+                            }
+                        }).start();
                     }
                 });
+
             } else {
                 ActivityCompat.requestPermissions(activity, new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, 1);
             }
