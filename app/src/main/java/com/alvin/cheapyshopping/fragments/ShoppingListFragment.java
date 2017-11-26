@@ -20,7 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.alvin.cheapyshopping.AddShoppingListActivity;
-import com.alvin.cheapyshopping.AddShoppingListProductActivity;
+import com.alvin.cheapyshopping.AddShoppingListProductRelationActivity;
 import com.alvin.cheapyshopping.MainActivity;
 import com.alvin.cheapyshopping.ProductActivity;
 import com.alvin.cheapyshopping.R;
@@ -308,6 +308,9 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
             case R.id.item_add_shopping_list:
                 this.onAddShoppingListOptionSelected(item);
                 return true;
+            case R.id.item_refresh_best_price:
+                this.onRefreshBestPriceOptionSelected(item);
+                return true;
         }
 
         if (this.mMenuItemShoppingListIdMap != null && this.mMenuItemShoppingListIdMap.containsKey(item)) {
@@ -323,6 +326,13 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
             Intent intent = new Intent(this.getContext(), AddShoppingListActivity.class);
             intent.putExtra(AddShoppingListActivity.EXTRA_ACCOUNT_ID, this.mCurrentAccount.getActiveShoppingListId());
             this.startActivityForResult(intent, REQUEST_ADD_SHOPPING_LIST);
+        }
+    }
+
+    private void onRefreshBestPriceOptionSelected(MenuItem item) {
+        if (this.mCurrentAccountActiveShoppingList != null) {
+            this.mViewModel.refreshBestPriceRelations(
+                    this.mCurrentAccountActiveShoppingList.getShoppingListId());
         }
     }
 
@@ -348,8 +358,8 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
     @Override
     public void onFloatingActionButtonClick(FloatingActionButton button) {
         if (this.mCurrentAccount != null && this.mCurrentAccount.getActiveShoppingListId() != null) {
-            Intent intent = new Intent(this.getContext(), AddShoppingListProductActivity.class);
-            intent.putExtra(AddShoppingListProductActivity.EXTRA_SHOPPING_LIST_ID,
+            Intent intent = new Intent(this.getContext(), AddShoppingListProductRelationActivity.class);
+            intent.putExtra(AddShoppingListProductRelationActivity.EXTRA_SHOPPING_LIST_ID,
                     this.mCurrentAccountActiveShoppingList.getShoppingListId());
             this.startActivity(intent);
         }

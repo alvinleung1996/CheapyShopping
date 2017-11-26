@@ -81,6 +81,11 @@ public class PriceRepository {
     }
 
 
+    public List<Price> computeProductBestPriceNow(long productId, List<Long> storeIds, int quantity) {
+        return this.getPriceDao().computeProductBestPricesNow(productId, storeIds, quantity);
+    }
+
+
     /*
     ************************************************************************************************
     * Other

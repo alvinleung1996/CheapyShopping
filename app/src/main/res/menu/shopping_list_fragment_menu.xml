@@ -9,6 +9,12 @@
         app:showAsAction="always|collapseActionView"
         app:actionViewClass="android.support.v7.widget.SearchView"/>
 
+    <item
+        android:id="@+id/item_refresh_best_price"
+        android:title="Refresh Best Price"
+        android:icon="@drawable/ic_refresh_best_price_white_24dp"
+        app:showAsAction="always"/>
+
     <group android:id="@+id/group_normal_options">
         <item
             android:id="@+id/item_add_shopping_list"

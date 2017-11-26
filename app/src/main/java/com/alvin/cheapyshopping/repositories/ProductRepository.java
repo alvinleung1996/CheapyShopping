@@ -11,6 +11,7 @@ import com.alvin.cheapyshopping.db.entities.Product;
 
 import java.util.List;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 /**
  * Created by Alvin on 19/11/2017.
@@ -78,6 +79,20 @@ public class ProductRepository {
         return this.mProductsNotInShoppingListCache.get(shoppingListId);
     }
 
+
+    private Map<Long, LiveData<List<Product>>> mShoppingListProductsCache;
+    LiveData<List<Product>> findShoppingListProducts(long shoppingListId) {
+        if (this.mShoppingListProductsCache == null) {
+            this.mShoppingListProductsCache = new WeakHashMap<>();
+        }
+        if (!this.mShoppingListProductsCache.containsKey(shoppingListId)) {
+            this.mShoppingListProductsCache.put(shoppingListId, this.getProductDao()
+                    .findShoppingListProducts(shoppingListId));
+        }
+        return this.mShoppingListProductsCache.get(shoppingListId);
+    }
+
+
     private Map<Long, LiveData<Product>> mProductCache;
     public LiveData<Product> findProductByProductId(long productId) {
         if (this.mProductCache == null) {
@@ -100,9 +115,16 @@ public class ProductRepository {
         return this.getProductDao().getAllProductsNow();
     }
 
+
     public List<Product> findProductsNotInShoppingListNow(long shoppingListId) {
         return this.getProductDao().findProductsNotInShoppingListNow(shoppingListId);
     }
+
+
+    List<Product> findShoppingListProductsNow(long shoppingListId) {
+        return this.getProductDao().findShoppingListProductsNow(shoppingListId);
+    }
+
 
     public Product findProductByProductIdNow(long productId) {
         return this.getProductDao().findProductByProductIdNow(productId);

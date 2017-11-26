@@ -4,13 +4,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data class="AddShoppingListProductActivityBinding"/>
+    <data class="AddShoppingListProductRelationActivityBinding"/>
 
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/fragment_container"
-        tools:context="com.alvin.cheapyshopping.AddShoppingListProductActivity">
+        tools:context="com.alvin.cheapyshopping.AddShoppingListProductRelationActivity">
 
     </FrameLayout>
 

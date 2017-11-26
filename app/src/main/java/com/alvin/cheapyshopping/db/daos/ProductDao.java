@@ -28,10 +28,18 @@ public interface ProductDao {
     LiveData<List<Product>> getAllProducts();
 
 
-    @Query("SELECT DISTINCT P.* FROM Product P LEFT OUTER JOIN ShoppingListProductRelation R"
-            + " ON P.product_id = R.foreign_product_id"
-            + " WHERE R.foreign_shopping_list_id IS NULL OR R.foreign_shopping_list_id != :shoppingListId")
+    @Query("SELECT * FROM Product P WHERE ("
+                + "SELECT COUNT(*) FROM Product P0 INNER JOIN ShoppingListProductRelation R"
+                + " ON P0.product_id = R.foreign_product_id"
+                + " WHERE P.product_id = P0.product_id AND R.foreign_shopping_list_id = :shoppingListId"
+            + ") = 0")
     LiveData<List<Product>> findProductsNotInShoppingList(long shoppingListId);
+
+
+    @Query("SELECT P.* FROM Product P INNER JOIN ShoppingListProductRelation R"
+            + " ON P.product_id = R.foreign_product_id"
+            + " WHERE R.foreign_shopping_list_id = :shoppingListId")
+    LiveData<List<Product>> findShoppingListProducts(long shoppingListId);
 
 
     @Query("SELECT * FROM Product WHERE product_id = :productId")
@@ -48,10 +56,18 @@ public interface ProductDao {
     List<Product> getAllProductsNow();
 
 
-    @Query("SELECT DISTINCT P.* FROM Product P LEFT OUTER JOIN ShoppingListProductRelation R"
-            + " ON P.product_id = R.foreign_product_id"
-            + " WHERE R.foreign_shopping_list_id IS NULL OR R.foreign_shopping_list_id != :shoppingListId")
+    @Query("SELECT * FROM Product P WHERE ("
+                + "SELECT COUNT(*) FROM Product P0 INNER JOIN ShoppingListProductRelation R"
+                + " ON P0.product_id = R.foreign_product_id"
+                + " WHERE P.product_id = P0.product_id AND R.foreign_shopping_list_id = :shoppingListId"
+            + ") = 0")
     List<Product> findProductsNotInShoppingListNow(long shoppingListId);
+
+
+    @Query("SELECT P.* FROM Product P INNER JOIN ShoppingListProductRelation R"
+            + " ON P.product_id = R.foreign_product_id"
+            + " WHERE R.foreign_shopping_list_id = :shoppingListId")
+    List<Product> findShoppingListProductsNow(long shoppingListId);
 
 
     @Query("SELECT * FROM Product WHERE product_id = :productId")
