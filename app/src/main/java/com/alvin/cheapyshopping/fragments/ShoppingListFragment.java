@@ -24,6 +24,7 @@ import com.alvin.cheapyshopping.AddShoppingListProductRelationActivity;
 import com.alvin.cheapyshopping.MainActivity;
 import com.alvin.cheapyshopping.ProductActivity;
 import com.alvin.cheapyshopping.R;
+import com.alvin.cheapyshopping.SampleMapsActivity;
 import com.alvin.cheapyshopping.databinding.ShoppingListFragmentBinding;
 import com.alvin.cheapyshopping.databinding.ShoppingListProductItemBinding;
 import com.alvin.cheapyshopping.databinding.ShoppingListStoreItemBinding;
@@ -311,6 +312,9 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
             case R.id.item_refresh_best_price:
                 this.onRefreshBestPriceOptionSelected(item);
                 return true;
+            case R.id.item_sample_map_activity:
+                Intent intent = new Intent(this.getContext(), SampleMapsActivity.class);
+                this.startActivity(intent);
         }
 
         if (this.mMenuItemShoppingListIdMap != null && this.mMenuItemShoppingListIdMap.containsKey(item)) {

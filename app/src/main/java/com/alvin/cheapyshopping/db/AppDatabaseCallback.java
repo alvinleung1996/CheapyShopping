@@ -77,12 +77,17 @@ public class AppDatabaseCallback extends RoomDatabase.Callback {
                         .insertShoppingListProductRelation(listProducts.toArray(new ShoppingListProductRelation[listProducts.size()]));
 
                 List<Store> stores = new ArrayList<>();
-                for (int i = 0; i < 4; ++i) {
-                    Store store = new Store();
-                    store.setName("Store " + i);
-                    store.setLocation("Location " + i);
-                    stores.add(store);
-                }
+                stores.add(this.newStore("百佳", "Parknshop - Hill Road", "ChIJW6SHeIT_AzQR9bGVjdwkzuA", 22.2861835, 114.135282));
+                stores.add(this.newStore("西寶城", "石塘咀卑路乍街8號", "ChIJ07jUtoT_AzQRFzl3vPWyvto", 22.2861676, 114.135403));
+                stores.add(this.newStore("豐澤", "G/F, REAR PORTION, WAH MING CENTRE, 396 DES VOEUX ROAD WEST, Shek Tong Tsui", "ChIJsz0z94P_AzQR_Ek-nv0PCgQ", 22.2861362, 114.1367759));
+                stores.add(this.newStore("一田超市", "石塘咀干諾道西188號香港商業中心地下", "ChIJbUt0XoP_AzQRcVo_QMDYI4M", 22.2870644, 114.1361631));
+                stores.add(this.newStore("百佳hku", "Chong Yuet Ming Cultural Centre, Lung Fu Shan", "ChIJ47sSZIb_AzQRysVCSOvGlvQ", 22.2825287, 114.1388094));
+//                for (int i = 0; i < 4; ++i) {
+//                    Store store = new Store();
+//                    store.setName("Store " + i);
+//                    store.setLocation("ShoppingListLocationUpdater " + i);
+//                    stores.add(store);
+//                }
                 appDb.getStoreDao()
                         .insertStore(stores.toArray(new Store[stores.size()]));
                 stores = appDb.getStoreDao().getAllStoresNow();
@@ -111,6 +116,16 @@ public class AppDatabaseCallback extends RoomDatabase.Callback {
                         .insertPrice(prices.toArray(new Price[prices.size()]));
 
 
+            }
+
+            private Store newStore(String name, String location, String placeId, double longitude, double latitude) {
+                Store store = new Store();
+                store.setName(name);
+                store.setLocation(location);
+                store.setPlaceId(placeId);
+                store.setLongitude(longitude);
+                store.setLatitude(latitude);
+                return store;
             }
         }).start();
 

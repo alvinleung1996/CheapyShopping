@@ -80,37 +80,33 @@ public class StoreRepository {
     }
 
 
-    private LiveData<List<Store>> mNearbyStores;
-    public LiveData<List<Store>> findNearbyStores() {
-        if (this.mNearbyStores == null) {
-            this.mNearbyStores = new NearbyStoresComputer();
-        }
-        return this.mNearbyStores;
+    public LiveData<List<Store>> findStoresAroundGeoPoint(double longitude, double latitude, double distance) {
+        return this.getStoreDao().findStoresAroundGeoCoordinate();
     }
 
-    private class NearbyStoresComputer extends MediatorLiveData<List<Store>> {
-
-        private ExecutorService mExecutor;
-        private Future<?> mExecutingJob;
-
-        private void compute() {
-            if (this.mExecutingJob != null) {
-                this.mExecutingJob.cancel(true);
-                this.mExecutingJob = null;
-            }
-            if (this.mExecutor == null) {
-                this.mExecutor = Executors.newCachedThreadPool();
-            }
-            this.mExecutingJob = this.mExecutor.submit(new Runnable() {
-                @Override
-                public void run() {
-                    List<Store> stores = StoreRepository.this.findNearbyStoresNow();
-                    if (!Thread.interrupted()) NearbyStoresComputer.this.postValue(stores);
-                }
-            });
-        }
-
-    }
+//    private class NearbyStoresComputer extends MediatorLiveData<List<Store>> {
+//
+//        private ExecutorService mExecutor;
+//        private Future<?> mExecutingJob;
+//
+//        private void compute() {
+//            if (this.mExecutingJob != null) {
+//                this.mExecutingJob.cancel(true);
+//                this.mExecutingJob = null;
+//            }
+//            if (this.mExecutor == null) {
+//                this.mExecutor = Executors.newCachedThreadPool();
+//            }
+//            this.mExecutingJob = this.mExecutor.submit(new Runnable() {
+//                @Override
+//                public void run() {
+//                    List<Store> stores = StoreRepository.this.findNearbyStoresNow();
+//                    if (!Thread.interrupted()) NearbyStoresComputer.this.postValue(stores);
+//                }
+//            });
+//        }
+//
+//    }
 
 
     /*
