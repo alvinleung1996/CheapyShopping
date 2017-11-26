@@ -1,6 +1,7 @@
 package com.alvin.cheapyshopping.viewmodels;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Application;
 import android.arch.core.util.Function;
 import android.arch.lifecycle.AndroidViewModel;
@@ -284,8 +285,8 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
     ************************************************************************************************
      */
 
-    public void refreshBestPriceRelations(long shoppingListId) {
-        ShoppingListLocationUpdater.getsInstance(this.getApplication()).updateShoppingListCenterCoordinate(shoppingListId);
+    public void refreshBestPriceRelations(Activity activity, long shoppingListId) {
+        ShoppingListLocationUpdater.getsInstance(this.getApplication()).updateShoppingListCenterCoordinate(activity, shoppingListId);
         this.getBestPriceRelationRepository().refreshBestPriceRelation(shoppingListId);
     }
 

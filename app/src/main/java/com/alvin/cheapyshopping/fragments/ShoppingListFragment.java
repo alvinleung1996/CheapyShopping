@@ -337,6 +337,7 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
     private void onRefreshBestPriceOptionSelected(MenuItem item) {
         if (this.mCurrentAccountActiveShoppingList != null) {
             this.mViewModel.refreshBestPriceRelations(
+                    this.getActivity(),
                     this.mCurrentAccountActiveShoppingList.getShoppingListId());
         }
     }
