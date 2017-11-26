@@ -206,6 +206,7 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
         this.mViewModel = ViewModelProviders.of(this).get(ShoppingListFragmentViewModel.class);
 
         this.mBinding.listShoppingListItems.setLayoutManager(new LinearLayoutManager(this.getContext()));
+        this.mBinding.listShoppingListItems.setNestedScrollingEnabled(false);
 
         this.mShoppingListItemListAdapter = new ShoppingListAdapter();
         this.mBinding.listShoppingListItems.setAdapter(this.mShoppingListItemListAdapter);

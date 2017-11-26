@@ -1,6 +1,7 @@
 package com.alvin.cheapyshopping.fragments;
 
 
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,6 +15,7 @@ import android.view.ViewGroup;
 
 import com.alvin.cheapyshopping.R;
 import com.alvin.cheapyshopping.databinding.AccountFragmentBinding;
+import com.alvin.cheapyshopping.db.entities.Account;
 import com.alvin.cheapyshopping.viewmodels.AccountFragmentViewModel;
 
 /**
@@ -56,9 +58,18 @@ public class AccountFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-//        // Setup ViewModel
-//        this.mViewModel = ViewModelProviders.of(this).get(AccountFragmentViewModel.class);
-//
+        // Setup ViewModel
+        this.mViewModel = ViewModelProviders.of(this).get(AccountFragmentViewModel.class);
+
+
+        // Get current account
+        this.mViewModel.findCurrentAccount().observe(this, new Observer<Account>() {
+            @Override
+            public void onChanged(@Nullable Account account) {
+                mBinding.setAccount(account);
+            }
+        });
+
 
     }
 

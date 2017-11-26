@@ -94,7 +94,7 @@
                     android:tint="@color/grey"
                     android:src="@drawable/ic_phone_black_24dp"
                     app:layout_constraintStart_toStartOf="@+id/text_store_name"
-                    app:layout_constraintTop_toBottomOf="@+id/image_store_location" />
+                    app:layout_constraintTop_toBottomOf="@+id/text_store_location" />
 
                 <TextView
                     android:id="@+id/text_store_phone"
@@ -133,7 +133,7 @@
                     android:layout_height="wrap_content"
                     android:text="Description:"
                     android:padding="4dp"
-                    app:layout_constraintTop_toBottomOf="@id/image_store"
+                    app:layout_constraintTop_toBottomOf="@id/image_store_opening_hours"
                     app:layout_constraintStart_toStartOf="@id/image_store"/>
 
                 <TextView
@@ -146,19 +146,12 @@
                     app:layout_constraintTop_toBottomOf="@id/text_product_description_title"
                     app:layout_constraintStart_toStartOf="@id/text_product_description_title"/>
 
-                <FrameLayout
-                    android:layout_width="0dp"
+                <fragment
+                    android:id="@+id/map"
+                    android:name="com.google.android.gms.maps.SupportMapFragment"
+                    android:layout_width="match_parent"
                     android:layout_height="170dp"
-                    app:layout_constraintTop_toBottomOf="@id/text_product_description"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent">
-
-                    <!--<com.google.android.gms.maps.MapView-->
-                        <!--android:id="@+id/mapView"-->
-                        <!--android:layout_width="match_parent"-->
-                        <!--android:layout_height="match_parent" />-->
-
-                </FrameLayout>
+                    app:layout_constraintTop_toBottomOf="@id/text_product_description"/>
 
             </android.support.constraint.ConstraintLayout>
 

@@ -26,6 +26,12 @@ import com.alvin.cheapyshopping.db.entities.Product;
 import com.alvin.cheapyshopping.db.entities.Store;
 import com.alvin.cheapyshopping.db.entities.pseudo.ProductPrice;
 import com.alvin.cheapyshopping.viewmodels.StoreFragmentViewModel;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,7 +41,7 @@ import java.util.List;
  * Created by cheng on 11/26/2017.
  */
 
-public class StoreFragment extends Fragment {
+public class StoreFragment extends Fragment implements OnMapReadyCallback {
 
 
     /*
@@ -149,6 +155,9 @@ public class StoreFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         this.mBinding = StoreFragmentBinding.inflate(inflater, container, false);
+        // Setup Google Map for store location
+        SupportMapFragment mapFragment = (SupportMapFragment)getChildFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
 
         return mBinding.getRoot();
     }
@@ -186,8 +195,24 @@ public class StoreFragment extends Fragment {
         });
 
 
+
+
     }
 
+    /*
+    ************************************************************************************************
+    * Google Map
+    ************************************************************************************************
+     */
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        LatLng sydney = new LatLng(-33.852, 151.211);
+        googleMap.addMarker(new MarkerOptions().position(sydney)
+                .title("Marker in Sydney"));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+
+    }
 
     /*
     ************************************************************************************************

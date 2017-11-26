@@ -5,16 +5,15 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 
 import com.alvin.cheapyshopping.db.entities.Account;
-import com.alvin.cheapyshopping.db.entities.Product;
 import com.alvin.cheapyshopping.repositories.AccountRepository;
 
 /**
  * Created by cheng on 11/26/2017.
  */
 
-public class AccountFragmentViewModel extends AndroidViewModel {
+public class MainActivityViewModel extends AndroidViewModel {
 
-    public AccountFragmentViewModel(Application application){
+    public MainActivityViewModel(Application application){
         super(application);
     }
 
@@ -46,6 +45,5 @@ public class AccountFragmentViewModel extends AndroidViewModel {
         }
         return this.mCurrentAccount;
     }
-
 
 }
