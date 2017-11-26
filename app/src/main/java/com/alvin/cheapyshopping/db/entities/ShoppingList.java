@@ -26,6 +26,12 @@ public class ShoppingList {
     @ColumnInfo(name = "foreign_account_id")
     private long mForeignAccountId;
 
+    @ColumnInfo(name = "center_longitude")
+    private Double mCenterLongitude;
+
+    @ColumnInfo(name = "center_latitude")
+    private Double mCenterLatitude;
+
 
     public long getShoppingListId() {
         return this.mShoppingListId;
@@ -57,6 +63,22 @@ public class ShoppingList {
 
     public void setForeignAccountId(long foreignAccountId) {
         this.mForeignAccountId = foreignAccountId;
+    }
+
+    public Double getCenterLongitude() {
+        return this.mCenterLongitude;
+    }
+
+    public void setCenterLongitude(Double centerLongitude) {
+        this.mCenterLongitude = centerLongitude;
+    }
+
+    public Double getCenterLatitude() {
+        return this.mCenterLatitude;
+    }
+
+    public void setCenterLatitude(Double centerLatitude) {
+        this.mCenterLatitude = centerLatitude;
     }
 
 }
