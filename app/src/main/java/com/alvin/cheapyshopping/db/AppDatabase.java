@@ -10,6 +10,7 @@ import com.alvin.cheapyshopping.db.daos.AccountDao;
 import com.alvin.cheapyshopping.db.daos.BestPriceRelationDao;
 import com.alvin.cheapyshopping.db.daos.PriceDao;
 import com.alvin.cheapyshopping.db.daos.ProductDao;
+import com.alvin.cheapyshopping.db.daos.ProductPriceDao;
 import com.alvin.cheapyshopping.db.daos.ShoppingListDao;
 import com.alvin.cheapyshopping.db.daos.ShoppingListProductDao;
 import com.alvin.cheapyshopping.db.daos.ShoppingListProductRelationDao;
@@ -83,5 +84,7 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract ShoppingListProductDao getShoppingListProductDao();
 
     public abstract StorePriceDao getStorePriceDao();
+
+    public abstract ProductPriceDao getProductPriceDao();
 
 }

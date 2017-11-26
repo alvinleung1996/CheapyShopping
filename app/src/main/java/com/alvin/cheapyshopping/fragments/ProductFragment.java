@@ -5,13 +5,13 @@ import android.app.AlertDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -22,10 +22,12 @@ import android.widget.Toast;
 
 
 import com.alvin.cheapyshopping.R;
+import com.alvin.cheapyshopping.StoreActivity;
 import com.alvin.cheapyshopping.databinding.ProductFragmentBinding;
 import com.alvin.cheapyshopping.databinding.ProductStorePriceItemBinding;
 import com.alvin.cheapyshopping.db.entities.Product;
 import com.alvin.cheapyshopping.db.entities.ShoppingList;
+import com.alvin.cheapyshopping.db.entities.Store;
 import com.alvin.cheapyshopping.db.entities.pseudo.StorePrice;
 import com.alvin.cheapyshopping.viewmodels.ProductFragmentViewModel;
 
@@ -70,10 +72,18 @@ public class ProductFragment extends Fragment {
             ProductStorePriceListItemViewHolder viewHolder = new ProductStorePriceListItemViewHolder(view);
             return viewHolder;
         }
-        //
+
+
         @Override
-        public void onBindViewHolder(ProductStorePriceListItemViewHolder holder, int position) {
+        public void onBindViewHolder(ProductStorePriceListItemViewHolder holder, final int position) {
             holder.mBinding.setStorePrice(mStorePrices.get(position));
+
+            holder.mBinding.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View view) {
+                    ProductFragment.this.onStoreClick(view, mStorePrices.get(position).getStore());
+                }
+            });
 
             // Set price update date & time
             SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy     HH:mm:ss");
@@ -203,7 +213,7 @@ public class ProductFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.toolbar_menu_product, menu);
+        inflater.inflate(R.menu.product_fragment_menu, menu);
     }
 
 
@@ -211,12 +221,13 @@ public class ProductFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.item_save:
-                Log.d("Debug", "test");
                 selectShoppingListDialog();
                 return true;
             case R.id.item_edit:
+                // TODO: Edit product information
                 return true;
             case R.id.item_add_price:
+                // TODO: Add new price
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -306,9 +317,28 @@ public class ProductFragment extends Fragment {
     }
 
     private void saveProductToShopplingLists(List<ShoppingList> shoppingLists){
+
+        // TODO: add product to shopping list
+        // check if the product is already in the shopping list
+
+
+
         Toast.makeText(ProductFragment.this.getContext() ,
-                "Faked: Added to  " + shoppingLists.size() + " shopping list(s)",
+                "Added to  " + shoppingLists.size() + " shopping list(s)",
                 Toast.LENGTH_LONG).show();
+    }
+
+
+    /*
+    ************************************************************************************************
+    * On Click
+    ************************************************************************************************
+     */
+
+    private void onStoreClick(View view, Store store) {
+        Intent intent = new Intent(this.getContext(), StoreActivity.class);
+        intent.putExtra(StoreActivity.EXTRA_STORE_ID, store.getStoreId());
+        this.startActivity(intent);
     }
 
 

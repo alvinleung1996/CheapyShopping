@@ -4,10 +4,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data class="ProductStorePriceItemBinding">
+    <data class="StoreProductPriceItemBinding">
         <variable
-            name="storePrice"
-            type="com.alvin.cheapyshopping.db.entities.pseudo.StorePrice"/>
+            name="productPrice"
+            type="com.alvin.cheapyshopping.db.entities.pseudo.ProductPrice"/>
         <variable
             name="date"
             type="String"/>
@@ -32,68 +32,39 @@
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:onClick="@{onClickListener::onClick}">
 
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/layout_store_info"
-                android:paddingBottom="5dp"
-                android:onClick="@{onClickListener::onClick}">
+                android:paddingBottom="5dp">
                 <ImageView
-                    android:id="@+id/image_store_photo"
+                    android:id="@+id/image_product_photo"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="16dp"
                     android:contentDescription="Product photo"
-                    android:src="@drawable/ic_store_black_24dp"
+                    android:src="@drawable/ic_product_black_24dp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"/>
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
 
                 <TextView
-                    android:id="@+id/text_store_name"
+                    android:id="@+id/text_product_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
                     android:layout_marginStart="16dp"
-                    android:text="@{storePrice.store.name}"
+                    android:text="@{productPrice.product.name}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                    app:layout_constraintStart_toEndOf="@+id/image_store_photo"
-                    app:layout_constraintTop_toTopOf="@id/image_store_photo" />
+                    app:layout_constraintStart_toEndOf="@+id/image_product_photo"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
 
-                <ImageView
-                    android:id="@+id/image_store_verification"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_marginStart="10dp"
-                    android:layout_marginTop="2dp"
-                    android:padding="2dp"
-                    android:src="@drawable/ic_check_circle_black_24dp"
-                    android:tint="@color/lightBlue"
-                    app:layout_constraintStart_toEndOf="@id/text_store_name"
-                    app:layout_constraintTop_toTopOf="@id/image_store_photo"/>
 
-                <ImageView
-                    android:id="@+id/image_store_location"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:padding="2dp"
-                    android:layout_marginStart="12dp"
-                    android:tint="@color/grey"
-                    android:src="@drawable/ic_location_on_black_24dp"
-                    app:layout_constraintStart_toEndOf="@+id/image_store_photo"
-                    app:layout_constraintTop_toBottomOf="@+id/text_store_name" />
-
-                <TextView
-                    android:id="@+id/text_store_location"
-                    android:layout_width="0dp"
-                    android:layout_height="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:text="@{storePrice.store.location}"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/image_store_location"
-                    app:layout_constraintTop_toBottomOf="@id/text_store_name"/>
             </android.support.constraint.ConstraintLayout>
 
             <View
@@ -112,7 +83,7 @@
                 app:layout_constraintTop_toBottomOf="@id/layout_store_info">
 
                 <TextView
-                    android:id="@+id/text_price_title"
+                    android:id="@+id/text_price_prefix"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -126,21 +97,11 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
-                    android:text="@{Double.toString(storePrice.total)}"
-                    app:layout_constraintBaseline_toBaselineOf="@+id/text_price_title"
+                    android:text="@{Double.toString(productPrice.total)}"
+                    app:layout_constraintBaseline_toBaselineOf="@+id/text_price_prefix"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/text_price_title" />
+                    app:layout_constraintStart_toEndOf="@+id/text_price_prefix" />
 
-                <TextView
-                    android:id="@+id/text_price_id"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginTop="8dp"
-                    android:text="@{`Price ID: ` + storePrice.priceId}"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintBaseline_toBaselineOf="@+id/text_price_title" />
 
                 <ImageView
                     android:id="@+id/image_price_update"
@@ -150,7 +111,7 @@
                     android:padding="3dp"
                     android:layout_marginStart="2dp"
                     android:tint="@color/grey"
-                    app:layout_constraintTop_toBottomOf="@id/text_price_title"
+                    app:layout_constraintTop_toBottomOf="@id/text_price_prefix"
                     app:layout_constraintStart_toStartOf="parent"/>
 
                 <TextView
