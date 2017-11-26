@@ -12,7 +12,6 @@ import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -73,7 +72,8 @@ public class ProductFragment extends Fragment {
             ProductStorePriceListItemViewHolder viewHolder = new ProductStorePriceListItemViewHolder(view);
             return viewHolder;
         }
-        //
+
+
         @Override
         public void onBindViewHolder(ProductStorePriceListItemViewHolder holder, final int position) {
             holder.mBinding.setStorePrice(mStorePrices.get(position));
@@ -213,7 +213,7 @@ public class ProductFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.toolbar_menu_product, menu);
+        inflater.inflate(R.menu.product_fragment_menu, menu);
     }
 
 
@@ -224,8 +224,10 @@ public class ProductFragment extends Fragment {
                 selectShoppingListDialog();
                 return true;
             case R.id.item_edit:
+                // TODO: Edit product information
                 return true;
             case R.id.item_add_price:
+                // TODO: Add new price
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -316,6 +318,7 @@ public class ProductFragment extends Fragment {
 
     private void saveProductToShopplingLists(List<ShoppingList> shoppingLists){
 
+        // TODO: add product to shopping list
         // check if the product is already in the shopping list
 
 

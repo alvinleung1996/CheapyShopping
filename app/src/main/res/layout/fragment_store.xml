@@ -4,7 +4,11 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         tools:context="com.alvin.cheapyshopping.fragments.ProductFragment">
 
-    <data class="StoreFragmentBinding"/>
+    <data class="StoreFragmentBinding">
+        <variable
+            name="store"
+            type="com.alvin.cheapyshopping.db.entities.Store"/>
+    </data>
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
@@ -41,7 +45,7 @@
                     android:id="@+id/text_store_name"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Store Name"
+                    android:text="@{store.name}"
                     android:textColor="@color/black"
                     android:textSize="20sp"
                     android:textStyle="bold"
@@ -77,7 +81,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="16dp"
-                    android:text="Store address"
+                    android:text="@{store.location}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/image_store_location"
                     app:layout_constraintTop_toTopOf="@id/image_store_location"/>

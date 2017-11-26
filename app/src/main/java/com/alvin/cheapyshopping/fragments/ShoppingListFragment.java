@@ -24,6 +24,7 @@ import com.alvin.cheapyshopping.AddShoppingListProductRelationActivity;
 import com.alvin.cheapyshopping.MainActivity;
 import com.alvin.cheapyshopping.ProductActivity;
 import com.alvin.cheapyshopping.R;
+import com.alvin.cheapyshopping.StoreActivity;
 import com.alvin.cheapyshopping.databinding.ShoppingListFragmentBinding;
 import com.alvin.cheapyshopping.databinding.ShoppingListProductItemBinding;
 import com.alvin.cheapyshopping.databinding.ShoppingListStoreItemBinding;
@@ -368,7 +369,9 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
 
 
     private void onStoreItemClick(View view, Store model) {
-
+        Intent intent = new Intent(this.getContext(), StoreActivity.class);
+        intent.putExtra(StoreActivity.EXTRA_STORE_ID, model.getStoreId());
+        this.startActivity(intent);
     }
 
     private void onProductItemClick(View view, Product model) {
