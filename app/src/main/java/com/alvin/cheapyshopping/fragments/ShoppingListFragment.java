@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -33,8 +34,15 @@ import com.alvin.cheapyshopping.db.entities.Account;
 import com.alvin.cheapyshopping.db.entities.Product;
 import com.alvin.cheapyshopping.db.entities.ShoppingList;
 import com.alvin.cheapyshopping.db.entities.Store;
+import com.alvin.cheapyshopping.db.entities.pseudo.ShoppingListProduct;
 import com.alvin.cheapyshopping.viewmodels.ShoppingListFragmentViewModel;
 import com.alvin.cheapyshopping.viewmodels.ShoppingListFragmentViewModel.ShoppingListItem;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -181,9 +189,12 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
     private ShoppingListFragmentBinding mBinding;
     private ShoppingListAdapter mShoppingListItemListAdapter;
 
+    private GoogleMap mMap;
+
     private Account mCurrentAccount;
     private List<ShoppingList> mCurrentAccountShoppingLists;
     private ShoppingList mCurrentAccountActiveShoppingList;
+    private Map<Store, List<ShoppingListProduct>> mCurrentAccountGroupedActiveShoppingListProducts;
 
 
     @Override
@@ -205,13 +216,16 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
 
         this.mViewModel = ViewModelProviders.of(this).get(ShoppingListFragmentViewModel.class);
 
+        ((SupportMapFragment) this.getChildFragmentManager().findFragmentById(R.id.fragment_map))
+                .getMapAsync(new MapReadyCallback());
+
         this.mBinding.listShoppingListItems.setLayoutManager(new LinearLayoutManager(this.getContext()));
         this.mBinding.listShoppingListItems.setNestedScrollingEnabled(false);
 
         this.mShoppingListItemListAdapter = new ShoppingListAdapter();
         this.mBinding.listShoppingListItems.setAdapter(this.mShoppingListItemListAdapter);
 
-
+        // Current Account
         this.mViewModel.findCurrentAccount().observe(this, new Observer<Account>() {
             @Override
             public void onChanged(@Nullable Account account) {
@@ -219,6 +233,7 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
             }
         });
 
+        // Current Account All Shopping Lists
         this.mViewModel.findCurrentAccountShoppingLists().observe(this, new Observer<List<ShoppingList>>() {
             @Override
             public void onChanged(@Nullable List<ShoppingList> shoppingLists) {
@@ -229,6 +244,7 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
             }
         });
 
+        // Current Account Active Shopping List
         this.mViewModel.findCurrentAccountActiveShoppingList().observe(this, new Observer<ShoppingList>() {
             @Override
             public void onChanged(@Nullable ShoppingList shoppingList) {
@@ -249,9 +265,21 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
                                 .setChecked(true);
                     }
                 }
+
+                ShoppingListFragment.this.updateMapMarkers();
             }
         });
 
+        // Current Account Grouped Active Shopping List Products
+        this.mViewModel.findCurrentAccountGroupedActiveShoppingListProducts().observe(this, new Observer<Map<Store, List<ShoppingListProduct>>>() {
+            @Override
+            public void onChanged(@Nullable Map<Store, List<ShoppingListProduct>> storeListMap) {
+                ShoppingListFragment.this.mCurrentAccountGroupedActiveShoppingListProducts = storeListMap;
+                ShoppingListFragment.this.updateMapMarkers();
+            }
+        });
+
+        // Shopping List Items
         this.mViewModel.findCurrentAccountShoppingListItems().observe(this, new Observer<List<ShoppingListItem>>() {
             @Override
             public void onChanged(@Nullable List<ShoppingListItem> items) {
@@ -349,6 +377,45 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
         if (this.mCurrentAccount.getActiveShoppingListId() != shoppingListId) {
             item.setChecked(true);
             this.mViewModel.setShoppingListId(shoppingListId);
+        }
+    }
+
+
+    /*
+    ************************************************************************************************
+    * Map
+    ************************************************************************************************
+     */
+
+    private class MapReadyCallback implements OnMapReadyCallback {
+
+        @Override
+        public void onMapReady(GoogleMap googleMap) {
+            ShoppingListFragment.this.mMap = googleMap;
+        }
+
+    }
+
+    private void updateMapMarkers() {
+        if (this.mMap == null) {
+            return;
+        }
+        this.mMap.clear();
+        if (this.mCurrentAccountGroupedActiveShoppingListProducts != null) {
+            for (Store store : this.mCurrentAccountGroupedActiveShoppingListProducts.keySet()) {
+                if (store != null) {
+                    LatLng coordinate = new LatLng(store.getLatitude(), store.getLongitude());
+                    this.mMap.addMarker(new MarkerOptions().position(coordinate).title(store.getName()));
+                }
+            }
+
+        }
+        if (this.mCurrentAccountActiveShoppingList != null) {
+            Double longitude = this.mCurrentAccountActiveShoppingList.getCenterLongitude();
+            Double latitude = this.mCurrentAccountActiveShoppingList.getCenterLatitude();
+            if (longitude != null && latitude != null) {
+                this.mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latitude, longitude), 16));
+            }
         }
     }
 

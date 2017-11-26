@@ -155,7 +155,7 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
      */
 
     private LiveData<Map<Store, List<ShoppingListProduct>>> mCurrentAccountGroupedActiveShoppingListProductsCache;
-    private LiveData<Map<Store, List<ShoppingListProduct>>> findCurrentAccountGroupedActiveShoppingListProducts() {
+    public LiveData<Map<Store, List<ShoppingListProduct>>> findCurrentAccountGroupedActiveShoppingListProducts() {
         if (this.mCurrentAccountGroupedActiveShoppingListProductsCache == null) {
             this.mCurrentAccountGroupedActiveShoppingListProductsCache = Transformations.switchMap(
                 this.findCurrentAccountActiveShoppingList(),
@@ -170,6 +170,7 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
         }
         return this.mCurrentAccountGroupedActiveShoppingListProductsCache;
     }
+
 
     public class ShoppingListItem {
 
