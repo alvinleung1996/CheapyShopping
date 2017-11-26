@@ -2,24 +2,23 @@ package com.alvin.cheapyshopping.fragments;
 
 
 import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.app.AlertDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.arch.persistence.room.Room;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
-import android.graphics.Point;
-import android.graphics.Rect;
-import android.media.Image;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.media.ExifInterface;
+import android.net.Uri;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.content.FileProvider;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -29,28 +28,30 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
-import android.view.animation.DecelerateInterpolator;
-import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 
+import com.alvin.cheapyshopping.utils.ImageUpdater;
 import com.alvin.cheapyshopping.ProductActivity;
 import com.alvin.cheapyshopping.R;
 import com.alvin.cheapyshopping.StoreActivity;
 import com.alvin.cheapyshopping.databinding.ProductFragmentBinding;
 import com.alvin.cheapyshopping.databinding.ProductStorePriceItemBinding;
-import com.alvin.cheapyshopping.db.AppDatabase;
 import com.alvin.cheapyshopping.db.entities.Product;
 import com.alvin.cheapyshopping.db.entities.ShoppingList;
 import com.alvin.cheapyshopping.db.entities.Store;
 import com.alvin.cheapyshopping.db.entities.pseudo.StorePrice;
+import com.alvin.cheapyshopping.utils.ImageExpander;
 import com.alvin.cheapyshopping.viewmodels.ProductFragmentViewModel;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import static android.support.v4.content.FileProvider.getUriForFile;
 
 /**
  * Created by cheng on 11/21/2017.
@@ -59,6 +60,8 @@ import java.util.List;
 public class ProductFragment extends Fragment {
 
     private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final String IMAGE_FILE_TYPE = "Product";
+    private static final String IMAGE_FOLDER = "Product";
 
 
     private class ProductStorePriceListAdapter extends RecyclerView.Adapter<ProductStorePriceListAdapter.ProductStorePriceListItemViewHolder> {
@@ -223,12 +226,18 @@ public class ProductFragment extends Fragment {
             }
         });
 
+        // Setup product image
+        setProductImage();
+
 
         // Product Image Click to zoom
         this.mBinding.imageProduct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                zoomImage(mBinding.imageProduct, mBinding.imageProductZoomed ,R.drawable.ic_product_black_24dp, 300);
+                ImageExpander.getsInstance(getContext(), mCurrentAnimator, mBinding.container,
+                        mBinding.imageProduct, mBinding.imageProductZoomed,
+                        R.drawable.ic_product_black_24dp, 300)
+                        .expandImage();
             }
         });
 
@@ -237,19 +246,14 @@ public class ProductFragment extends Fragment {
         this.mBinding.imageEdit.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                // Check if the device has camera first
-                if (ProductFragment.this.getContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
-                    Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    if (takePictureIntent.resolveActivity(ProductFragment.this.getContext().getPackageManager()) != null) {
-                        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-                    }
-                }
-
-
+                updateImage();
+                setProductImage();
             }
         } );
 
     }
+
+
 
 
     /*
@@ -376,149 +380,88 @@ public class ProductFragment extends Fragment {
                 Toast.LENGTH_LONG).show();
     }
 
-
     /*
     ************************************************************************************************
-    * Zoom the product image
+    *  Update product image
     ************************************************************************************************
      */
 
-    private void zoomImage(final View thumbView, final ImageView expendedImageView, int imageResID, final int mShortAnimationDuration){
-        // If there's an animation in progress, cancel it
-        // immediately and proceed with this one.
-        if (mCurrentAnimator != null) {
-            mCurrentAnimator.cancel();
-        }
+    private void updateImage(){
+        final int DIALOG_INDEX_GALLERY = 0;
+        final int DIALOG_INDEX_CAMERA = 1;
 
-        // Load the high-resolution "zoomed-in" image.
-        expendedImageView.setImageResource(imageResID);
+        String[] items = new String[] {"Gallery","Camera"};
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ProductFragment.this.getContext());
+        alertDialogBuilder.setTitle("Please select an image");
 
-        // Calculate the starting and ending bounds for the zoomed-in image.
-        // This step involves lots of math. Yay, math.
-        final Rect startBounds = new Rect();
-        final Rect finalBounds = new Rect();
-        final Point globalOffset = new Point();
-
-        // The start bounds are the global visible rectangle of the thumbnail,
-        // and the final bounds are the global visible rectangle of the container
-        // view. Also set the container view's offset as the origin for the
-        // bounds, since that's the origin for the positioning animation
-        // properties (X, Y).
-        thumbView.getGlobalVisibleRect(startBounds);
-        mBinding.container.getGlobalVisibleRect(finalBounds, globalOffset);
-        startBounds.offset(-globalOffset.x, -globalOffset.y);
-        finalBounds.offset(-globalOffset.x, -globalOffset.y);
-
-
-        // Adjust the start bounds to be the same aspect ratio as the final
-        // bounds using the "center crop" technique. This prevents undesirable
-        // stretching during the animation. Also calculate the start scaling
-        // factor (the end scaling factor is always 1.0).
-        float startScale;
-        if ((float) finalBounds.width() / finalBounds.height()
-                > (float) startBounds.width() / startBounds.height()) {
-            // Extend start bounds horizontally
-            startScale = (float) startBounds.height() / finalBounds.height();
-            float startWidth = startScale * finalBounds.width();
-            float deltaWidth = (startWidth - startBounds.width()) / 2;
-            startBounds.left -= deltaWidth;
-            startBounds.right += deltaWidth;
-        } else {
-            // Extend start bounds vertically
-            startScale = (float) startBounds.width() / finalBounds.width();
-            float startHeight = startScale * finalBounds.height();
-            float deltaHeight = (startHeight - startBounds.height()) / 2;
-            startBounds.top -= deltaHeight;
-            startBounds.bottom += deltaHeight;
-        }
-
-
-        // Hide the thumbnail and show the zoomed-in view. When the animation
-        // begins, it will position the zoomed-in view in the place of the
-        // thumbnail.
-        thumbView.setAlpha(0f);
-        expendedImageView.setVisibility(View.VISIBLE);
-
-        // Set the pivot point for SCALE_X and SCALE_Y transformations
-        // to the top-left corner of the zoomed-in view (the default
-        // is the center of the view).
-        expendedImageView.setPivotX(0f);
-        expendedImageView.setPivotY(0f);
-
-        // Construct and run the parallel animation of the four translation and
-        // scale properties (X, Y, SCALE_X, and SCALE_Y).
-        AnimatorSet set = new AnimatorSet();
-        set
-                .play(ObjectAnimator.ofFloat(expendedImageView, View.X,
-                        startBounds.left, finalBounds.left))
-                .with(ObjectAnimator.ofFloat(expendedImageView, View.Y,
-                        startBounds.top, finalBounds.top))
-                .with(ObjectAnimator.ofFloat(expendedImageView, View.SCALE_X,
-                        startScale, 1f)).with(ObjectAnimator.ofFloat(expendedImageView,
-                View.SCALE_Y, startScale, 1f));
-        set.setDuration(mShortAnimationDuration);
-        set.setInterpolator(new DecelerateInterpolator());
-        set.addListener(new AnimatorListenerAdapter() {
+        alertDialogBuilder.setItems(items, new DialogInterface.OnClickListener(){
             @Override
-            public void onAnimationEnd(Animator animation) {
-                mCurrentAnimator = null;
-            }
+            public void onClick(DialogInterface dialogInterface, int which) {
+                // Choose new product image from gallery
+                if (which == DIALOG_INDEX_GALLERY){
+                    ImageUpdater.getsInstance(ProductFragment.this.getContext(), IMAGE_FILE_TYPE, mCurrentProductID)
+                            .updateImageFromGallery();
 
-            @Override
-            public void onAnimationCancel(Animator animation) {
-                mCurrentAnimator = null;
-            }
-        });
-        set.start();
-        mCurrentAnimator = set;
+                }
+                // Choose new product image using camera
+                else if (which == DIALOG_INDEX_CAMERA){
+                    ImageUpdater imageUpdater = new ImageUpdater(getActivity() ,ProductFragment.this.getContext(),
+                            IMAGE_FILE_TYPE, mCurrentProductID, IMAGE_FOLDER, REQUEST_IMAGE_CAPTURE);
+                    imageUpdater.updateImageFromCamera();
 
-        // Upon clicking the zoomed-in image, it should zoom back down
-        // to the original bounds and show the thumbnail instead of
-        // the expanded image.
-        final float startScaleFinal = startScale;
-        expendedImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (mCurrentAnimator != null) {
-                    mCurrentAnimator.cancel();
+                    Log.d("Debug", "current product id: " + mCurrentProductID);
                 }
 
-                // Animate the four positioning/sizing properties in parallel,
-                // back to their original values.
-                AnimatorSet set = new AnimatorSet();
-                set.play(ObjectAnimator
-                        .ofFloat(expendedImageView, View.X, startBounds.left))
-                        .with(ObjectAnimator
-                                .ofFloat(expendedImageView,
-                                        View.Y,startBounds.top))
-                        .with(ObjectAnimator
-                                .ofFloat(expendedImageView,
-                                        View.SCALE_X, startScaleFinal))
-                        .with(ObjectAnimator
-                                .ofFloat(expendedImageView,
-                                        View.SCALE_Y, startScaleFinal));
-                set.setDuration(mShortAnimationDuration);
-                set.setInterpolator(new DecelerateInterpolator());
-                set.addListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        thumbView.setAlpha(1f);
-                        expendedImageView.setVisibility(View.GONE);
-                        mCurrentAnimator = null;
-                    }
-
-                    @Override
-                    public void onAnimationCancel(Animator animation) {
-                        thumbView.setAlpha(1f);
-                        expendedImageView.setVisibility(View.GONE);
-                        mCurrentAnimator = null;
-                    }
-                });
-                set.start();
-                mCurrentAnimator = set;
             }
         });
 
+        alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+
+        alertDialogBuilder.show();
+    }
+
+
+    private void setProductImage(){
+        String imageFileName = IMAGE_FILE_TYPE + "_" + mCurrentProductID;
+        File storageDir = ProductFragment.this.getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = new File(storageDir, imageFileName + ".jpg");
+        if (image.exists()){
+            Uri photoURI = getUriForFile(ProductFragment.this.getContext(),
+                    "com.alvin.fileprovider",
+                    image);
+
+
+            // Rotate the image
+            Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath());
+            try {
+                ExifInterface exif = new ExifInterface(image.getAbsolutePath());
+                int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1);
+                Log.d("EXIF", "Exif: " + orientation);
+                Matrix matrix = new Matrix();
+                if (orientation == 6) {
+                    matrix.postRotate(90);
+                }
+                else if (orientation == 3) {
+                    matrix.postRotate(180);
+                }
+                else if (orientation == 8) {
+                    matrix.postRotate(270);
+                }
+                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true); // rotating bitmap
+            }
+            catch (Exception e) {
+
+            }
+            mBinding.imageProduct.setImageBitmap(bitmap);
+//            mBinding.imageProduct.setImageURI(null);
+//            mBinding.imageProduct.setImageURI(photoURI);
+            mBinding.imageProduct.invalidate();
+        }
     }
 
     /*

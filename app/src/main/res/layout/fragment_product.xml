@@ -137,12 +137,12 @@
 
         </LinearLayout>
 
-<!-- This initially-hidden ImageView will hold the expanded/zoomed version of
-the images above. Without transformations applied, it takes up the entire
-screen. To achieve the "zoom" animation, this view's bounds are animated
-from the bounds of the thumbnail button above, to its final laid-out
-bounds.
--->
+            <!-- This initially-hidden ImageView will hold the expanded/zoomed version of
+            the images above. Without transformations applied, it takes up the entire
+            screen. To achieve the "zoom" animation, this view's bounds are animated
+            from the bounds of the thumbnail button above, to its final laid-out
+            bounds.
+            -->
 
             <ImageView
                 android:id="@+id/image_product_zoomed"

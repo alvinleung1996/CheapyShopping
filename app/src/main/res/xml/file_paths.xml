@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+    <external-path name="external_my_images" path="Android/data/com.alvin.cheapyshopping/files/Pictures/" />
+    <files-path name="my_images" path="images/"/>
+    <files-path name="my_docs" path="docs/"/>
+</paths>
