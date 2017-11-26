@@ -40,6 +40,7 @@ public class AppDatabaseCallback extends RoomDatabase.Callback {
                 AppDatabase appDb = AppDatabase.getInstance(mContext);
 
                 Account account = new Account();
+                account.setAccountName("Account 0");
                 appDb.getAccountDao().insertAccount(account);
                 account = appDb.getAccountDao().getAllAccountsNow().get(0);
 

@@ -35,17 +35,20 @@
             android:layout_height="wrap_content">
 
             <android.support.constraint.ConstraintLayout
+                android:id="@+id/layout_store_info"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/layout_store_info"
+                android:onClick="@{onClickListener::onClick}"
                 android:paddingBottom="5dp"
-                android:onClick="@{onClickListener::onClick}">
+                tools:layout_editor_absoluteX="0dp"
+                tools:layout_editor_absoluteY="0dp">
+
                 <ImageView
                     android:id="@+id/image_store_photo"
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:layout_marginTop="10dp"
                     android:layout_marginStart="16dp"
+                    android:layout_marginTop="10dp"
                     android:contentDescription="Product photo"
                     android:src="@drawable/ic_store_black_24dp"
                     app:layout_constraintStart_toStartOf="parent"
@@ -60,7 +63,7 @@
                     android:text="@{storePrice.store.name}"
                     android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                     app:layout_constraintStart_toEndOf="@+id/image_store_photo"
-                    app:layout_constraintTop_toTopOf="@id/image_store_photo" />
+                    app:layout_constraintTop_toTopOf="@id/image_store_photo"/>
 
                 <ImageView
                     android:id="@+id/image_store_verification"
@@ -78,12 +81,12 @@
                     android:id="@+id/image_store_location"
                     android:layout_width="20dp"
                     android:layout_height="20dp"
-                    android:padding="2dp"
                     android:layout_marginStart="12dp"
-                    android:tint="@color/grey"
+                    android:padding="2dp"
                     android:src="@drawable/ic_location_on_black_24dp"
+                    android:tint="@color/grey"
                     app:layout_constraintStart_toEndOf="@+id/image_store_photo"
-                    app:layout_constraintTop_toBottomOf="@+id/text_store_name" />
+                    app:layout_constraintTop_toBottomOf="@+id/text_store_name"/>
 
                 <TextView
                     android:id="@+id/text_store_location"

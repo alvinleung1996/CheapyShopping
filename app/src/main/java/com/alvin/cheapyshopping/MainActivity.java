@@ -1,9 +1,11 @@
 package com.alvin.cheapyshopping;
 
+import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
+import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -20,12 +22,16 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import com.alvin.cheapyshopping.databinding.DrawerHeaderBinding;
 import com.alvin.cheapyshopping.databinding.MainActivityBinding;
+import com.alvin.cheapyshopping.db.entities.Account;
 import com.alvin.cheapyshopping.fragments.AccountFragment;
 import com.alvin.cheapyshopping.fragments.ProductListFragment;
 import com.alvin.cheapyshopping.fragments.ShoppingListFragment;
 import com.alvin.cheapyshopping.fragments.StoreListFragment;
 import com.alvin.cheapyshopping.db.entities.Store;
+import com.alvin.cheapyshopping.viewmodels.AccountFragmentViewModel;
+import com.alvin.cheapyshopping.viewmodels.MainActivityViewModel;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -50,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     private MainActivityBinding mBinding;
+    private DrawerHeaderBinding mDrawerHeaderBinding;
+    private MainActivityViewModel mViewModel;
 
     private ActionBarDrawerToggle mDrawerToggle;
 
@@ -58,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         this.mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        this.mDrawerHeaderBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.drawer_header, mBinding.drawer, false);
 
         this.getSupportFragmentManager().registerFragmentLifecycleCallbacks(new FragmentLifecycleCallbacks(), false);
 
@@ -79,8 +88,29 @@ public class MainActivity extends AppCompatActivity {
                 return MainActivity.this.onDrawerMenuItemSelected(item);
             }
         });
+        this.mBinding.drawer.addHeaderView(mDrawerHeaderBinding.getRoot());
+        this.mDrawerHeaderBinding.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                MainActivity.this.getSupportFragmentManager().popBackStack();
+                MainActivity.this.getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, AccountFragment.newInstance(), FRAGMENT_ACCOUNT)
+                        .addToBackStack(null)
+                        .commit();
+                MainActivity.this.mBinding.drawerLayout.closeDrawer(MainActivity.this.mBinding.drawer);
+            }
+        });
 
-        //Floating action buttons
+        // TODO: Setup drawer account information
+//        this.mViewModel.findCurrentAccount().observe(this, new Observer<Account>() {
+//            @Override
+//            public void onChanged(@Nullable Account account) {
+//                mDrawerHeaderBinding.setAccount(account);
+//            }
+//        });
+
+
+        // Floating action buttons
         this.mBinding.fabPlus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
