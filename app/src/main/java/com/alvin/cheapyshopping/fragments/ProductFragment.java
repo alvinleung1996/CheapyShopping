@@ -8,17 +8,21 @@ import android.animation.ObjectAnimator;
 import android.app.AlertDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.arch.persistence.room.Room;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.media.Image;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -32,10 +36,12 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 
+import com.alvin.cheapyshopping.ProductActivity;
 import com.alvin.cheapyshopping.R;
 import com.alvin.cheapyshopping.StoreActivity;
 import com.alvin.cheapyshopping.databinding.ProductFragmentBinding;
 import com.alvin.cheapyshopping.databinding.ProductStorePriceItemBinding;
+import com.alvin.cheapyshopping.db.AppDatabase;
 import com.alvin.cheapyshopping.db.entities.Product;
 import com.alvin.cheapyshopping.db.entities.ShoppingList;
 import com.alvin.cheapyshopping.db.entities.Store;
@@ -52,8 +58,7 @@ import java.util.List;
 
 public class ProductFragment extends Fragment {
 
-
-    public static final String EXTRA_PRODUCT_ID = "com.alvin.cheapyshopping.fragments.ProductFragment.EXTRA_PRODUCT_ID";
+    private static final int REQUEST_IMAGE_CAPTURE = 1;
 
 
     private class ProductStorePriceListAdapter extends RecyclerView.Adapter<ProductStorePriceListAdapter.ProductStorePriceListItemViewHolder> {
@@ -121,7 +126,7 @@ public class ProductFragment extends Fragment {
         ProductFragment fragment = new ProductFragment();
 
         Bundle args = new Bundle();
-        args.putLong(EXTRA_PRODUCT_ID, productID);
+        args.putLong(ProductActivity.EXTRA_PRODUCT_ID, productID);
         fragment.setArguments(args);
         return fragment;
     }
@@ -151,7 +156,7 @@ public class ProductFragment extends Fragment {
 
         // Get Product ID
         Bundle args = getArguments();
-        mCurrentProductID= args.getLong(EXTRA_PRODUCT_ID, 0);
+        mCurrentProductID= args.getLong(ProductActivity.EXTRA_PRODUCT_ID, 0);
 
     }
 
@@ -205,6 +210,11 @@ public class ProductFragment extends Fragment {
                 ProductFragment.this.mCurrentBestProductStorePrice = storePrice;
                 ProductFragment.this.mBinding.setBestPrice(storePrice);
 
+
+                Log.d("Debug Best price: ", "$" + storePrice.getTotal());
+                Log.d("Debug: ", "Best price Store - " + storePrice.getStore().getName());
+                Log.d("Debug: ", "Best price  - " + storePrice.getStore().getName());
+
                 // Set price update date & time
                 SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
                 String updateDate = formatter.format(storePrice.getCreationTime());
@@ -227,6 +237,14 @@ public class ProductFragment extends Fragment {
         this.mBinding.imageEdit.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
+                // Check if the device has camera first
+                if (ProductFragment.this.getContext().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)){
+                    Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                    if (takePictureIntent.resolveActivity(ProductFragment.this.getContext().getPackageManager()) != null) {
+                        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+                    }
+                }
+
 
             }
         } );
