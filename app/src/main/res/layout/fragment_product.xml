@@ -18,21 +18,15 @@
             type="String"/>
     </data>
 
-    <!--<data class="ProductFragmentBinding">-->
-        <!--<variable-->
-            <!--name="product"-->
-            <!--type="com.alvin.cheapyshopping.db.entities.Product"/>-->
-
-        <!--<variable-->
-            <!--name="bestPrice"-->
-            <!--type="com.alvin.cheapyshopping.db.entities.Price"/>-->
-    <!--</data>-->
-
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <FrameLayout
+            android:id="@+id/container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -53,9 +47,26 @@
                     android:background="@color/white"
                     android:elevation="2dp"
                     android:src="@drawable/ic_product_black_24dp"
+                    android:scaleType="fitCenter"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" />
+
+
+
+                <ImageView
+                    android:id="@+id/image_edit"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:background="@drawable/border_box_black_filled_white"
+                    android:padding="3dp"
+                    android:elevation="2dp"
+                    android:src="@drawable/ic_edit_black_24dp"
+                    android:tint="@color/black"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
 
 
 
@@ -125,6 +136,25 @@
             </android.support.v7.widget.RecyclerView>
 
         </LinearLayout>
+
+<!-- This initially-hidden ImageView will hold the expanded/zoomed version of
+the images above. Without transformations applied, it takes up the entire
+screen. To achieve the "zoom" animation, this view's bounds are animated
+from the bounds of the thumbnail button above, to its final laid-out
+bounds.
+-->
+
+            <ImageView
+                android:id="@+id/image_product_zoomed"
+                android:contentDescription="Product Image zoomed"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/white"
+                android:src="@drawable/ic_product_black_24dp"
+                android:visibility="invisible"
+                />
+        </FrameLayout>
+
 
     </android.support.v4.widget.NestedScrollView>
 
