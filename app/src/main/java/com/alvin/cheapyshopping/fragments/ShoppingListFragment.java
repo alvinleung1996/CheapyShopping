@@ -19,6 +19,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.alvin.cheapyshopping.AddShoppingListActivity;
 import com.alvin.cheapyshopping.AddShoppingListProductRelationActivity;
@@ -37,6 +38,11 @@ import com.alvin.cheapyshopping.db.entities.Store;
 import com.alvin.cheapyshopping.db.entities.pseudo.ShoppingListProduct;
 import com.alvin.cheapyshopping.viewmodels.ShoppingListFragmentViewModel;
 import com.alvin.cheapyshopping.viewmodels.ShoppingListFragmentViewModel.ShoppingListItem;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.GeoDataClient;
+import com.google.android.gms.location.places.PlaceDetectionClient;
+import com.google.android.gms.location.places.Places;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -191,6 +197,10 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
 
     private GoogleMap mMap;
 
+    private GeoDataClient mGeoDataClient;
+    private PlaceDetectionClient mPlaceDetectionClient;
+    private FusedLocationProviderClient mFusedLocationProviderClient;
+
     private Account mCurrentAccount;
     private List<ShoppingList> mCurrentAccountShoppingLists;
     private ShoppingList mCurrentAccountActiveShoppingList;
@@ -287,6 +297,11 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
                         .setShoppingListItems(items);
             }
         });
+
+
+        this.mGeoDataClient = Places.getGeoDataClient(this.getContext(),     null);
+        this.mPlaceDetectionClient = Places.getPlaceDetectionClient(this.getContext(), null);
+        this.mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this.getContext());
     }
 
 
@@ -392,6 +407,14 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
         @Override
         public void onMapReady(GoogleMap googleMap) {
             ShoppingListFragment.this.mMap = googleMap;
+            if (googleMap != null) {
+                try {
+                    googleMap.setMyLocationEnabled(true);
+                    googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+                } catch (SecurityException e) {
+                    Toast.makeText(ShoppingListFragment.this.getContext(), "Security Exception when setting google map", Toast.LENGTH_SHORT).show();
+                }
+            }
         }
 
     }

@@ -86,7 +86,7 @@ public class AppDatabaseCallback extends RoomDatabase.Callback {
 //                for (int i = 0; i < 4; ++i) {
 //                    Store store = new Store();
 //                    store.setName("Store " + i);
-//                    store.setLocation("ShoppingListLocationUpdater " + i);
+//                    store.setAddress("ShoppingListLocationUpdater " + i);
 //                    stores.add(store);
 //                }
                 appDb.getStoreDao()
@@ -122,7 +122,7 @@ public class AppDatabaseCallback extends RoomDatabase.Callback {
             private Store newStore(String name, String location, String placeId, double longitude, double latitude) {
                 Store store = new Store();
                 store.setName(name);
-                store.setLocation(location);
+                store.setAddress(location);
                 store.setPlaceId(placeId);
                 store.setLongitude(longitude);
                 store.setLatitude(latitude);

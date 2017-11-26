@@ -23,8 +23,8 @@ public class Store {
     @ColumnInfo(name = "name")
     private String mName;
 
-    @ColumnInfo(name = "location")
-    private String mLocation;
+    @ColumnInfo(name = "address")
+    private String mAddress;
 
     @ColumnInfo(name = "place_id")
     private String mPlaceId;
@@ -52,12 +52,12 @@ public class Store {
         this.mName = name;
     }
 
-    public String getLocation() {
-        return this.mLocation;
+    public String getAddress() {
+        return this.mAddress;
     }
 
-    public void setLocation(String location) {
-        this.mLocation = location;
+    public void setAddress(String address) {
+        this.mAddress = address;
     }
 
     public String getPlaceId() {

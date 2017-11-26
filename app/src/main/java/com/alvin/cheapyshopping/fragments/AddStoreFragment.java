@@ -2,20 +2,30 @@ package com.alvin.cheapyshopping.fragments;
 
 
 import android.arch.core.util.Function;
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.alvin.cheapyshopping.R;
 import com.alvin.cheapyshopping.databinding.AddStoreFragmentBinding;
 import com.alvin.cheapyshopping.viewmodels.AddStoreFragmentViewModel;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
+
+import static android.app.Activity.RESULT_OK;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -79,9 +89,25 @@ public class AddStoreFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         this.mViewModel = ViewModelProviders.of(this).get(AddStoreFragmentViewModel.class);
+
+        this.mBinding.setOnAddFromPlaceApiButtonClick(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AddStoreFragment.this.onAddFromPlaceAPIButtonClick(view);
+            }
+        });
     }
 
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case REQUEST_PLACE_PICKER:
+                this.onPlacePickerResult(requestCode, resultCode, data);
+                break;
+        }
+    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -119,6 +145,45 @@ public class AddStoreFragment extends Fragment {
         this.saveInput();
     }
 
+
+
+    private static final int REQUEST_PLACE_PICKER = 1;
+
+    private void onAddFromPlaceAPIButtonClick(View view) {
+        try {
+            Intent intent = new PlacePicker.IntentBuilder().build(this.getActivity());
+            this.startActivityForResult(intent, REQUEST_PLACE_PICKER);
+        } catch (GooglePlayServicesRepairableException e) {
+            Log.e("add store", "Play service exception", e);
+        } catch (GooglePlayServicesNotAvailableException e) {
+            Log.e("add store", "No Play Service", e);
+        }
+    }
+
+    private void onPlacePickerResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            Place place = PlacePicker.getPlace(this.getContext(), data);
+            String name = place.getName().toString();
+            String address = place.getAddress().toString();
+            String placeId = place.getId();
+            double longitude = place.getLatLng().longitude;
+            double latitude = place.getLatLng().latitude;
+
+            Toast.makeText(this.getContext(), name+", "+longitude+", "+latitude, Toast.LENGTH_SHORT).show();
+
+            this.mViewModel.addStore(name, address, placeId, longitude, latitude).observe(this, new Observer<Long>() {
+                @Override
+                public void onChanged(@Nullable Long storeId) {
+                    if (AddStoreFragment.this.mInteractionListener != null) {
+                        AddStoreFragment.this.mInteractionListener.onNewStoreAdded(AddStoreFragment.this, storeId);
+                    }
+                }
+            });
+        }
+    }
+
+
+
     public void saveInput() {
         String storeName = this.mBinding.inputLayoutStoreName.getEditText().getText().toString();
         String storeLocation = this.mBinding.inputLayoutStoreLocation.getEditText().getText().toString();
@@ -142,14 +207,16 @@ public class AddStoreFragment extends Fragment {
             return;
         }
 
-        this.mViewModel.addStore(storeName, storeLocation, new Function<long[], Void>() {
-            @Override
-            public Void apply(long[] storeIds) {
-                if (AddStoreFragment.this.mInteractionListener != null) {
-                    AddStoreFragment.this.mInteractionListener.onNewStoreAdded(AddStoreFragment.this, storeIds[0]);
-                }
-                return null;
-            }
-        });
+        Toast.makeText(this.getContext(), "The input will be removed soon and the input is not working now", Toast.LENGTH_SHORT).show();
+
+//        this.mViewModel.addStore(storeName, storeLocation, new Function<long[], Void>() {
+//            @Override
+//            public Void apply(long[] storeIds) {
+//                if (AddStoreFragment.this.mInteractionListener != null) {
+//                    AddStoreFragment.this.mInteractionListener.onNewStoreAdded(AddStoreFragment.this, storeIds[0]);
+//                }
+//                return null;
+//            }
+//        });
     }
 }
