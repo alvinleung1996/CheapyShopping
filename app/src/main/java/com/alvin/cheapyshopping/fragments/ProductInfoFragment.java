@@ -142,6 +142,8 @@ public class ProductInfoFragment extends Fragment {
     private ProductStorePriceListAdapter mProductStorePriceItemListAdapter;
 
     private Animator mCurrentAnimator;
+    ImageExpander mImageExpander;
+    Bitmap mBitmap;
 
 
     public ProductInfoFragment(){
@@ -191,6 +193,7 @@ public class ProductInfoFragment extends Fragment {
 
                 // Setup Product Basic Info
                 mBinding.setProduct(mCurrentProduct);
+                setProductImage();
             }
         });
 
@@ -230,10 +233,17 @@ public class ProductInfoFragment extends Fragment {
         this.mBinding.imageProduct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ImageExpander.getsInstance(getContext(), mCurrentAnimator, mBinding.container,
-                        mBinding.imageProduct, mBinding.imageProductZoomed,
-                        R.drawable.ic_product_black_24dp, 300)
-                        .expandImage();
+                if (mImageExpander == null){
+                    mImageExpander = new ImageExpander(getContext(), mCurrentAnimator, mBinding.container,
+                            mBinding.imageProduct, mBinding.imageProductZoomed,
+                            300);
+                }
+                if (mBitmap != null){
+                    mImageExpander.setBitmap(mBitmap);
+                }else {
+                    mImageExpander.setImgResId(R.drawable.ic_product_black_24dp);
+                }
+                mImageExpander.expandImage();
             }
         });
 
@@ -427,11 +437,6 @@ public class ProductInfoFragment extends Fragment {
         File storageDir = ProductInfoFragment.this.getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = new File(storageDir, imageFileName + ".jpg");
         if (image.exists()){
-            Uri photoURI = getUriForFile(ProductInfoFragment.this.getContext(),
-                    "com.alvin.fileprovider",
-                    image);
-
-
             // Rotate the image
             Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath());
             try {
@@ -453,9 +458,13 @@ public class ProductInfoFragment extends Fragment {
             catch (Exception e) {
 
             }
-            mBinding.imageProduct.setImageBitmap(bitmap);
-//            mBinding.imageProduct.setImageURI(null);
-//            mBinding.imageProduct.setImageURI(photoURI);
+            mBitmap = bitmap;
+
+            // Update image view with rotated bitmap
+            mBinding.imageProduct.setImageBitmap(mBitmap);
+            mBinding.imageProductZoomed.setImageBitmap(mBitmap);
+
+            // Reset image view
             mBinding.imageProduct.invalidate();
         }
     }

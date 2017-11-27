@@ -6,6 +6,7 @@ import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.view.View;
@@ -21,42 +22,53 @@ public class ImageExpander {
     @SuppressLint("StaticFieldLeak")
     private static ImageExpander sInstance;
 
-    public static ImageExpander getsInstance(Context context, Animator animator , View container , View thumbView, final ImageView expendedImageView,
-                                             int imageResID, final int shortAnimationDuration) {
-        if (sInstance == null) {
-            sInstance = new ImageExpander(context, animator, container ,thumbView, expendedImageView, imageResID, shortAnimationDuration);
-        }
-        return sInstance;
-    }
 
     private final Context mContext;
     private final View mThumbView;
     private final ImageView mExpandedImageView;
-    private final int mImageResId;
+    private int mImageResId = -1;
+    private Bitmap mBitmap;
     private int mShortAnimationDuration;
     private Animator mCurrentAnimator;
     private final View mContainer;
 
-    private ImageExpander(Context context, Animator animator, View container , View thumbView, final ImageView expandedImageView,
-                          int imageResID, final int shortAnimationDuration){
+    public ImageExpander(Context context, Animator animator, View container , View thumbView, final ImageView expandedImageView, final int shortAnimationDuration){
         this.mContext = context;
         this.mCurrentAnimator = animator;
         this.mThumbView = thumbView;
         this.mExpandedImageView = expandedImageView;
-        this.mImageResId = imageResID;
         this.mShortAnimationDuration = shortAnimationDuration;
         this.mContainer = container;
     }
 
-    public void expandImage(){
+    public void setImgResId (int imageResId){
+        this.mImageResId = imageResId;
+    }
+
+    public void setBitmap (Bitmap bitmap){
+        this.mBitmap = bitmap;
+    }
+
+
+    public boolean expandImage(){
+        // Check if either bitmap or resId is set
+        if (mBitmap != null){
+            // Load the high-resolution "zoomed-in" image.
+            mExpandedImageView.setImageBitmap(mBitmap);
+        }else if(mImageResId != -1){
+            // Load the high-resolution "zoomed-in" image.
+            mExpandedImageView.setImageResource(mImageResId);
+        }else{
+            return false;
+        }
+
         // If there's an animation in progress, cancel it
         // immediately and proceed with this one.
         if (mCurrentAnimator != null) {
             mCurrentAnimator.cancel();
         }
 
-        // Load the high-resolution "zoomed-in" image.
-        mExpandedImageView.setImageResource(mImageResId);
+
 
         // Calculate the starting and ending bounds for the zoomed-in image.
         // This step involves lots of math. Yay, math.
@@ -183,6 +195,7 @@ public class ImageExpander {
                 mCurrentAnimator = set;
             }
         });
+        return true;
     }
 
 }
