@@ -46,72 +46,6 @@ import java.util.List;
 
 public class StoreInfoFragment extends Fragment{
 
-
-    /*
-    ************************************************************************************************
-    * Store recycler view setup
-    ************************************************************************************************
-     */
-
-//    private class StoreProductPriceListAdapter extends RecyclerView.Adapter<StoreProductPriceListAdapter.StoreProductPriceListItemViewHolder>{
-//
-//        private List<ProductPrice> mProductPrices;
-//
-//        private StoreProductPriceListAdapter(){
-//            this.mProductPrices = new ArrayList<>();
-//        }
-//
-//        public int getItemCount(){
-//            return mProductPrices.size();
-//        }
-//
-//        public class StoreProductPriceListItemViewHolder extends RecyclerView.ViewHolder{
-//            private StoreProductPriceItemBinding mBinding;
-//
-//            private StoreProductPriceListItemViewHolder(View v){
-//                super(v);
-//                this.mBinding = DataBindingUtil.getBinding(this.itemView);
-//            }
-//        }
-//
-//        @Override
-//        public StoreProductPriceListItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-//            View view = StoreProductPriceItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false).getRoot();
-//            StoreProductPriceListItemViewHolder viewHolder = new StoreProductPriceListItemViewHolder(view);
-//            return viewHolder;
-//        }
-//
-//        @Override
-//        public void onBindViewHolder(StoreProductPriceListItemViewHolder holder, final int position) {
-//
-//            holder.mBinding.setProductPrice(mProductPrices.get(position));
-//
-//            holder.mBinding.setOnClickListener(new View.OnClickListener(){
-//                @Override
-//                public void onClick(View view) {
-//                    StoreInfoFragment.this.onProductClick(view, mProductPrices.get(position).getProduct());
-//                }
-//            });
-//
-////            // Set price update date & time
-////            SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy     HH:mm:ss");
-////            String updateDate = formatter.format(mProductPrices.get(position).getCreationTime());
-////            holder.mBinding.setDate(updateDate);
-//        }
-//
-//        private void setStoreProductPriceItems(List<ProductPrice> items){
-//            this.mProductPrices = items;
-//            this.notifyDataSetChanged();
-//        }
-//
-//        @Override
-//        public void onViewRecycled(StoreProductPriceListItemViewHolder holder) {
-//            super.onViewRecycled(holder);
-//        }
-//    }
-
-
-
     /*
     ************************************************************************************************
     * Store Fragment Setup
@@ -136,7 +70,6 @@ public class StoreInfoFragment extends Fragment{
 
     private long mCurrentStoreId;
     private Store mCurrentStore;
-//    private StoreProductPriceListAdapter mStoreProductPriceListAdapter;
 
 
     public StoreInfoFragment(){
@@ -174,31 +107,20 @@ public class StoreInfoFragment extends Fragment{
         ((SupportMapFragment) this.getChildFragmentManager().findFragmentById(R.id.fragment_map))
                 .getMapAsync(new MapReadyCallback());
 
-//        // Setup recycler view
-//        this.mBinding.listProductPriceItems.setLayoutManager(new LinearLayoutManager(this.getContext()));
-//        this.mBinding.listProductPriceItems.setNestedScrollingEnabled(false); // For smoother scrolling
-//        this.mStoreProductPriceListAdapter = new StoreProductPriceListAdapter();
-//        mBinding.listProductPriceItems.setAdapter(mStoreProductPriceListAdapter);
 
         // Get Store
         this.mViewModel.getStore(mCurrentStoreId).observe(this, new Observer<Store>() {
             @Override
             public void onChanged(@Nullable Store store) {
                 StoreInfoFragment.this.mCurrentStore = store;
-
                 // Setup Store Basic Info
                 mBinding.setStore(mCurrentStore);
+                StoreInfoFragment.this.updateMapMarkers();
             }
         });
 
 
-//        // Get Store ProductPrice list
-//        this.mViewModel.getProductPriceList(mCurrentStoreId).observe(this, new Observer<List<ProductPrice>>() {
-//            @Override
-//            public void onChanged(@Nullable List<ProductPrice> productPrices) {
-//                StoreInfoFragment.this.mStoreProductPriceListAdapter.setStoreProductPriceItems(productPrices);
-//            }
-//        });
+
     }
 
     /*
@@ -222,6 +144,18 @@ public class StoreInfoFragment extends Fragment{
             }
         }
 
+    }
+
+    private void updateMapMarkers() {
+        if (this.mMap == null) {
+            return;
+        }
+        this.mMap.clear();
+        if (this.mCurrentStore != null) {
+            LatLng coordinate = new LatLng(mCurrentStore.getLatitude(), mCurrentStore.getLongitude());
+            this.mMap.addMarker(new MarkerOptions().position(coordinate).title(mCurrentStore.getName()));
+            this.mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(coordinate, 16));
+        }
     }
     /*
     ************************************************************************************************
