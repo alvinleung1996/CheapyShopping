@@ -34,7 +34,7 @@ public class AddShoppingListActivity extends AppCompatActivity {
         if (args == null || !args.containsKey(EXTRA_ACCOUNT_ID)) {
             throw new RuntimeException("caller must include account id in the intent");
         }
-        this.mViewModel.setAccountId(args.getLong(EXTRA_ACCOUNT_ID));
+        this.mViewModel.setAccountId(args.getString(EXTRA_ACCOUNT_ID));
     }
 
     @Override

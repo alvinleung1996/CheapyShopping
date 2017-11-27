@@ -28,14 +28,14 @@ public class ImageUpdater {
     @SuppressLint("StaticFieldLeak")
     private static ImageUpdater sInstance;
 
-    public static ImageUpdater getsInstance(Activity activity , Context context, String fileType, long fileId, String folder, int captureNum ) {
+    public static ImageUpdater getsInstance(Activity activity , Context context, String fileType, String fileId, String folder, int captureNum ) {
         if (sInstance == null) {
             sInstance = new ImageUpdater(activity, context, fileType, fileId, folder, captureNum);
         }
         return sInstance;
     }
 
-    public static ImageUpdater getsInstance(Context context, String fileType, long fileId) {
+    public static ImageUpdater getsInstance(Context context, String fileType, String fileId) {
         if (sInstance == null) {
             sInstance = new ImageUpdater(context, fileType, fileId);
         }
@@ -44,13 +44,13 @@ public class ImageUpdater {
 
     private Activity mActivity;
     private Context mContext;
-    private long mFileId;
+    private String mFileId;
     private String mFileType;
     private String mFolder;
     private int mCaptureNum;
 
 
-    public ImageUpdater(Activity activity, Context context, String fileType, long fileId, String folder, int captureNum) {
+    public ImageUpdater(Activity activity, Context context, String fileType, String fileId, String folder, int captureNum) {
         this.mActivity = activity;
         this.mContext = context.getApplicationContext();
         this.mFileId = fileId;
@@ -59,7 +59,7 @@ public class ImageUpdater {
         this.mCaptureNum = captureNum;
     }
 
-    public ImageUpdater(Context context, String fileType, long fileId) {
+    public ImageUpdater(Context context, String fileType, String fileId) {
         this.mContext = context.getApplicationContext();
         this.mFileId = fileId;
     }

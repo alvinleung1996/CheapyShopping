@@ -73,8 +73,8 @@ public class AccountRepository {
         return this.mCurrentAccount;
     }
 
-    private Map<Long, LiveData<Account>> mAccountCache;
-    public LiveData<Account> findAccountByAccountId(long accountId) {
+    private Map<String, LiveData<Account>> mAccountCache;
+    public LiveData<Account> findAccountByAccountId(String accountId) {
         if (this.mAccountCache == null) {
             this.mAccountCache = new ArrayMap<>();
         }
@@ -99,7 +99,7 @@ public class AccountRepository {
         return this.getAccountDao().getCurrentAccountNow();
     }
 
-    public Account findAccountByAccountIdNow(long accountId) {
+    public Account findAccountByAccountIdNow(String accountId) {
         return this.getAccountDao().findAccountByAccountIdNow(accountId);
     }
 

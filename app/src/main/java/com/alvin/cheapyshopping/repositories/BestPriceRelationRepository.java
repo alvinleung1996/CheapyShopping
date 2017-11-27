@@ -113,7 +113,7 @@ public class BestPriceRelationRepository {
     ************************************************************************************************
      */
 
-    public int deleteShoppingListProductBestPrice(long shoppingListId, long productId) {
+    public int deleteShoppingListProductBestPrice(String shoppingListId, String productId) {
         return this.getBestPriceRelationDao().deleteShoppingListProductBestPrice(shoppingListId, productId);
     }
 
@@ -144,7 +144,7 @@ public class BestPriceRelationRepository {
      */
 
     private BestPriceRelationRefresher mBestPriceRelationRefresher;
-    public void refreshBestPriceRelation(long shoppingListId) {
+    public void refreshBestPriceRelation(String shoppingListId) {
         if (this.mBestPriceRelationRefresher == null) {
             this.mBestPriceRelationRefresher = new BestPriceRelationRefresher();
         }
@@ -156,7 +156,7 @@ public class BestPriceRelationRepository {
         private ExecutorService mExecutor;
         private Future<?> mExecutingJob;
 
-        private void refresh(long shoppingListId) {
+        private void refresh(String shoppingListId) {
             if (this.mExecutingJob != null) {
                 this.mExecutingJob.cancel(true);
                 this.mExecutingJob = null;
@@ -169,9 +169,9 @@ public class BestPriceRelationRepository {
 
         private class Job implements Runnable {
 
-            private final long shoppingListId;
+            private final String shoppingListId;
 
-            private Job(long shoppingListId) {
+            private Job(String shoppingListId) {
                 this.shoppingListId = shoppingListId;
             }
 
@@ -180,7 +180,7 @@ public class BestPriceRelationRepository {
                 List<Store> nearbyStores = BestPriceRelationRepository.this.getStoreRepository()
                         .findNearbyStoresNow();
 
-                List<Long> nearByStoreIds = new ArrayList<>(nearbyStores.size());
+                List<String> nearByStoreIds = new ArrayList<>(nearbyStores.size());
                 for (Store store : nearbyStores) {
                     nearByStoreIds.add(store.getStoreId());
                 }

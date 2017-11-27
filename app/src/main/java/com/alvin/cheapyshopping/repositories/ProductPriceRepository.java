@@ -57,8 +57,8 @@ public class ProductPriceRepository {
     ************************************************************************************************
      */
 
-    private Map<Long, LiveData<List<ProductPrice>>> mStoreProductPricesCache;
-    public LiveData<List<ProductPrice>> findProductStorePrices(long storeId) {
+    private Map<String, LiveData<List<ProductPrice>>> mStoreProductPricesCache;
+    public LiveData<List<ProductPrice>> findProductStorePrices(String storeId) {
         if (this.mStoreProductPricesCache == null) {
             this.mStoreProductPricesCache = new ArrayMap<>();
         }
@@ -76,7 +76,7 @@ public class ProductPriceRepository {
     ************************************************************************************************
      */
 
-    public List<ProductPrice> findStoreProductPricesNow(long storeId) {
+    public List<ProductPrice> findStoreProductPricesNow(String storeId) {
         return this.getProductPriceDao().findProductStorePricesNow(storeId);
     }
 

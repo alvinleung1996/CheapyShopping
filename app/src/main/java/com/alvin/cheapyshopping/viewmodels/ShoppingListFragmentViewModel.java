@@ -135,7 +135,7 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
                         if (account == null) {
                             return null;
                         }
-                        Long activeId = account.getActiveShoppingListId();
+                        String activeId = account.getActiveShoppingListId();
                         if (activeId == null) {
                             return null;
                         }
@@ -254,7 +254,7 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
     ************************************************************************************************
      */
 
-    public void setShoppingListId(Long shoppingListId) {
+    public void setShoppingListId(String shoppingListId) {
         new UpdateAccountTask(this.getApplication(), shoppingListId).execute();
     }
 
@@ -262,9 +262,9 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
 
         @SuppressLint("StaticFieldLeak")
         private final Context mContext;
-        private final Long mShoppingListId;
+        private final String mShoppingListId;
 
-        private UpdateAccountTask(Context context, Long shoppingListId) {
+        private UpdateAccountTask(Context context, String shoppingListId) {
             this.mContext = context.getApplicationContext();
             this.mShoppingListId = shoppingListId;
         }
@@ -286,7 +286,7 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
     ************************************************************************************************
      */
 
-    public void refreshBestPriceRelations(Activity activity, long shoppingListId) {
+    public void refreshBestPriceRelations(Activity activity, String shoppingListId) {
         ShoppingListLocationUpdater.getsInstance(this.getApplication()).updateShoppingListCenterCoordinate(activity, shoppingListId);
         this.getBestPriceRelationRepository().refreshBestPriceRelation(shoppingListId);
     }

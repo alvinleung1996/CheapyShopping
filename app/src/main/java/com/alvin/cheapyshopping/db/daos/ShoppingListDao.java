@@ -25,10 +25,10 @@ public interface ShoppingListDao {
      */
 
     @Query("SELECT * FROM ShoppingList WHERE shopping_list_id = :shoppingListId")
-    LiveData<ShoppingList> findShoppingList(long shoppingListId);
+    LiveData<ShoppingList> findShoppingList(String shoppingListId);
 
     @Query("SELECT * FROM ShoppingList WHERE foreign_account_id = :accountId")
-    LiveData<List<ShoppingList>> findAccountShoppingLists(long accountId);
+    LiveData<List<ShoppingList>> findAccountShoppingLists(String accountId);
 
 
     /*
@@ -38,10 +38,10 @@ public interface ShoppingListDao {
      */
 
     @Query("SELECT * FROM ShoppingList WHERE shopping_list_id = :shoppingListId")
-    ShoppingList findShoppingListNow(long shoppingListId);
+    ShoppingList findShoppingListNow(String shoppingListId);
 
     @Query("SELECT * FROM ShoppingList WHERE foreign_account_id = :accountId")
-    List<ShoppingList> findAccountShoppingListsNow(long accountId);
+    List<ShoppingList> findAccountShoppingListsNow(String accountId);
 
 
     /*

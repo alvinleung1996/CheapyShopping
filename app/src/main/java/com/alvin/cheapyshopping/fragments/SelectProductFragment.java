@@ -39,7 +39,7 @@ public class SelectProductFragment extends Fragment {
 
         void onAddProductOptionSelected(SelectProductFragment fragment);
 
-        void onProductItemsSelected(SelectProductFragment fragment, List<Long> products);
+        void onProductItemsSelected(SelectProductFragment fragment, List<String> products);
 
     }
 
@@ -49,12 +49,12 @@ public class SelectProductFragment extends Fragment {
 
 
 
-    public static SelectProductFragment newInstance(boolean createOptionsMenu, Long excludeShoppingListId) {
+    public static SelectProductFragment newInstance(boolean createOptionsMenu, String excludeShoppingListId) {
         SelectProductFragment fragment = new SelectProductFragment();
         Bundle args = new Bundle();
         args.putBoolean(ARGUMENT_CREATE_OPTIONS_MENU, createOptionsMenu);
         if (excludeShoppingListId != null) {
-            args.putLong(ARGUMENT_EXCLUDE_SHOPPING_LIST_PRODUCTS, excludeShoppingListId);
+            args.putString(ARGUMENT_EXCLUDE_SHOPPING_LIST_PRODUCTS, excludeShoppingListId);
         }
         fragment.setArguments(args);
         return fragment;
@@ -131,7 +131,7 @@ public class SelectProductFragment extends Fragment {
     }
 
 
-    private Long exludeShoppingListId;
+    private String exludeShoppingListId;
 
     private SelectProductFragmentViewModel mViewModel;
     private SelectProductFragmentBinding mBinding;
@@ -148,7 +148,7 @@ public class SelectProductFragment extends Fragment {
         if (args != null) {
             this.setHasOptionsMenu(args.getBoolean(ARGUMENT_CREATE_OPTIONS_MENU, true));
             if (args.containsKey(ARGUMENT_EXCLUDE_SHOPPING_LIST_PRODUCTS)) {
-                this.exludeShoppingListId = args.getLong(ARGUMENT_EXCLUDE_SHOPPING_LIST_PRODUCTS);
+                this.exludeShoppingListId = args.getString(ARGUMENT_EXCLUDE_SHOPPING_LIST_PRODUCTS);
             } else {
                 this.exludeShoppingListId = null;
             }

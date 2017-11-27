@@ -27,7 +27,7 @@ public class ProductActivity extends AppCompatActivity {
 
     private ProductActivityBinding mBinding;
 
-    private long mProductId;
+    private String mProductId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -37,10 +37,10 @@ public class ProductActivity extends AppCompatActivity {
 
         Bundle args = getIntent().getExtras();
 
-        Long productId = null;
+        String productId = null;
         if (args != null) {
             if (args.containsKey(EXTRA_PRODUCT_ID)) {
-                productId = args.getLong(EXTRA_PRODUCT_ID);
+                productId = args.getString(EXTRA_PRODUCT_ID);
             }
         }
 
@@ -118,7 +118,7 @@ public class ProductActivity extends AppCompatActivity {
 
 
     private void onFloatingActionButtonClick(FloatingActionButton fab) {
-        Intent intent = new Intent(this.getApplicationContext(), AddPriceActivity.class);
+        Intent intent = new Intent(this.getApplicationContext(), AddProductPriceActivity.class);
 
     }
 

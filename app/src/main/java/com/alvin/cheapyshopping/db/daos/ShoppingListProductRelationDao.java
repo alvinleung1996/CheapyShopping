@@ -28,7 +28,7 @@ public interface ShoppingListProductRelationDao {
 
     @Query("SELECT * FROM ShoppingListProductRelation"
             + " WHERE ShoppingListProductRelation.foreign_shopping_list_id = :shoppingListId")
-    LiveData<List<ShoppingListProductRelation>> findShoppingListProductRelations(long shoppingListId);
+    LiveData<List<ShoppingListProductRelation>> findShoppingListProductRelations(String shoppingListId);
 
 
     /*
@@ -39,7 +39,7 @@ public interface ShoppingListProductRelationDao {
 
     @Query("SELECT * FROM ShoppingListProductRelation"
             + " WHERE ShoppingListProductRelation.foreign_shopping_list_id = :shoppingListId")
-    List<ShoppingListProductRelation> findShoppingListProductRelationsNow(long shoppingListId);
+    List<ShoppingListProductRelation> findShoppingListProductRelationsNow(String shoppingListId);
 
     /*
     ************************************************************************************************

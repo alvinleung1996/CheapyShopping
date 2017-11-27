@@ -59,8 +59,8 @@ public class StorePriceRepository {
     ************************************************************************************************
      */
 
-    private Map<Long, LiveData<List<StorePrice>>> mProductStorePricesCache;
-    public LiveData<List<StorePrice>> findProductStorePrices(long productId) {
+    private Map<String, LiveData<List<StorePrice>>> mProductStorePricesCache;
+    public LiveData<List<StorePrice>> findProductStorePrices(String productId) {
         if (this.mProductStorePricesCache == null) {
             this.mProductStorePricesCache = new ArrayMap<>();
         }
@@ -71,12 +71,12 @@ public class StorePriceRepository {
         return this.mProductStorePricesCache.get(productId);
     }
 
-    private Map<Pair<Long, Long>, LiveData<List<StorePrice>>> mShoppingListProductBestStorePricesCache;
-    public LiveData<List<StorePrice>> findShoppingListProductBestStorePrices(long shoppingListId, long productId) {
+    private Map<Pair<String, String>, LiveData<List<StorePrice>>> mShoppingListProductBestStorePricesCache;
+    public LiveData<List<StorePrice>> findShoppingListProductBestStorePrices(String shoppingListId, String productId) {
         if (this.mShoppingListProductBestStorePricesCache == null) {
             this.mShoppingListProductBestStorePricesCache = new ArrayMap<>();
         }
-        Pair<Long, Long> key = new Pair<>(shoppingListId, productId);
+        Pair<String, String> key = new Pair<>(shoppingListId, productId);
         if (!this.mShoppingListProductBestStorePricesCache.containsKey(key)) {
             this.mShoppingListProductBestStorePricesCache.put(key, this.getStorePriceDao()
                     .findShoppingListProductBestStorePrices(shoppingListId, productId));
@@ -87,7 +87,7 @@ public class StorePriceRepository {
 
     private LiveData<StorePrice> mBestProductStorePrice;
     @Deprecated
-    public LiveData<StorePrice> findBestProductStorePrice(long productId){
+    public LiveData<StorePrice> findBestProductStorePrice(String productId){
         if (mBestProductStorePrice == null){
             mBestProductStorePrice = this.getStorePriceDao().findBestProductStorePrice(productId);
         }
@@ -100,11 +100,11 @@ public class StorePriceRepository {
     ************************************************************************************************
      */
 
-    public List<StorePrice> findProductStorePricesNow(long productId) {
+    public List<StorePrice> findProductStorePricesNow(String productId) {
         return this.getStorePriceDao().findProductStorePricesNow(productId);
     }
 
-    public List<StorePrice> findShoppingListProductBestStorePriceNow(long shoppingListId, long productId) {
+    public List<StorePrice> findShoppingListProductBestStorePriceNow(String shoppingListId, String productId) {
         return this.getStorePriceDao().findShoppingListProductBestStorePricesNow(shoppingListId, productId);
     }
 

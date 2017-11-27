@@ -4,30 +4,25 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
 
 /**
  * Created by Alvin on 19/11/2017.
  */
 
-@Entity(
-    indices = {
-        @Index(value = {"place_id"}, unique = true)
-    }
-)
+@Entity
 public class Store {
 
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
+    @NonNull
     @ColumnInfo(name = "store_id")
-    private long mStoreId;
+    private String mStoreId;
 
     @ColumnInfo(name = "name")
     private String mName;
 
     @ColumnInfo(name = "address")
     private String mAddress;
-
-    @ColumnInfo(name = "place_id")
-    private String mPlaceId;
 
     @ColumnInfo(name = "longitude")
     private double mLongitude;
@@ -36,11 +31,11 @@ public class Store {
     private double mLatitude;
 
 
-    public long getStoreId() {
+    public String getStoreId() {
         return this.mStoreId;
     }
 
-    public void setStoreId(long storeId) {
+    public void setStoreId(String storeId) {
         this.mStoreId = storeId;
     }
 
@@ -58,14 +53,6 @@ public class Store {
 
     public void setAddress(String address) {
         this.mAddress = address;
-    }
-
-    public String getPlaceId() {
-        return this.mPlaceId;
-    }
-
-    public void setPlaceId(String placeId) {
-        this.mPlaceId = placeId;
     }
 
     public double getLongitude() {

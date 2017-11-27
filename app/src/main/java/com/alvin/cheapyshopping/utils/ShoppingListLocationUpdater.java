@@ -71,10 +71,10 @@ public class ShoppingListLocationUpdater {
 
 
 
-    private Set<Long> mShoppingListsToUpdate;
+    private Set<String> mShoppingListsToUpdate;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private Task<Location> mRunningLocationTask;
-    public void updateShoppingListCenterCoordinate(Activity activity, long shoppingListId) {
+    public void updateShoppingListCenterCoordinate(Activity activity, String shoppingListId) {
         if (this.mShoppingListsToUpdate == null) {
             this.mShoppingListsToUpdate = new ArraySet<>();
         }
@@ -114,7 +114,7 @@ public class ShoppingListLocationUpdater {
 
                                     List<ShoppingList> listToUpdate = new ArrayList<>();
 
-                                    for (Long id : updater.mShoppingListsToUpdate) {
+                                    for (String id : updater.mShoppingListsToUpdate) {
                                         ShoppingList shoppingList = ShoppingListLocationUpdater.this.getShoppingListRepository()
                                                 .findShoppingListNow(id);
 

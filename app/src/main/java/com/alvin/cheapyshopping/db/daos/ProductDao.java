@@ -33,17 +33,17 @@ public interface ProductDao {
                 + " ON P0.product_id = R.foreign_product_id"
                 + " WHERE P.product_id = P0.product_id AND R.foreign_shopping_list_id = :shoppingListId"
             + ") = 0")
-    LiveData<List<Product>> findProductsNotInShoppingList(long shoppingListId);
+    LiveData<List<Product>> findProductsNotInShoppingList(String shoppingListId);
 
 
     @Query("SELECT P.* FROM Product P INNER JOIN ShoppingListProductRelation R"
             + " ON P.product_id = R.foreign_product_id"
             + " WHERE R.foreign_shopping_list_id = :shoppingListId")
-    LiveData<List<Product>> findShoppingListProducts(long shoppingListId);
+    LiveData<List<Product>> findShoppingListProducts(String shoppingListId);
 
 
     @Query("SELECT * FROM Product WHERE product_id = :productId")
-    LiveData<Product> findProductByProductId(long productId);
+    LiveData<Product> findProductByProductId(String productId);
 
 
     /*
@@ -61,17 +61,17 @@ public interface ProductDao {
                 + " ON P0.product_id = R.foreign_product_id"
                 + " WHERE P.product_id = P0.product_id AND R.foreign_shopping_list_id = :shoppingListId"
             + ") = 0")
-    List<Product> findProductsNotInShoppingListNow(long shoppingListId);
+    List<Product> findProductsNotInShoppingListNow(String shoppingListId);
 
 
     @Query("SELECT P.* FROM Product P INNER JOIN ShoppingListProductRelation R"
             + " ON P.product_id = R.foreign_product_id"
             + " WHERE R.foreign_shopping_list_id = :shoppingListId")
-    List<Product> findShoppingListProductsNow(long shoppingListId);
+    List<Product> findShoppingListProductsNow(String shoppingListId);
 
 
     @Query("SELECT * FROM Product WHERE product_id = :productId")
-    Product findProductByProductIdNow(long productId);
+    Product findProductByProductIdNow(String productId);
 
 
     /*

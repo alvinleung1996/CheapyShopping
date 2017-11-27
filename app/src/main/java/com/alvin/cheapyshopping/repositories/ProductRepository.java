@@ -65,8 +65,8 @@ public class ProductRepository {
     }
 
 
-    private Map<Long, LiveData<List<Product>>> mProductsNotInShoppingListCache;
-    public LiveData<List<Product>> findProductsNotInShoppingList(long shoppingListId) {
+    private Map<String, LiveData<List<Product>>> mProductsNotInShoppingListCache;
+    public LiveData<List<Product>> findProductsNotInShoppingList(String shoppingListId) {
         if (this.mProductsNotInShoppingListCache == null) {
             this.mProductsNotInShoppingListCache = new ArrayMap<>();
         }
@@ -79,8 +79,8 @@ public class ProductRepository {
     }
 
 
-    private Map<Long, LiveData<List<Product>>> mShoppingListProductsCache;
-    LiveData<List<Product>> findShoppingListProducts(long shoppingListId) {
+    private Map<String, LiveData<List<Product>>> mShoppingListProductsCache;
+    LiveData<List<Product>> findShoppingListProducts(String shoppingListId) {
         if (this.mShoppingListProductsCache == null) {
             this.mShoppingListProductsCache = new ArrayMap<>();
         }
@@ -92,8 +92,8 @@ public class ProductRepository {
     }
 
 
-    private Map<Long, LiveData<Product>> mProductCache;
-    public LiveData<Product> findProductByProductId(long productId) {
+    private Map<String, LiveData<Product>> mProductCache;
+    public LiveData<Product> findProductByProductId(String productId) {
         if (this.mProductCache == null) {
             this.mProductCache = new ArrayMap<>();
         }
@@ -115,17 +115,17 @@ public class ProductRepository {
     }
 
 
-    public List<Product> findProductsNotInShoppingListNow(long shoppingListId) {
+    public List<Product> findProductsNotInShoppingListNow(String shoppingListId) {
         return this.getProductDao().findProductsNotInShoppingListNow(shoppingListId);
     }
 
 
-    List<Product> findShoppingListProductsNow(long shoppingListId) {
+    List<Product> findShoppingListProductsNow(String shoppingListId) {
         return this.getProductDao().findShoppingListProductsNow(shoppingListId);
     }
 
 
-    public Product findProductByProductIdNow(long productId) {
+    public Product findProductByProductIdNow(String productId) {
         return this.getProductDao().findProductByProductIdNow(productId);
     }
 

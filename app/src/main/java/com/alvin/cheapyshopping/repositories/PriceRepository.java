@@ -58,8 +58,8 @@ public class PriceRepository {
     ************************************************************************************************
      */
 
-    private Map<Long, LiveData<List<Price>>> mProductPriceCache;
-    public LiveData<List<Price>> findProductPrices(long productId) {
+    private Map<String, LiveData<List<Price>>> mProductPriceCache;
+    public LiveData<List<Price>> findProductPrices(String productId) {
         if (this.mProductPriceCache == null) {
             this.mProductPriceCache = new ArrayMap<>();
         }
@@ -76,12 +76,12 @@ public class PriceRepository {
     ************************************************************************************************
      */
 
-    public List<Price> findProductPricesNow(long productId) {
+    public List<Price> findProductPricesNow(String productId) {
         return this.getPriceDao().findProductPricesNow(productId);
     }
 
 
-    public List<Price> computeProductBestPriceNow(long productId, List<Long> storeIds, int quantity) {
+    public List<Price> computeProductBestPriceNow(String productId, List<String> storeIds, int quantity) {
         return this.getPriceDao().computeProductBestPricesNow(productId, storeIds, quantity);
     }
 

@@ -20,7 +20,7 @@
         android:orientation="vertical"
         android:background="@drawable/list_item_background"
         android:elevation="2dp"
-        android:onClick="@{onClickListener::onClick}">
+        android:onClick="@{onClickListener}">
 
         <View
             android:layout_width="match_parent"
@@ -67,18 +67,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/text_store_name"
                 android:text="@{store.address}"/>
-
-            <TextView
-                android:id="@+id/text_store_id"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginTop="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/text_store_name"
-                android:text="@{Long.toString(store.storeId)}"/>
 
         </android.support.constraint.ConstraintLayout>
 

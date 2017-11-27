@@ -311,8 +311,8 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
     ************************************************************************************************
      */
 
-    private Map<Long, MenuItem> mShoppingListIdMenuItemMap;
-    private Map<MenuItem, Long> mMenuItemShoppingListIdMap;
+    private Map<String, MenuItem> mShoppingListIdMenuItemMap;
+    private Map<MenuItem, String> mMenuItemShoppingListIdMap;
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -388,7 +388,7 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
         }
     }
 
-    private void onShoppingListOptionSelected(MenuItem item, long shoppingListId) {
+    private void onShoppingListOptionSelected(MenuItem item, String shoppingListId) {
         if (this.mCurrentAccount.getActiveShoppingListId() != shoppingListId) {
             item.setChecked(true);
             this.mViewModel.setShoppingListId(shoppingListId);

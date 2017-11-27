@@ -3,6 +3,7 @@ package com.alvin.cheapyshopping.db.entities;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
 
 /**
  * Created by Alvin on 19/11/2017.
@@ -11,9 +12,10 @@ import android.arch.persistence.room.PrimaryKey;
 @Entity
 public class Product {
 
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
+    @NonNull
     @ColumnInfo(name = "product_id")
-    private long mProductId;
+    private String mProductId;
 
     @ColumnInfo(name = "name")
     private String mName;
@@ -22,11 +24,11 @@ public class Product {
     private String mDescription;
 
 
-    public long getProductId() {
+    public String getProductId() {
         return this.mProductId;
     }
 
-    public void setProductId(long productId) {
+    public void setProductId(String productId) {
         this.mProductId = productId;
     }
 

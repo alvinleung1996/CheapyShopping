@@ -3,6 +3,7 @@ package com.alvin.cheapyshopping.db.entities;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
+import android.support.annotation.NonNull;
 
 /**
  * Created by Alvin on 20/11/2017.
@@ -33,28 +34,30 @@ import android.arch.persistence.room.ForeignKey;
 public class ShoppingListProductRelation {
 
     @ColumnInfo(name = "foreign_shopping_list_id", index = true)
-    private long mForeignShoppingListId;
+    @NonNull
+    private String mForeignShoppingListId;
 
     @ColumnInfo(name = "foreign_product_id", index = true)
-    private long mForeignProductId;
+    @NonNull
+    private String mForeignProductId;
 
     @ColumnInfo(name = "quantity")
     private int mQuantity;
 
 
-    public long getForeignShoppingListId() {
+    public String getForeignShoppingListId() {
         return this.mForeignShoppingListId;
     }
 
-    public void setForeignShoppingListId(long foreignShoppingListId) {
+    public void setForeignShoppingListId(String foreignShoppingListId) {
         this.mForeignShoppingListId = foreignShoppingListId;
     }
 
-    public long getForeignProductId() {
+    public String getForeignProductId() {
         return this.mForeignProductId;
     }
 
-    public void setForeignProductId(long foreignProductId) {
+    public void setForeignProductId(String foreignProductId) {
         this.mForeignProductId = foreignProductId;
     }
 

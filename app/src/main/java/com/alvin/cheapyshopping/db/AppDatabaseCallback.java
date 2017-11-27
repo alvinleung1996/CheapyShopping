@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by Alvin on 21/11/2017.
@@ -40,11 +41,13 @@ public class AppDatabaseCallback extends RoomDatabase.Callback {
                 AppDatabase appDb = AppDatabase.getInstance(mContext);
 
                 Account account = new Account();
+                account.setAccountId(UUID.randomUUID().toString());
                 account.setAccountName("Account 0");
                 appDb.getAccountDao().insertAccount(account);
                 account = appDb.getAccountDao().getAllAccountsNow().get(0);
 
                 ShoppingList list = new ShoppingList();
+                list.setShoppingListId(UUID.randomUUID().toString());
                 list.setName("Shopping List 0");
                 list.setCreationTime(Calendar.getInstance());
                 list.setForeignAccountId(account.getAccountId());
@@ -58,6 +61,7 @@ public class AppDatabaseCallback extends RoomDatabase.Callback {
                 List<Product> products = new ArrayList<>();
                 for (int i = 0; i < 10; ++i) {
                     Product product = new Product();
+                    product.setProductId(UUID.randomUUID().toString());
                     product.setName("Product " + i);
                     product.setDescription("I am product number " + i);
                     products.add(product);
@@ -78,11 +82,11 @@ public class AppDatabaseCallback extends RoomDatabase.Callback {
                         .insertShoppingListProductRelation(listProducts.toArray(new ShoppingListProductRelation[listProducts.size()]));
 
                 List<Store> stores = new ArrayList<>();
-                stores.add(this.newStore("百佳", "Parknshop - Hill Road", "ChIJW6SHeIT_AzQR9bGVjdwkzuA", 114.135282, 22.2861835));
-                stores.add(this.newStore("西寶城", "石塘咀卑路乍街8號", "ChIJ07jUtoT_AzQRFzl3vPWyvto", 114.135403, 22.2861676));
-                stores.add(this.newStore("豐澤", "G/F, REAR PORTION, WAH MING CENTRE, 396 DES VOEUX ROAD WEST, Shek Tong Tsui", "ChIJsz0z94P_AzQR_Ek-nv0PCgQ", 114.1367759, 22.2861362));
-                stores.add(this.newStore("一田超市", "石塘咀干諾道西188號香港商業中心地下", "ChIJbUt0XoP_AzQRcVo_QMDYI4M",114.1361631, 22.2870644));
-                stores.add(this.newStore("百佳hku", "Chong Yuet Ming Cultural Centre, Lung Fu Shan", "ChIJ47sSZIb_AzQRysVCSOvGlvQ", 114.1388094, 22.2825287));
+                stores.add(this.newStore("ChIJW6SHeIT_AzQR9bGVjdwkzuA", "百佳", "Parknshop - Hill Road", 114.135282, 22.2861835));
+                stores.add(this.newStore("ChIJ07jUtoT_AzQRFzl3vPWyvto", "西寶城", "石塘咀卑路乍街8號", 114.135403, 22.2861676));
+                stores.add(this.newStore("ChIJsz0z94P_AzQR_Ek-nv0PCgQ", "豐澤", "G/F, REAR PORTION, WAH MING CENTRE, 396 DES VOEUX ROAD WEST, Shek Tong Tsui", 114.1367759, 22.2861362));
+                stores.add(this.newStore("ChIJbUt0XoP_AzQRcVo_QMDYI4M","一田超市", "石塘咀干諾道西188號香港商業中心地下", 114.1361631, 22.2870644));
+                stores.add(this.newStore("ChIJ47sSZIb_AzQRysVCSOvGlvQ", "百佳hku", "Chong Yuet Ming Cultural Centre, Lung Fu Shan", 114.1388094, 22.2825287));
 //                for (int i = 0; i < 4; ++i) {
 //                    Store store = new Store();
 //                    store.setName("Store " + i);
@@ -97,6 +101,7 @@ public class AppDatabaseCallback extends RoomDatabase.Callback {
                 List<Price> prices = new ArrayList<>();
                 for (Product product : products) {
                     Price price = new Price();
+                    price.setPriceId(UUID.randomUUID().toString());
                     price.setType(Price.TYPE_SINGLE);
                     price.setTotal(100);
                     price.setCreationTime(Calendar.getInstance());
@@ -105,13 +110,13 @@ public class AppDatabaseCallback extends RoomDatabase.Callback {
                     prices.add(price);
                 }
 
-                Price price = new Price();
-                price.setType(Price.TYPE_SINGLE);
-                price.setTotal(30);
-                price.setForeignProductId(1);
-                price.setForeignStoreId(3);
-                price.setCreationTime(Calendar.getInstance());
-                prices.add(price);
+//                Price price = new Price();
+//                price.setType(Price.TYPE_SINGLE);
+//                price.setTotal(30);
+//                price.setForeignProductId(1);
+//                price.setForeignStoreId(3);
+//                price.setCreationTime(Calendar.getInstance());
+//                prices.add(price);
 
                 appDb.getPriceDao()
                         .insertPrice(prices.toArray(new Price[prices.size()]));
@@ -119,11 +124,11 @@ public class AppDatabaseCallback extends RoomDatabase.Callback {
 
             }
 
-            private Store newStore(String name, String location, String placeId, double longitude, double latitude) {
+            private Store newStore(String storeId, String name, String location, double longitude, double latitude) {
                 Store store = new Store();
+                store.setStoreId(storeId);
                 store.setName(name);
                 store.setAddress(location);
-                store.setPlaceId(placeId);
                 store.setLongitude(longitude);
                 store.setLatitude(latitude);
                 return store;

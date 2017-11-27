@@ -44,8 +44,8 @@ public class ProductStorePricesFragmentViewModel extends AndroidViewModel {
     ************************************************************************************************
      */
 
-    private Map<Long, LiveData<List<StorePrice>>> mProductStorePricesCache;
-    public LiveData<List<StorePrice>> findProductStorePrices(long productId) {
+    private Map<String, LiveData<List<StorePrice>>> mProductStorePricesCache;
+    public LiveData<List<StorePrice>> findProductStorePrices(String productId) {
         if (this.mProductStorePricesCache == null) {
             this.mProductStorePricesCache = new ArrayMap<>();
         }

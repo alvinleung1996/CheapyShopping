@@ -81,8 +81,8 @@ public class ShoppingListProductRepository {
     ************************************************************************************************
      */
 
-    private Map<Long, LiveData<List<ShoppingListProduct>>> mShoppingListProductsCache;
-    public LiveData<List<ShoppingListProduct>> findShoppingListProducts(long shoppingListId) {
+    private Map<String, LiveData<List<ShoppingListProduct>>> mShoppingListProductsCache;
+    public LiveData<List<ShoppingListProduct>> findShoppingListProducts(String shoppingListId) {
         if (this.mShoppingListProductsCache == null) {
             this.mShoppingListProductsCache = new ArrayMap<>();
         }
@@ -93,10 +93,10 @@ public class ShoppingListProductRepository {
         return this.mShoppingListProductsCache.get(shoppingListId);
     }
 
-    private static Comparator<ShoppingListProduct> sShoppingListProductComparator = new Comparator<ShoppingListProduct>() {
+    private static final Comparator<ShoppingListProduct> sShoppingListProductComparator = new Comparator<ShoppingListProduct>() {
         @Override
         public int compare(ShoppingListProduct a, ShoppingListProduct b) {
-            return (int) (a.getProductId() - b.getProductId());
+            return a.getProductId().compareTo(b.getProductId());
         }
     };
     private class ShoppingListProductAssembler extends MediatorLiveData<List<ShoppingListProduct>> {
@@ -105,7 +105,7 @@ public class ShoppingListProductRepository {
         private Set<ShoppingListProduct> mNotReadyProducts;
         private Set<ShoppingListProduct> mReadyProducts;
 
-        private ShoppingListProductAssembler(final long shoppingListId) {
+        private ShoppingListProductAssembler(final String shoppingListId) {
             this.addSource(
                 ShoppingListProductRepository.this.findPartialShoppingListProducts(shoppingListId),
                 new Observer<List<ShoppingListProduct>>() {
@@ -118,7 +118,7 @@ public class ShoppingListProductRepository {
             );
         }
 
-        private void onPartialShoppingListProductsChanged(final long shoppingListId, List<ShoppingListProduct> partialShoppingListProducts) {
+        private void onPartialShoppingListProductsChanged(final String shoppingListId, List<ShoppingListProduct> partialShoppingListProducts) {
 
             if (this.mSources != null) {
                 for (LiveData<List<StorePrice>> source : this.mSources) {
@@ -190,8 +190,8 @@ public class ShoppingListProductRepository {
 
     }
 
-    private Map<Long, LiveData<List<ShoppingListProduct>>> mPartialShoppingListProductsCache;
-    private LiveData<List<ShoppingListProduct>> findPartialShoppingListProducts(long shoppingListId) {
+    private Map<String, LiveData<List<ShoppingListProduct>>> mPartialShoppingListProductsCache;
+    private LiveData<List<ShoppingListProduct>> findPartialShoppingListProducts(String shoppingListId) {
         if (this.mPartialShoppingListProductsCache == null) {
             this.mPartialShoppingListProductsCache = new ArrayMap<>();
         }
@@ -203,8 +203,8 @@ public class ShoppingListProductRepository {
     }
 
 
-    private Map<Long, LiveData<Map<Store, List<ShoppingListProduct>>>> mGroupedShoppingListProductsCache;
-    public LiveData<Map<Store, List<ShoppingListProduct>>> findGroupedShoppingListProducts(long shoppingListId) {
+    private Map<String, LiveData<Map<Store, List<ShoppingListProduct>>>> mGroupedShoppingListProductsCache;
+    public LiveData<Map<Store, List<ShoppingListProduct>>> findGroupedShoppingListProducts(String shoppingListId) {
         if (this.mGroupedShoppingListProductsCache == null) {
             this.mGroupedShoppingListProductsCache = new ArrayMap<>();
         }
@@ -216,7 +216,7 @@ public class ShoppingListProductRepository {
 
     private class ShoppingListProductsGrouper extends MediatorLiveData<Map<Store, List<ShoppingListProduct>>> {
 
-        private ShoppingListProductsGrouper(long shoppingListId) {
+        private ShoppingListProductsGrouper(String shoppingListId) {
             this.addSource(
                 ShoppingListProductRepository.this.findShoppingListProducts(shoppingListId),
                 new Observer<List<ShoppingListProduct>>() {
@@ -244,7 +244,7 @@ public class ShoppingListProductRepository {
     ************************************************************************************************
      */
 
-    public List<ShoppingListProduct> findShoppingListProductsNow(long shoppingListId) {
+    public List<ShoppingListProduct> findShoppingListProductsNow(String shoppingListId) {
         List<ShoppingListProduct> products
                 = this.findPartialShoppingListProductsNow(shoppingListId);
         for (ShoppingListProduct product : products) {
@@ -254,12 +254,12 @@ public class ShoppingListProductRepository {
         return products;
     }
 
-    private List<ShoppingListProduct> findPartialShoppingListProductsNow(long shoppingListId) {
+    private List<ShoppingListProduct> findPartialShoppingListProductsNow(String shoppingListId) {
         return this.getShoppingListProductDao().findPartialShoppingListProductsNow(shoppingListId);
     }
 
 
-    public Map<Store, List<ShoppingListProduct>> findGroupedShoppingListProductsNow(long shoppingListId) {
+    public Map<Store, List<ShoppingListProduct>> findGroupedShoppingListProductsNow(String shoppingListId) {
         List<ShoppingListProduct> shoppingListProducts
                 = this.findShoppingListProductsNow(shoppingListId);
         return this.groupShoppingListProducts(shoppingListProducts);
@@ -280,8 +280,8 @@ public class ShoppingListProductRepository {
             return null;
         }
 
-        Map<Long, List<ShoppingListProduct>> idResult = new ArrayMap<>();
-        Map<Long, Store> storeIdMap = new ArrayMap<>();
+        Map<String, List<ShoppingListProduct>> idResult = new ArrayMap<>();
+        Map<String, Store> storeIdMap = new ArrayMap<>();
 
         for (ShoppingListProduct product : shoppingListProducts) {
 
@@ -290,7 +290,7 @@ public class ShoppingListProductRepository {
             if (bestPrices.size() > 0) {
 
                 Store store = bestPrices.get(0).getStore();
-                long storeId = store.getStoreId();
+                String storeId = store.getStoreId();
 
                 if (!idResult.containsKey(storeId)) {
                     idResult.put(storeId, new ArrayList<ShoppingListProduct>());
@@ -312,7 +312,7 @@ public class ShoppingListProductRepository {
 
         Map<Store, List<ShoppingListProduct>> result = new ArrayMap<>();
 
-        for (Map.Entry<Long, List<ShoppingListProduct>> entry : idResult.entrySet()) {
+        for (Map.Entry<String, List<ShoppingListProduct>> entry : idResult.entrySet()) {
 
             Store store = storeIdMap.get(entry.getKey());
             result.put(store, entry.getValue());

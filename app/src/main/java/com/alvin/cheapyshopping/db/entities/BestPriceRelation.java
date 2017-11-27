@@ -3,6 +3,7 @@ package com.alvin.cheapyshopping.db.entities;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
+import android.support.annotation.NonNull;
 
 /**
  * Created by Alvin on 21/11/2017.
@@ -34,36 +35,39 @@ import android.arch.persistence.room.ForeignKey;
 public class BestPriceRelation {
 
     @ColumnInfo(name = "foreign_shopping_list_id")
-    private long mForeignShoppingListId;
+    @NonNull
+    private String mForeignShoppingListId;
 
     @ColumnInfo(name = "foreign_product_id")
-    private long mForeignProductId;
+    @NonNull
+    private String mForeignProductId;
 
     @ColumnInfo(name = "foreign_price_id", index = true)
-    private long mForeignPriceId;
+    @NonNull
+    private String mForeignPriceId;
 
 
-    public long getForeignShoppingListId() {
+    public String getForeignShoppingListId() {
         return this.mForeignShoppingListId;
     }
 
-    public void setForeignShoppingListId(long foreignShoppingListId) {
+    public void setForeignShoppingListId(String foreignShoppingListId) {
         this.mForeignShoppingListId = foreignShoppingListId;
     }
 
-    public long getForeignProductId() {
+    public String getForeignProductId() {
         return this.mForeignProductId;
     }
 
-    public void setForeignProductId(long foreignProductId) {
+    public void setForeignProductId(String foreignProductId) {
         this.mForeignProductId = foreignProductId;
     }
 
-    public long getForeignPriceId() {
+    public String getForeignPriceId() {
         return this.mForeignPriceId;
     }
 
-    public void setForeignPriceId(long foreignPriceId) {
+    public void setForeignPriceId(String foreignPriceId) {
         this.mForeignPriceId = foreignPriceId;
     }
 }

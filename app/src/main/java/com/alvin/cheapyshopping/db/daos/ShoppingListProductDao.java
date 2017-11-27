@@ -26,7 +26,7 @@ public interface ShoppingListProductDao {
     @Query("SELECT R.foreign_shopping_list_id, R.quantity, P.*"
             + "FROM ShoppingListProductRelation R INNER JOIN Product P ON R.foreign_product_id = P.product_id"
             + " WHERE R.foreign_shopping_list_id = :shoppingListId")
-    LiveData<List<ShoppingListProduct>> findPartialShoppingListProducts(long shoppingListId);
+    LiveData<List<ShoppingListProduct>> findPartialShoppingListProducts(String shoppingListId);
 
 
     /*
@@ -38,7 +38,7 @@ public interface ShoppingListProductDao {
     @Query("SELECT R.foreign_shopping_list_id, R.quantity, P.*"
             + "FROM ShoppingListProductRelation R INNER JOIN Product P ON R.foreign_product_id = P.product_id"
             + " WHERE R.foreign_shopping_list_id = :shoppingListId")
-    List<ShoppingListProduct> findPartialShoppingListProductsNow(long shoppingListId);
+    List<ShoppingListProduct> findPartialShoppingListProductsNow(String shoppingListId);
 
 
 

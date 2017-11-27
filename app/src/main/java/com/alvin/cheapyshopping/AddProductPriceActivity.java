@@ -5,7 +5,7 @@ import android.os.Bundle;
 
 import com.alvin.cheapyshopping.fragments.SelectStoreFragment;
 
-public class AddPriceActivity extends AppCompatActivity {
+public class AddProductPriceActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

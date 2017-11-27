@@ -26,7 +26,7 @@ public class AddShoppingListProductRelationActivity extends AppCompatActivity {
 
     private AddShoppingListProductRelationActivityBinding mBinding;
 
-    private long mShoppingListId;
+    private String mShoppingListId;
 
 
     @Override
@@ -42,9 +42,9 @@ public class AddShoppingListProductRelationActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             Bundle args = this.getIntent().getExtras();
 
-            Long shoppingListId = null;
+            String shoppingListId = null;
             if (args != null) {
-                shoppingListId = this.mShoppingListId = args.getLong(EXTRA_SHOPPING_LIST_ID);
+                shoppingListId = this.mShoppingListId = args.getString(EXTRA_SHOPPING_LIST_ID);
             }
 
             if (shoppingListId == null) {
@@ -57,9 +57,9 @@ public class AddShoppingListProductRelationActivity extends AppCompatActivity {
         }
     }
 
-    private void finishActivity(List<Long> productIds) {
+    private void finishActivity(List<String> productIds) {
         Intent intent = new Intent();
-        long[] data = new long[productIds.size()];
+        String[] data = new String[productIds.size()];
         for (int i = 0; i < productIds.size(); ++i) {
             data[i] = productIds.get(i);
         }
@@ -111,7 +111,7 @@ public class AddShoppingListProductRelationActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onProductItemsSelected(SelectProductFragment fragment, List<Long> productIds) {
+        public void onProductItemsSelected(SelectProductFragment fragment, List<String> productIds) {
             AddShoppingListProductRelationActivity.this.mViewModel
                     .addShoppingListProduct(AddShoppingListProductRelationActivity.this.mShoppingListId, productIds, 1);
             AddShoppingListProductRelationActivity.this.finishActivity(productIds);

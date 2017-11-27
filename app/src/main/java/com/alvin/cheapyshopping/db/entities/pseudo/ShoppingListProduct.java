@@ -23,7 +23,7 @@ import java.util.List;
 public class ShoppingListProduct extends Product {
 
     @ColumnInfo(name = "foreign_shopping_list_id")
-    private long mForeignShoppingListId;
+    private String mForeignShoppingListId;
 
     @ColumnInfo(name = "quantity")
     private int mQuantity;
@@ -32,11 +32,11 @@ public class ShoppingListProduct extends Product {
     private List<StorePrice> mBestStorePrices;
 
 
-    public long getForeignShoppingListId() {
+    public String getForeignShoppingListId() {
         return this.mForeignShoppingListId;
     }
 
-    public void setForeignShoppingListId(long foreignShoppingListId) {
+    public void setForeignShoppingListId(String foreignShoppingListId) {
         this.mForeignShoppingListId = foreignShoppingListId;
     }
 
