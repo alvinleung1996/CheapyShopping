@@ -119,7 +119,8 @@ public class ProductActivity extends AppCompatActivity {
 
     private void onFloatingActionButtonClick(FloatingActionButton fab) {
         Intent intent = new Intent(this.getApplicationContext(), AddProductPriceActivity.class);
-
+        intent.putExtra(AddProductPriceActivity.EXTRA_PRODUCT_ID, this.mProductId);
+        this.startActivity(intent);
     }
 
 }

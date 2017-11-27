@@ -6,12 +6,12 @@
 
     <data class="ProductInfoFragmentBinding">
         <variable
-        name="product"
-        type="com.alvin.cheapyshopping.db.entities.Product"/>
+            name="product"
+            type="com.alvin.cheapyshopping.db.entities.Product"/>
 
         <variable
-        name="bestPrice"
-        type="com.alvin.cheapyshopping.db.entities.pseudo.StorePrice"/>
+            name="bestPrice"
+            type="com.alvin.cheapyshopping.db.entities.pseudo.StorePrice"/>
 
         <variable
             name="bestPriceDate"
