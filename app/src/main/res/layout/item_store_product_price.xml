@@ -9,8 +9,8 @@
             name="productPrice"
             type="com.alvin.cheapyshopping.db.entities.pseudo.ProductPrice"/>
         <variable
-            name="date"
-            type="String"/>
+            name="creationTimeFormatter"
+            type="java.text.Format"/>
         <variable
             name="onClickListener"
             type="android.view.View.OnClickListener"/>
@@ -118,7 +118,7 @@
                     android:id="@+id/text_price_date"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@{date}"
+                    android:text="(Date)"
                     android:textStyle="italic"
                     app:layout_constraintStart_toEndOf="@id/image_price_update"
                     app:layout_constraintTop_toBottomOf="@id/text_store_price"/>
