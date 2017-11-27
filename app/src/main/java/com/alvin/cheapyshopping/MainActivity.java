@@ -1,6 +1,7 @@
 package com.alvin.cheapyshopping;
 
 import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -17,6 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -67,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
 
         this.mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         this.mDrawerHeaderBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.drawer_header, mBinding.drawer, false);
+        this.mViewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
 
         this.getSupportFragmentManager().registerFragmentLifecycleCallbacks(new FragmentLifecycleCallbacks(), false);
 
@@ -101,13 +104,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // TODO: Setup drawer account information
-//        this.mViewModel.findCurrentAccount().observe(this, new Observer<Account>() {
-//            @Override
-//            public void onChanged(@Nullable Account account) {
-//                mDrawerHeaderBinding.setAccount(account);
-//            }
-//        });
+        // Setup drawer account information
+        setupDrawerHeader();
 
 
         // Floating action buttons
@@ -171,6 +169,19 @@ public class MainActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+
+    private void setupDrawerHeader(){
+
+        this.mViewModel.findCurrentAccount().observe(this, new Observer<Account>() {
+            @Override
+            public void onChanged(@Nullable Account account) {
+                if (account != null){
+                    mDrawerHeaderBinding.setAccount(account);
+                }
+            }
+        });
     }
 
 
@@ -374,5 +385,7 @@ public class MainActivity extends AppCompatActivity {
         this.mBinding.drawerLayout.closeDrawer(this.mBinding.drawer);
         return true;
     }
+
+
 
 }
