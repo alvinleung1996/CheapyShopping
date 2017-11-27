@@ -42,6 +42,14 @@ public class AddProductPriceFragmentViewModel extends AndroidViewModel {
         return this.mPriceRepository;
     }
 
+    private StoreRepository mStoreRepository;
+    private StoreRepository getStoreRepository(){
+        if(this.mStoreRepository == null){
+            this.mStoreRepository = StoreRepository.getInstance(this.getApplication());
+        }
+        return this.mStoreRepository;
+    }
+
 
     /*
     ************************************************************************************************
@@ -154,4 +162,20 @@ public class AddProductPriceFragmentViewModel extends AndroidViewModel {
             return null;
         }
     }
+
+    /*
+    ************************************************************************************************
+    * Get Store
+    ************************************************************************************************
+     */
+
+    private LiveData<Store> mStore;
+
+    public LiveData<Store> findStoreByStoreId(String storeId){
+        if (this.mStore == null){
+            this.mStore = this.getStoreRepository().findStoreByStoreId(storeId);
+        }
+        return this.mStore;
+    }
+
 }

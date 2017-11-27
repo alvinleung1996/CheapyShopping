@@ -38,7 +38,7 @@ public class AddProductPriceActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             this.getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, AddProductPriceFragment.newInstance(productId, true))
+                    .add(R.id.fragment_container, AddProductPriceFragment.newInstance(productId, true, null))
                     .commit();
         }
     }

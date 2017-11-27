@@ -20,6 +20,7 @@ import android.widget.RadioButton;
 import com.alvin.cheapyshopping.R;
 import com.alvin.cheapyshopping.databinding.AddProductPriceFragmentBinding;
 import com.alvin.cheapyshopping.db.entities.Price;
+import com.alvin.cheapyshopping.db.entities.Store;
 import com.alvin.cheapyshopping.viewmodels.AddProductPriceFragmentViewModel;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -47,13 +48,14 @@ public class AddProductPriceFragment extends Fragment {
 
     private static final String ARGUMENT_PRODUCT_ID = "com.alvin.cheapyshopping.fragments.AddProductPriceFragment.ARGUMENT_PRODUCT_ID";
     private static final String ARGUMENT_CREATE_OPTIONS_MENU = "com.alvin.cheapyshopping.fragments.AddProductPriceFragment.ARGUMENT_CREATE_OPTIONS_MENU";
+    private static final String ARGUMENT_STORE_ID = "com.alvin.cheapyshopping.fragments.AddProductPriceFragment.ARGUMENT_STORE_ID";
 
-
-    public static AddProductPriceFragment newInstance(String productId, boolean createOptionsMenu) {
+    public static AddProductPriceFragment newInstance(String productId, boolean createOptionsMenu, String storeId) {
         AddProductPriceFragment fragment = new AddProductPriceFragment();
         Bundle bundle = new Bundle();
         bundle.putString(ARGUMENT_PRODUCT_ID, productId);
         bundle.putBoolean(ARGUMENT_CREATE_OPTIONS_MENU, createOptionsMenu);
+        bundle.putString(ARGUMENT_STORE_ID, storeId);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -89,6 +91,8 @@ public class AddProductPriceFragment extends Fragment {
         if (args != null) {
             this.mProductId = args.getString(ARGUMENT_PRODUCT_ID);
             this.setHasOptionsMenu(args.getBoolean(ARGUMENT_CREATE_OPTIONS_MENU, true));
+
+            this.mStoreId = args.getString(ARGUMENT_STORE_ID);
         }
 
 
@@ -134,6 +138,29 @@ public class AddProductPriceFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         this.mViewModel = ViewModelProviders.of(this).get(AddProductPriceFragmentViewModel.class);
+
+        // If store already exist
+        if(this.mStoreId != null){
+            this.mViewModel.findStoreByStoreId(mStoreId).observe(this, new Observer<Store>() {
+                @Override
+                public void onChanged(@Nullable Store store) {
+                    if (store != null){
+                        Log.d("Debug: ", "Store_" + store.getName() + " detected");
+                        // Disable the place pick button
+                        AddProductPriceFragment.this.mBinding.buttonPickPlace.setVisibility(View.GONE);
+
+                        // Setup store information for save
+                        AddProductPriceFragment.this.mStoreSelected = true;
+                        AddProductPriceFragment.this.mStoreId = store.getStoreId();
+                        AddProductPriceFragment.this.mStoreName = store.getName();
+                        AddProductPriceFragment.this.mStoreAddress = store.getAddress();
+                        AddProductPriceFragment.this.mStoreLongitude = store.getLongitude();
+                        AddProductPriceFragment.this.mStoreLatitude = store.getLatitude();
+
+                    }
+                }
+            });
+        }
     }
 
 
@@ -267,13 +294,14 @@ public class AddProductPriceFragment extends Fragment {
                 throw new RuntimeException("Unknow price type!");
         }
 
+
         if (!this.mStoreSelected) {
             return;
         }
 
         this.mViewModel.addPrice(this.mProductId,
-                 priceType, priceTotal, priceQuantity, priceFreeQuantity, priceDiscount,
-                 this.mStoreId, this.mStoreName, this.mStoreAddress, this.mStoreLongitude, this.mStoreLatitude)
+                priceType, priceTotal, priceQuantity, priceFreeQuantity, priceDiscount,
+                this.mStoreId, this.mStoreName, this.mStoreAddress, this.mStoreLongitude, this.mStoreLatitude)
                 .observe(this, new Observer<long[]>() {
                     @Override
                     public void onChanged(@Nullable long[] rowIds) {
@@ -283,6 +311,9 @@ public class AddProductPriceFragment extends Fragment {
                         }
                     }
                 });
+
+
+
     }
 
 }
