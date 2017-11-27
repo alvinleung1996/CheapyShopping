@@ -188,7 +188,7 @@ public class StoreInfoFragment extends Fragment{
 
 //    private void onProductClick(View view, Product product) {
 //        Intent intent = new Intent(this.getContext(), ProductActivity.class);
-//        intent.putExtra(ProductActivity.EXTRA_PRODUCT_ID, product.getProductId());
+//        intent.putExtra(ProductActivity.ARGUMENT_PRODUCT_ID, product.getProductId());
 //        this.startActivity(intent);
 //    }
 
