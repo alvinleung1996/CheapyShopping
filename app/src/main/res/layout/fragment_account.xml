@@ -49,7 +49,7 @@
                         android:layout_height="25dp"
                         android:layout_marginBottom="10dp"
                         android:layout_marginEnd="10dp"
-                        android:background="@drawable/border_box_white"
+                        android:background="@drawable/frame_box_white"
                         android:padding="3dp"
                         android:src="@drawable/ic_edit_black_24dp"
                         android:tint="@color/white"
@@ -163,7 +163,7 @@
                     android:padding="@dimen/account_fragment_box_padding_inner">
 
                     <TextView
-                        android:id="@+id/text_account_score_title"
+                        android:id="@+id/text_account_score_prefix"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:text="Score: "
@@ -179,17 +179,30 @@
                         android:text="@{account.accountScore != null ? Long.toString(account.accountScore) : `Not available`}"
                         android:textStyle="bold"
                         app:layout_constraintEnd_toEndOf="parent"/>
+                    
+                    <ProgressBar
+                        android:id="@+id/progress_bar_rank"
+                        android:layout_width="150dp"
+                        android:layout_height="10dp"
+                        android:progress="70"
+                        android:layout_marginTop="20dp"
+                        android:progressDrawable="@drawable/progress_bar_account"
+                        android:elevation="4dp"
+                        style="@android:style/Widget.ProgressBar.Horizontal"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/text_account_score_prefix"/>
 
                     <ImageView
                         android:id="@+id/image_account_badge"
                         android:layout_width="150dp"
                         android:layout_height="150dp"
                         android:paddingBottom="10dp"
-                        android:paddingTop="20dp"
+                        android:paddingTop="10dp"
                         android:src="@drawable/sample_badge_icon"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/text_account_score_title"/>
+                        app:layout_constraintTop_toBottomOf="@id/progress_bar_rank"/>
 
                     <TextView
                         android:id="@+id/text_account_badge_rank"

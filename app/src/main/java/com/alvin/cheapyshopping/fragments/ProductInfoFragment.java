@@ -29,6 +29,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 
+import com.alvin.cheapyshopping.utils.ImageRotate;
 import com.alvin.cheapyshopping.utils.ImageUpdater;
 import com.alvin.cheapyshopping.ProductActivity;
 import com.alvin.cheapyshopping.R;
@@ -437,28 +438,8 @@ public class ProductInfoFragment extends Fragment {
         File storageDir = ProductInfoFragment.this.getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = new File(storageDir, imageFileName + ".jpg");
         if (image.exists()){
-            // Rotate the image
-            Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath());
-            try {
-                ExifInterface exif = new ExifInterface(image.getAbsolutePath());
-                int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1);
-                Log.d("EXIF", "Exif: " + orientation);
-                Matrix matrix = new Matrix();
-                if (orientation == 6) {
-                    matrix.postRotate(90);
-                }
-                else if (orientation == 3) {
-                    matrix.postRotate(180);
-                }
-                else if (orientation == 8) {
-                    matrix.postRotate(270);
-                }
-                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true); // rotating bitmap
-            }
-            catch (Exception e) {
 
-            }
-            mBitmap = bitmap;
+            mBitmap = ImageRotate.getsInstance(this.getContext()).rotateImage(image);
 
             // Update image view with rotated bitmap
             mBinding.imageProduct.setImageBitmap(mBitmap);
