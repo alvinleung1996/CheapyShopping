@@ -48,6 +48,9 @@
             android:name=".EditStoreActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
         <activity
+            android:name=".AddStoreProductActivity"
+            android:label="Add Product to Store"/>
+        <activity
             android:name=".AddStoreActivity"
             android:label="Add Store">
         </activity>

@@ -186,8 +186,8 @@ public class StoreActivity extends AppCompatActivity {
                 intent.putExtra(StoreActivity.EXTRA_STORE_ID, mStoreId);
                 this.startActivity(intent);
             }else if(mActiveFragment instanceof StoreProductPricesFragment){
-                Intent intent = new Intent(this.getApplicationContext(), AddProductActivity.class);
-                intent.putExtra(StoreActivity.EXTRA_STORE_ID, mStoreId);
+                Intent intent = new Intent(this.getApplicationContext(), AddStoreProductActivity.class);
+                intent.putExtra(AddStoreProductActivity.EXTRA_STORE_ID, mStoreId);
                 this.startActivity(intent);
             }
         }
