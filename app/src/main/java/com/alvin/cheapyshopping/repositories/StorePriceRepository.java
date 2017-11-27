@@ -86,6 +86,7 @@ public class StorePriceRepository {
 
 
     private LiveData<StorePrice> mBestProductStorePrice;
+    @Deprecated
     public LiveData<StorePrice> findBestProductStorePrice(long productId){
         if (mBestProductStorePrice == null){
             mBestProductStorePrice = this.getStorePriceDao().findBestProductStorePrice(productId);

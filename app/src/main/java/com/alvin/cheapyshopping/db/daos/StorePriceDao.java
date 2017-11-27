@@ -34,6 +34,7 @@ public interface StorePriceDao {
 
 
     // Get the best StorePrice with min unit price (QTY: 1) and latest creation time
+    @Deprecated
     @Query("SELECT * " +
             "FROM Price P INNER JOIN STORE S ON P.foreign_store_id = S.store_id " +
             "WHERE P.foreign_product_id = :productId " +

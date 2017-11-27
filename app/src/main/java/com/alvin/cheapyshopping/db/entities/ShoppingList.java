@@ -4,6 +4,7 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -20,8 +21,8 @@ public class ShoppingList {
     @ColumnInfo(name = "name")
     private String mName;
 
-    @ColumnInfo(name = "creation_time")
-    private Date mCreationTime;
+    @ColumnInfo(name = "time")
+    private Calendar mCreationTime;
 
     @ColumnInfo(name = "foreign_account_id")
     private long mForeignAccountId;
@@ -49,11 +50,11 @@ public class ShoppingList {
         this.mName = name;
     }
 
-    public Date getCreationTime() {
+    public Calendar getCreationTime() {
         return this.mCreationTime;
     }
 
-    public void setCreationTime(Date creationTime) {
+    public void setCreationTime(Calendar creationTime) {
         this.mCreationTime = creationTime;
     }
 

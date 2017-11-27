@@ -1,12 +1,15 @@
 package com.alvin.cheapyshopping.fragments;
 
 
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +19,7 @@ import com.alvin.cheapyshopping.databinding.ProductStorePricesFragmentBinding;
 import com.alvin.cheapyshopping.db.entities.pseudo.StorePrice;
 import com.alvin.cheapyshopping.viewmodels.ProductStorePricesFragmentViewModel;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +40,8 @@ public class ProductStorePricesFragment extends Fragment {
     }
 
 
+    private long productId;
+
     private ProductStorePricesFragmentViewModel mViewModel;
 
     private ProductStorePricesFragmentBinding mBinding;
@@ -45,6 +51,22 @@ public class ProductStorePricesFragment extends Fragment {
 
     public ProductStorePricesFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Bundle args = this.getArguments();
+        Long productId = null;
+        if (args != null) {
+            if (args.containsKey(ARGUMENT_PRODUCT_ID)) {
+                productId = args.getLong(ARGUMENT_PRODUCT_ID);
+            }
+        }
+        if (productId == null) {
+            throw new RuntimeException("Product Id required!");
+        }
+        this.productId = productId;
     }
 
     @Override
@@ -62,6 +84,15 @@ public class ProductStorePricesFragment extends Fragment {
 
         this.mStorePriceListAdapter = new StorePriceListAdapter();
         this.mBinding.listStorePrices.setAdapter(this.mStorePriceListAdapter);
+        this.mBinding.listStorePrices.setLayoutManager(new LinearLayoutManager(this.getContext(), LinearLayoutManager.VERTICAL, false));
+
+        this.mViewModel.findProductStorePrices(this.productId).observe(this, new Observer<List<StorePrice>>() {
+            @Override
+            public void onChanged(@Nullable List<StorePrice> storePrices) {
+                ProductStorePricesFragment.this.mStorePriceListAdapter
+                        .setStorePrices(storePrices == null ? new ArrayList<StorePrice>() : storePrices);
+            }
+        });
     }
 
 
@@ -116,6 +147,7 @@ public class ProductStorePricesFragment extends Fragment {
                     .inflate(LayoutInflater.from(parent.getContext()), parent, false)
                     .getRoot());
             this.mBinding = DataBindingUtil.getBinding(this.itemView);
+            this.mBinding.setCreationTimeFormatter(new SimpleDateFormat("dd-MM-yyyy HH:mm:ss"));
         }
 
         private void onBind(StorePrice storePrice) {
@@ -144,6 +176,6 @@ public class ProductStorePricesFragment extends Fragment {
      */
 
     private void onStorePriceItemClick(View view, StorePrice storePrice) {
-
+        Log.d("item", "price clicked");
     }
 }

@@ -12,7 +12,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.media.ExifInterface;
-import android.net.Uri;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -47,8 +46,6 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.support.v4.content.FileProvider.getUriForFile;
 
 /**
  * Created by cheng on 11/21/2017.
@@ -102,9 +99,8 @@ public class ProductInfoFragment extends Fragment {
             });
 
             // Set price update date & time
-            SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy     HH:mm:ss");
-            String updateDate = formatter.format(mStorePrices.get(position).getCreationTime());
-            holder.mBinding.setDate(updateDate);
+//            SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy     HH:mm:ss");
+//            String updateDate = formatter.format(mStorePrices.get(position).getCreationTime());
         }
 
 
@@ -219,9 +215,9 @@ public class ProductInfoFragment extends Fragment {
                 Log.d("Debug: ", "Best price  - " + storePrice.getStore().getName());
 
                 // Set price update date & time
-                SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
-                String updateDate = formatter.format(storePrice.getCreationTime());
-                ProductInfoFragment.this.mBinding.setBestPriceDate(updateDate);
+//                SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
+//                String updateDate = formatter.format(storePrice.getCreationTime());
+//                ProductInfoFragment.this.mBinding.setBestPriceDate(updateDate);
 
             }
         });

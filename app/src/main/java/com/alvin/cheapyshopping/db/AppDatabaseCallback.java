@@ -46,7 +46,7 @@ public class AppDatabaseCallback extends RoomDatabase.Callback {
 
                 ShoppingList list = new ShoppingList();
                 list.setName("Shopping List 0");
-                list.setCreationTime(new Date());
+                list.setCreationTime(Calendar.getInstance());
                 list.setForeignAccountId(account.getAccountId());
                 appDb.getShoppingListDao().insertShoppingList(list);
                 list = appDb.getShoppingListDao()
@@ -99,7 +99,7 @@ public class AppDatabaseCallback extends RoomDatabase.Callback {
                     Price price = new Price();
                     price.setType(Price.TYPE_SINGLE);
                     price.setTotal(100);
-                    price.setCreationTime(Calendar.getInstance().getTime());
+                    price.setCreationTime(Calendar.getInstance());
                     price.setForeignProductId(product.getProductId());
                     price.setForeignStoreId(stores.get((stores.size() + prices.size()) / stores.size()).getStoreId());
                     prices.add(price);
@@ -110,7 +110,7 @@ public class AppDatabaseCallback extends RoomDatabase.Callback {
                 price.setTotal(30);
                 price.setForeignProductId(1);
                 price.setForeignStoreId(3);
-                price.setCreationTime(Calendar.getInstance().getTime());
+                price.setCreationTime(Calendar.getInstance());
                 prices.add(price);
 
                 appDb.getPriceDao()

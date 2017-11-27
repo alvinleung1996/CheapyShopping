@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import com.alvin.cheapyshopping.repositories.ShoppingListRepository;
 import com.alvin.cheapyshopping.db.entities.ShoppingList;
 
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -44,7 +45,7 @@ public class AddShoppingListActivityViewModel extends AndroidViewModel {
         }
         ShoppingList shoppingList = new ShoppingList();
         shoppingList.setName(name);
-        shoppingList.setCreationTime(new Date());
+        shoppingList.setCreationTime(Calendar.getInstance());
         new InsertShoppingListTask(this.getApplication(), this.mAccountId, name, callback).execute();
     }
 

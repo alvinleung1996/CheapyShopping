@@ -9,7 +9,7 @@ import android.support.annotation.IntDef;
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Date;
+import java.util.Calendar;
 
 /**
  * Created by Alvin on 20/11/2017.
@@ -65,7 +65,7 @@ public class Price {
     private double mDiscount;
 
     @ColumnInfo(name = "creation_time")
-    private Date mCreationTime;
+    private Calendar mCreationTime;
 
     @ColumnInfo(name = "foreign_product_id", index = true)
     private long mForeignProductId;
@@ -123,11 +123,11 @@ public class Price {
         this.mDiscount = discount;
     }
 
-    public Date getCreationTime() {
+    public Calendar getCreationTime() {
         return this.mCreationTime;
     }
 
-    public void setCreationTime(Date creationTime) {
+    public void setCreationTime(Calendar creationTime) {
         this.mCreationTime = creationTime;
     }
 
