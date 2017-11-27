@@ -4,10 +4,13 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
+import android.view.View;
 
 import com.alvin.cheapyshopping.databinding.ProductActivityBinding;
 import com.alvin.cheapyshopping.fragments.ProductInfoFragment;
@@ -49,12 +52,31 @@ public class ProductActivity extends AppCompatActivity {
 
         // Toolbar
         this.setSupportActionBar(this.mBinding.toolbar);
-        this.getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // View Pager
         this.mBinding.viewPager.setAdapter(new FragmentPageAdapter(this.getSupportFragmentManager()));
 
         this.mBinding.tabsContainer.setupWithViewPager(this.mBinding.viewPager);
+
+        // Floating Action Button
+        this.mBinding.setOnFloatingActionButtonClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ProductActivity.this.onFloatingActionButtonClick((FloatingActionButton) view);
+            }
+        });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private class FragmentPageAdapter extends FragmentPagerAdapter {
@@ -92,6 +114,12 @@ public class ProductActivity extends AppCompatActivity {
                     return null;
             }
         }
+    }
+
+
+    private void onFloatingActionButtonClick(FloatingActionButton fab) {
+        Intent intent = new Intent(this.getApplicationContext(), AddPriceActivity.class);
+
     }
 
 }
