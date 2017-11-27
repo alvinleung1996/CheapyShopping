@@ -3,14 +3,9 @@ package com.alvin.cheapyshopping.fragments;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Intent;
-import android.databinding.DataBindingUtil;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -23,7 +18,7 @@ import com.alvin.cheapyshopping.R;
 import com.alvin.cheapyshopping.StoreActivity;
 import com.alvin.cheapyshopping.databinding.StoreInfoFragmentBinding;
 import com.alvin.cheapyshopping.db.entities.Store;
-import com.alvin.cheapyshopping.viewmodels.StoreFragmentViewModel;
+import com.alvin.cheapyshopping.viewmodels.StoreInfoFragmentViewModel;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -56,7 +51,7 @@ public class StoreInfoFragment extends Fragment{
 
 
     private StoreInfoFragmentBinding mBinding;
-    private StoreFragmentViewModel mViewModel;
+    private StoreInfoFragmentViewModel mViewModel;
 
     private GoogleMap mMap;
 
@@ -71,7 +66,7 @@ public class StoreInfoFragment extends Fragment{
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.setHasOptionsMenu(true);
+        this.setHasOptionsMenu(false);
 
         // Get Product ID
         Bundle args = getArguments();
@@ -95,7 +90,7 @@ public class StoreInfoFragment extends Fragment{
 
 
         // Setup viewModel
-        this.mViewModel = ViewModelProviders.of(this).get(StoreFragmentViewModel.class);
+        this.mViewModel = ViewModelProviders.of(this).get(StoreInfoFragmentViewModel.class);
 
         ((SupportMapFragment) this.getChildFragmentManager().findFragmentById(R.id.fragment_map))
                 .getMapAsync(new MapReadyCallback());
@@ -156,28 +151,28 @@ public class StoreInfoFragment extends Fragment{
     ************************************************************************************************
      */
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.store_fragment_menu, menu);
-    }
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.item_favourite:
-                // TODO: Add store to favourite
-                return true;
-            case R.id.item_edit:
-                // TODO: Edit store information
-                return true;
-            case R.id.item_add_product:
-                // TODO: Add new product to store
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+//    @Override
+//    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+//        super.onCreateOptionsMenu(menu, inflater);
+//        inflater.inflate(R.menu.store_fragment_menu, menu);
+//    }
+//
+//
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        switch (item.getItemId()) {
+//            case R.id.item_favourite:
+//                // TODO: Add store to favourite
+//                return true;
+//            case R.id.item_edit:
+//                // TODO: Edit store information
+//                return true;
+//            case R.id.item_add_product:
+//                // TODO: Add new product to store
+//                return true;
+//        }
+//        return super.onOptionsItemSelected(item);
+//    }
 
 
     /*
@@ -191,5 +186,13 @@ public class StoreInfoFragment extends Fragment{
 //        intent.putExtra(ProductActivity.EXTRA_PRODUCT_ID, product.getProductId());
 //        this.startActivity(intent);
 //    }
+
+    /*
+    ************************************************************************************************
+    * StoreActivity.FloatingActionButtonInteractionListener
+    ************************************************************************************************
+     */
+
+
 
 }

@@ -17,9 +17,9 @@ import java.util.List;
  * Created by cheng on 11/26/2017.
  */
 
-public class StoreFragmentViewModel extends AndroidViewModel {
+public class StoreInfoFragmentViewModel extends AndroidViewModel {
 
-    public StoreFragmentViewModel(Application application) {
+    public StoreInfoFragmentViewModel(Application application) {
         super(application);
     }
 
@@ -75,7 +75,7 @@ public class StoreFragmentViewModel extends AndroidViewModel {
 
     public LiveData<List<ProductPrice>> getProductPriceList(String storeId){
         if (this.mProductPriceList == null){
-            this.mProductPriceList = this.getProductPriceRepository().findProductStorePrices(storeId);
+            this.mProductPriceList = this.getProductPriceRepository().findStoreProductPrices(storeId);
         }
         return this.mProductPriceList;
     }

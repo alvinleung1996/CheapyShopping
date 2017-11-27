@@ -58,7 +58,7 @@ public class ProductPriceRepository {
      */
 
     private Map<String, LiveData<List<ProductPrice>>> mStoreProductPricesCache;
-    public LiveData<List<ProductPrice>> findProductStorePrices(String storeId) {
+    public LiveData<List<ProductPrice>> findStoreProductPrices(String storeId) {
         if (this.mStoreProductPricesCache == null) {
             this.mStoreProductPricesCache = new ArrayMap<>();
         }
@@ -68,7 +68,6 @@ public class ProductPriceRepository {
         }
         return this.mStoreProductPricesCache.get(storeId);
     }
-
 
     /*
     ************************************************************************************************

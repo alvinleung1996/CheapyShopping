@@ -52,9 +52,11 @@ public class StoreProductPricesFragmentViewModel extends AndroidViewModel {
         }
         if (!this.mStoreProductPricesCache.containsKey(storeId)) {
             this.mStoreProductPricesCache.put(storeId, this.getProductPriceRepository()
-                    .findProductStorePrices(storeId));
+                    .findStoreProductPrices(storeId));
         }
         return this.mStoreProductPricesCache.get(storeId);
     }
+
+
 
 }

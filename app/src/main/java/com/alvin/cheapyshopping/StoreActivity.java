@@ -9,10 +9,13 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.util.SparseArray;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.alvin.cheapyshopping.databinding.StoreActivityBinding;
 import com.alvin.cheapyshopping.fragments.StoreInfoFragment;
@@ -26,9 +29,21 @@ public class StoreActivity extends AppCompatActivity {
 
     public static final String EXTRA_STORE_ID = "com.alvin.cheapyshopping.StoreActivity.EXTRA_STORE_ID";
 
+
+    public interface FloatingActionButtonInteractionListener {
+
+        void onFloatingActionButtonClick(FloatingActionButton button);
+
+    }
+
+
     private StoreActivityBinding mBinding;
 
     private String mStoreId;
+
+    private Fragment mActiveFragment;
+
+    FragmentPageAdapter mFragmentPageAdapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,7 +74,8 @@ public class StoreActivity extends AppCompatActivity {
         this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // View Pager
-        this.mBinding.viewPager.setAdapter(new FragmentPageAdapter(this.getSupportFragmentManager()));
+        mFragmentPageAdapter = new FragmentPageAdapter(this.getSupportFragmentManager());
+        this.mBinding.viewPager.setAdapter(mFragmentPageAdapter);
 
         this.mBinding.tabsContainer.setupWithViewPager(this.mBinding.viewPager);
 
@@ -68,6 +84,28 @@ public class StoreActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 StoreActivity.this.onFloatingActionButtonClick((FloatingActionButton) view);
+            }
+        });
+
+        this.mBinding.viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                mActiveFragment = mFragmentPageAdapter.getRegisteredFragment(mBinding.viewPager.getCurrentItem());
+                if (position == 0){
+                    StoreActivity.this.mBinding.fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_edit_white_24dp));
+                } else {
+                    StoreActivity.this.mBinding.fab.setImageDrawable(getResources().getDrawable(R.drawable.ic_add_white_24dp));
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
             }
         });
 
@@ -88,6 +126,25 @@ public class StoreActivity extends AppCompatActivity {
 
         private FragmentPageAdapter(FragmentManager fragmentManager) {
             super(fragmentManager);
+        }
+
+        SparseArray<Fragment> registeredFragments = new SparseArray<Fragment>();
+
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            Fragment fragment = (Fragment) super.instantiateItem(container, position);
+            registeredFragments.put(position, fragment);
+            return fragment;
+        }
+
+        @Override
+        public void destroyItem(ViewGroup container, int position, Object object) {
+            registeredFragments.remove(position);
+            super.destroyItem(container, position, object);
+        }
+
+        public Fragment getRegisteredFragment(int position) {
+            return registeredFragments.get(position);
         }
 
         @Override
@@ -123,7 +180,18 @@ public class StoreActivity extends AppCompatActivity {
 
 
     private void onFloatingActionButtonClick(FloatingActionButton fab) {
-        Intent intent = new Intent(this.getApplicationContext(), AddStoreActivity.class);
+        if(mActiveFragment != null){
+            if(mActiveFragment instanceof StoreInfoFragment){
+                Intent intent = new Intent(this.getApplicationContext(), EditStoreActivity.class);
+                intent.putExtra(StoreActivity.EXTRA_STORE_ID, mStoreId);
+                this.startActivity(intent);
+            }else if(mActiveFragment instanceof StoreProductPricesFragment){
+                Intent intent = new Intent(this.getApplicationContext(), AddProductActivity.class);
+                intent.putExtra(StoreActivity.EXTRA_STORE_ID, mStoreId);
+                this.startActivity(intent);
+            }
+        }
+
 
     }
 }
