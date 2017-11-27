@@ -28,7 +28,7 @@ public class StoreActivity extends AppCompatActivity {
 
     private StoreActivityBinding mBinding;
 
-    private long mStoreId;
+    private String mStoreId;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,10 +40,10 @@ public class StoreActivity extends AppCompatActivity {
 
         Log.d("Debug", "Created Store Activity");
 
-        Long storeId = null;
+        String storeId = null;
         if (args != null) {
             if (args.containsKey(EXTRA_STORE_ID)) {
-                storeId = args.getLong(EXTRA_STORE_ID);
+                storeId = args.getString(EXTRA_STORE_ID);
             }
         }
 

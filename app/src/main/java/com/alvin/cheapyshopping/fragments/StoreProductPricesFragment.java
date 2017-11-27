@@ -33,9 +33,9 @@ public class StoreProductPricesFragment extends Fragment {
     private static final String ARGUMENT_STORE_ID = "com.alvin.cheapyshopping.fragments.StoreProductPricesFragment.ARGUMENT_STORE_ID";
 
 
-    public static StoreProductPricesFragment newInstance(long storeId) {
+    public static StoreProductPricesFragment newInstance(String storeId) {
         Bundle args = new Bundle();
-        args.putLong(ARGUMENT_STORE_ID, storeId);
+        args.putString(ARGUMENT_STORE_ID, storeId);
         StoreProductPricesFragment fragment = new StoreProductPricesFragment();
         fragment.setArguments(args);
         return fragment;

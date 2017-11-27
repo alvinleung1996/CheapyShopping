@@ -19,26 +19,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
-import com.alvin.cheapyshopping.ProductActivity;
 import com.alvin.cheapyshopping.R;
 import com.alvin.cheapyshopping.StoreActivity;
 import com.alvin.cheapyshopping.databinding.StoreInfoFragmentBinding;
-import com.alvin.cheapyshopping.databinding.StoreProductPriceItemBinding;
-import com.alvin.cheapyshopping.db.entities.Product;
 import com.alvin.cheapyshopping.db.entities.Store;
-import com.alvin.cheapyshopping.db.entities.pseudo.ProductPrice;
 import com.alvin.cheapyshopping.viewmodels.StoreFragmentViewModel;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by cheng on 11/26/2017.
@@ -53,11 +45,11 @@ public class StoreInfoFragment extends Fragment{
      */
 
 
-    public static StoreInfoFragment newInstance(long storeId) {
+    public static StoreInfoFragment newInstance(String storeId) {
         StoreInfoFragment fragment = new StoreInfoFragment();
 
         Bundle args = new Bundle();
-        args.putLong(StoreActivity.EXTRA_STORE_ID, storeId);
+        args.putString(StoreActivity.EXTRA_STORE_ID, storeId);
         fragment.setArguments(args);
         return fragment;
     }
