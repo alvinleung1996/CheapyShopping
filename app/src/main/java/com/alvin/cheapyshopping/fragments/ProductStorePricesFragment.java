@@ -31,16 +31,16 @@ public class ProductStorePricesFragment extends Fragment {
     private static final String ARGUMENT_PRODUCT_ID = "com.alvin.cheapyshopping.fragments.ProductStorePricesFragment.ARGUMENT_PRODUCT_ID";
 
 
-    public static ProductStorePricesFragment newInstance(long productId) {
+    public static ProductStorePricesFragment newInstance(String productId) {
         Bundle args = new Bundle();
-        args.putLong(ARGUMENT_PRODUCT_ID, productId);
+        args.putString(ARGUMENT_PRODUCT_ID, productId);
         ProductStorePricesFragment fragment = new ProductStorePricesFragment();
         fragment.setArguments(args);
         return fragment;
     }
 
 
-    private long productId;
+    private String productId;
 
     private ProductStorePricesFragmentViewModel mViewModel;
 
@@ -57,10 +57,10 @@ public class ProductStorePricesFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle args = this.getArguments();
-        Long productId = null;
+        String productId = null;
         if (args != null) {
             if (args.containsKey(ARGUMENT_PRODUCT_ID)) {
-                productId = args.getLong(ARGUMENT_PRODUCT_ID);
+                productId = args.getString(ARGUMENT_PRODUCT_ID);
             }
         }
         if (productId == null) {

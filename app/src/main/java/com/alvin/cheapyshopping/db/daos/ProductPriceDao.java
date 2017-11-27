@@ -23,7 +23,7 @@ public interface ProductPriceDao {
      */
 
     @Query("SELECT * FROM Price INNER JOIN Product ON Price.foreign_product_id = Product.product_id WHERE Price.foreign_store_id = :storeId")
-    LiveData<List<ProductPrice>> findStoreProductPrices(long storeId);
+    LiveData<List<ProductPrice>> findStoreProductPrices(String storeId);
 
 
     /*
@@ -33,7 +33,7 @@ public interface ProductPriceDao {
      */
 
     @Query("SELECT * FROM Price INNER JOIN Product ON Price.foreign_product_id = Product.product_id WHERE Price.foreign_store_id = :storeId")
-    List<ProductPrice> findProductStorePricesNow(long storeId);
+    List<ProductPrice> findProductStorePricesNow(String storeId);
 
 
 }

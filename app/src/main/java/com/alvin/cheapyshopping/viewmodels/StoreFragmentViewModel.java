@@ -57,7 +57,7 @@ public class StoreFragmentViewModel extends AndroidViewModel {
 
     private LiveData<Store> mStore;
 
-    public LiveData<Store> getStore(long storeId) {
+    public LiveData<Store> getStore(String storeId) {
 
         if (this.mStore == null) {
             this.mStore = this.getStoreRepository().findStoreByStoreId(storeId);
@@ -73,7 +73,7 @@ public class StoreFragmentViewModel extends AndroidViewModel {
 
     private LiveData<List<ProductPrice>> mProductPriceList;
 
-    public LiveData<List<ProductPrice>> getProductPriceList(long storeId){
+    public LiveData<List<ProductPrice>> getProductPriceList(String storeId){
         if (this.mProductPriceList == null){
             this.mProductPriceList = this.getProductPriceRepository().findProductStorePrices(storeId);
         }

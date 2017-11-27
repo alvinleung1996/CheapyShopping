@@ -57,8 +57,8 @@ public class ShoppingListProductRelationRepository {
     ************************************************************************************************
      */
 
-    private Map<Long, LiveData<List<ShoppingListProductRelation>>> mRelationCache;
-    public LiveData<List<ShoppingListProductRelation>> findShoppingListProductRelations(long shoppingListId) {
+    private Map<String, LiveData<List<ShoppingListProductRelation>>> mRelationCache;
+    public LiveData<List<ShoppingListProductRelation>> findShoppingListProductRelations(String shoppingListId) {
         if (this.mRelationCache == null) {
             this.mRelationCache = new ArrayMap<>();
         }
@@ -76,7 +76,7 @@ public class ShoppingListProductRelationRepository {
     ************************************************************************************************
      */
 
-    public List<ShoppingListProductRelation> findShoppingListProductRelationsNow(long shoppingListId) {
+    public List<ShoppingListProductRelation> findShoppingListProductRelationsNow(String shoppingListId) {
         return this.getShoppingListProductRelationDao().findShoppingListProductRelationsNow(shoppingListId);
     }
 

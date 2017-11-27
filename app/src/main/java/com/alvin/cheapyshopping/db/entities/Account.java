@@ -4,6 +4,7 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
 
 /**
  * Created by Alvin on 21/11/2017.
@@ -22,12 +23,13 @@ import android.arch.persistence.room.PrimaryKey;
 )
 public class Account {
 
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
+    @NonNull
     @ColumnInfo(name = "account_id")
-    private long mAccountId;
+    private String mAccountId;
 
     @ColumnInfo(name = "active_shopping_list_id", index = true)
-    private Long mActiveShoppingListId;
+    private String mActiveShoppingListId;
 
     @ColumnInfo(name = "account_name")
     private String mAccountName;
@@ -36,31 +38,31 @@ public class Account {
     private String mAccountType;
 
     @ColumnInfo(name = "account_mobile")
-    private Long mAccountMobile;
+    private String mAccountMobile;
 
     @ColumnInfo(name = "account_email")
     private String mAccountEmail;
 
     @ColumnInfo(name = "account_score")
-    private Long mAccountScore;
+    private String mAccountScore;
 
     @ColumnInfo(name = "account_password")
-    private Long mAccountPassword;
+    private String mAccountPassword;
 
 
-    public long getAccountId() {
+    public String getAccountId() {
         return this.mAccountId;
     }
 
-    public void setAccountId(long accountId) {
+    public void setAccountId(String accountId) {
         this.mAccountId = accountId;
     }
 
-    public Long getActiveShoppingListId() {
+    public String getActiveShoppingListId() {
         return this.mActiveShoppingListId;
     }
 
-    public void setActiveShoppingListId(Long activeShoppingListId) {
+    public void setActiveShoppingListId(String activeShoppingListId) {
         this.mActiveShoppingListId = activeShoppingListId;
     }
 
@@ -80,19 +82,19 @@ public class Account {
         this.mAccountType = accountType;
     }
 
-    public Long getAccountMobile() {
+    public String getAccountMobile() {
         return this.mAccountMobile;
     }
 
-    public void setAccountMobile(Long accountMobile) {
+    public void setAccountMobile(String accountMobile) {
         this.mAccountMobile = accountMobile;
     }
 
-    public Long getAccountScore() {
+    public String getAccountScore() {
         return mAccountScore;
     }
 
-    public void setAccountScore(Long accountScore) {
+    public void setAccountScore(String accountScore) {
         mAccountScore = accountScore;
     }
 
@@ -104,11 +106,11 @@ public class Account {
         mAccountEmail = accountEmail;
     }
 
-    public Long getAccountPassword() {
+    public String getAccountPassword() {
         return mAccountPassword;
     }
 
-    public void setAccountPassword(Long accountPassword) {
+    public void setAccountPassword(String accountPassword) {
         mAccountPassword = accountPassword;
     }
 }

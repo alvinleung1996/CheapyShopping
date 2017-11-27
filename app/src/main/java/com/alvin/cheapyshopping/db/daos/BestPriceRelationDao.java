@@ -39,7 +39,7 @@ public interface BestPriceRelationDao {
     @Query("DELETE FROM BestPriceRelation"
             + " WHERE foreign_shopping_list_id = :shoppingListId"
                 + " AND foreign_product_id = :productId")
-    int deleteShoppingListProductBestPrice(long shoppingListId, long productId);
+    int deleteShoppingListProductBestPrice(String shoppingListId, String productId);
 
 
     /*

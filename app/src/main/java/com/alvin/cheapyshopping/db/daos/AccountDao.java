@@ -32,7 +32,7 @@ public interface AccountDao {
     LiveData<Account> getCurrentAccount();
 
     @Query("SELECT * FROM Account WHERE account_id = :accountId")
-    LiveData<Account> findAccountByAccountId(long accountId);
+    LiveData<Account> findAccountByAccountId(String accountId);
 
 
     /*
@@ -51,7 +51,7 @@ public interface AccountDao {
     Account getCurrentAccountNow();
 
     @Query("SELECT * FROM Account WHERE account_id = :accountId")
-    Account findAccountByAccountIdNow(long accountId);
+    Account findAccountByAccountIdNow(String accountId);
 
 
     /*

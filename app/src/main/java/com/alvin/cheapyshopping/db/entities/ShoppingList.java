@@ -3,6 +3,7 @@ package com.alvin.cheapyshopping.db.entities;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -14,9 +15,10 @@ import java.util.Date;
 @Entity
 public class ShoppingList {
 
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
+    @NonNull
     @ColumnInfo(name = "shopping_list_id")
-    private long mShoppingListId;
+    private String mShoppingListId;
 
     @ColumnInfo(name = "name")
     private String mName;
@@ -25,7 +27,8 @@ public class ShoppingList {
     private Calendar mCreationTime;
 
     @ColumnInfo(name = "foreign_account_id")
-    private long mForeignAccountId;
+    @NonNull
+    private String mForeignAccountId;
 
     @ColumnInfo(name = "center_longitude")
     private Double mCenterLongitude;
@@ -34,11 +37,11 @@ public class ShoppingList {
     private Double mCenterLatitude;
 
 
-    public long getShoppingListId() {
+    public String getShoppingListId() {
         return this.mShoppingListId;
     }
 
-    public void setShoppingListId(long shoppingListId) {
+    public void setShoppingListId(String shoppingListId) {
         this.mShoppingListId = shoppingListId;
     }
 
@@ -58,11 +61,11 @@ public class ShoppingList {
         this.mCreationTime = creationTime;
     }
 
-    public long getForeignAccountId() {
+    public String getForeignAccountId() {
         return this.mForeignAccountId;
     }
 
-    public void setForeignAccountId(long foreignAccountId) {
+    public void setForeignAccountId(String foreignAccountId) {
         this.mForeignAccountId = foreignAccountId;
     }
 

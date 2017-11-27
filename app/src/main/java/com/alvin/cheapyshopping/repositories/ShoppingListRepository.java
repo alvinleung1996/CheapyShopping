@@ -57,8 +57,8 @@ public class ShoppingListRepository {
     ************************************************************************************************
      */
 
-    private Map<Long, LiveData<ShoppingList>> mShoppingListCache;
-    public LiveData<ShoppingList> findShoppingList(long shoppingListId) {
+    private Map<String, LiveData<ShoppingList>> mShoppingListCache;
+    public LiveData<ShoppingList> findShoppingList(String shoppingListId) {
         if (this.mShoppingListCache == null) {
             this.mShoppingListCache = new ArrayMap<>();
         }
@@ -70,8 +70,8 @@ public class ShoppingListRepository {
     }
 
 
-    private Map<Long, LiveData<List<ShoppingList>>> mAccountShoppingListsCache;
-    public LiveData<List<ShoppingList>> findAccountShoppingLists(long accountId) {
+    private Map<String, LiveData<List<ShoppingList>>> mAccountShoppingListsCache;
+    public LiveData<List<ShoppingList>> findAccountShoppingLists(String accountId) {
         if (this.mAccountShoppingListsCache == null) {
             this.mAccountShoppingListsCache = new ArrayMap<>();
         }
@@ -89,11 +89,11 @@ public class ShoppingListRepository {
     ************************************************************************************************
      */
 
-    public ShoppingList findShoppingListNow(long shoppingListId) {
+    public ShoppingList findShoppingListNow(String shoppingListId) {
         return this.getShoppingListDao().findShoppingListNow(shoppingListId);
     }
 
-    public List<ShoppingList> findAccountShoppingListsNow(long accountId) {
+    public List<ShoppingList> findAccountShoppingListsNow(String accountId) {
         return this.getShoppingListDao().findAccountShoppingListsNow(accountId);
     }
 

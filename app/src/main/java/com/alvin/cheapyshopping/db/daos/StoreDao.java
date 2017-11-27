@@ -29,7 +29,7 @@ public interface StoreDao {
 
 
     @Query("SELECT * FROM Store WHERE store_id = :id")
-    LiveData<Store> findStoreByStoreId(long id);
+    LiveData<Store> findStoreByStoreId(String id);
 
 
     /* TODO update to add math operation on longitude and latitude */
@@ -47,7 +47,7 @@ public interface StoreDao {
     List<Store> getAllStoresNow();
 
     @Query("SELECT * FROM Store WHERE store_id = :id")
-    Store findStoreByStoreIdNow(long id);
+    Store findStoreByStoreIdNow(String id);
 
 
     /* TODO update to add math operation on longitude and latitude */

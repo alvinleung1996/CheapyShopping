@@ -34,7 +34,6 @@ public class AddStoreFragmentViewModel extends AndroidViewModel {
         Store store = new Store();
         store.setName(name);
         store.setAddress(address);
-        store.setPlaceId(placeId);
         store.setLongitude(longitude);
         store.setLatitude(latitude);
         new InsertStoreTask(this.getApplication(), store, result).execute();

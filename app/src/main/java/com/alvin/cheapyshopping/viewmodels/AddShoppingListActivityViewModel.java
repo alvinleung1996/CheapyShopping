@@ -27,13 +27,13 @@ public class AddShoppingListActivityViewModel extends AndroidViewModel {
     }
 
 
-    private Long mAccountId;
+    private String mAccountId;
 
-    public void setAccountId(Long accountId) {
+    public void setAccountId(String accountId) {
         this.mAccountId = accountId;
     }
 
-    public Long getAccountId() {
+    public String getAccountId() {
         return this.mAccountId;
     }
 
@@ -53,11 +53,11 @@ public class AddShoppingListActivityViewModel extends AndroidViewModel {
 
         @SuppressLint("StaticFieldLeak")
         private final Context mContext;
-        private final long mAccountId;
+        private final String mAccountId;
         private final String mName;
         private final Function<long[], Void> mCallback;
 
-        private InsertShoppingListTask(Context context, long accountId, String name, Function<long[], Void> callback) {
+        private InsertShoppingListTask(Context context, String accountId, String name, Function<long[], Void> callback) {
             this.mContext = context.getApplicationContext();
             this.mAccountId = accountId;
             this.mName = name;

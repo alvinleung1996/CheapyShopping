@@ -68,8 +68,8 @@ public class StoreRepository {
     }
 
 
-    private Map<Long, LiveData<Store>> mStoreCache;
-    public LiveData<Store> findStoreByStoreId(long storeId) {
+    private Map<String, LiveData<Store>> mStoreCache;
+    public LiveData<Store> findStoreByStoreId(String storeId) {
         if (this.mStoreCache == null) {
             this.mStoreCache = new ArrayMap<>();
         }
@@ -119,7 +119,7 @@ public class StoreRepository {
         return this.getStoreDao().getAllStoresNow();
     }
 
-    public Store findStoreByIdNow(long storeId) {
+    public Store findStoreByIdNow(String storeId) {
         return this.getStoreDao().findStoreByStoreIdNow(storeId);
     }
 

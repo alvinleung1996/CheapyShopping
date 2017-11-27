@@ -5,6 +5,7 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.IntDef;
+import android.support.annotation.NonNull;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.Retention;
@@ -44,9 +45,10 @@ public class Price {
     public static final int TYPE_DISCOUNT_FOR_X = 3;
     public static final int TYPE_BUY_X_GET_Y_FREE = 4;
 
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
+    @NonNull
     @ColumnInfo(name = "price_id")
-    private long mPriceId;
+    private String mPriceId;
 
     @Type
     @ColumnInfo(name = "type")
@@ -68,17 +70,17 @@ public class Price {
     private Calendar mCreationTime;
 
     @ColumnInfo(name = "foreign_product_id", index = true)
-    private long mForeignProductId;
+    private String mForeignProductId;
 
     @ColumnInfo(name = "foreign_store_id", index = true)
-    private long mForeignStoreId;
+    private String mForeignStoreId;
 
 
-    public long getPriceId() {
+    public String getPriceId() {
         return this.mPriceId;
     }
 
-    public void setPriceId(long priceId) {
+    public void setPriceId(String priceId) {
         this.mPriceId = priceId;
     }
 
@@ -131,19 +133,19 @@ public class Price {
         this.mCreationTime = creationTime;
     }
 
-    public long getForeignProductId() {
+    public String getForeignProductId() {
         return this.mForeignProductId;
     }
 
-    public void setForeignProductId(long foreignProductId) {
+    public void setForeignProductId(String foreignProductId) {
         this.mForeignProductId = foreignProductId;
     }
 
-    public long getForeignStoreId() {
+    public String getForeignStoreId() {
         return this.mForeignStoreId;
     }
 
-    public void setForeignStoreId(long foreignStoreId) {
+    public void setForeignStoreId(String foreignStoreId) {
         this.mForeignStoreId = foreignStoreId;
     }
 

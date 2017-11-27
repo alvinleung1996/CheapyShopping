@@ -42,7 +42,7 @@ public class StoreProductPricesFragment extends Fragment {
     }
 
 
-    private long storeId;
+    private String storeId;
 
     private StoreProductPricesFragmentViewModel mViewModel;
 
@@ -59,10 +59,10 @@ public class StoreProductPricesFragment extends Fragment {
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Bundle args = this.getArguments();
-        Long productId = null;
+        String productId = null;
         if (args != null) {
             if (args.containsKey(ARGUMENT_STORE_ID)) {
-                productId = args.getLong(ARGUMENT_STORE_ID);
+                productId = args.getString(ARGUMENT_STORE_ID);
             }
         }
         if (productId == null) {

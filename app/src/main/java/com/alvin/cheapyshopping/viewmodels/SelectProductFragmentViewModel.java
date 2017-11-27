@@ -52,8 +52,8 @@ public class SelectProductFragmentViewModel extends AndroidViewModel {
     }
 
 
-    private Map<Long, LiveData<List<Product>>> mFilteredProductsCache;
-    public LiveData<List<Product>> findProductsNotInShoppingList(long shoppingListId) {
+    private Map<String, LiveData<List<Product>>> mFilteredProductsCache;
+    public LiveData<List<Product>> findProductsNotInShoppingList(String shoppingListId) {
         if (this.mFilteredProductsCache == null) {
             this.mFilteredProductsCache = new ArrayMap<>();
         }

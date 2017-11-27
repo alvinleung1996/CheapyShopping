@@ -58,7 +58,7 @@ public class AccountFragment extends Fragment {
     private AccountFragmentBinding mBinding;
     private AccountFragmentViewModel mViewModel;
 
-    private long mCurrentAccountId;
+    private String mCurrentAccountId;
     private Bitmap mBitmap;
 
 

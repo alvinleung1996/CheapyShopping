@@ -68,7 +68,7 @@ public class StoreInfoFragment extends Fragment{
 
     private GoogleMap mMap;
 
-    private long mCurrentStoreId;
+    private String mCurrentStoreId;
     private Store mCurrentStore;
 
 
@@ -83,7 +83,8 @@ public class StoreInfoFragment extends Fragment{
 
         // Get Product ID
         Bundle args = getArguments();
-        mCurrentStoreId= args.getLong(StoreActivity.EXTRA_STORE_ID, 0);
+        mCurrentStoreId= args.getString(StoreActivity.EXTRA_STORE_ID);
+
     }
 
 

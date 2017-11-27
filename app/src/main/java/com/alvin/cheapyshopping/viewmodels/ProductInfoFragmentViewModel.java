@@ -93,7 +93,7 @@ public class ProductInfoFragmentViewModel extends AndroidViewModel {
 
     private LiveData<Product> mProduct;
 
-    public LiveData<Product> getProduct(long productId) {
+    public LiveData<Product> getProduct(String productId) {
 
         if (this.mProduct == null) {
             this.mProduct = this.getProductRepository().findProductByProductId(productId);
@@ -109,7 +109,7 @@ public class ProductInfoFragmentViewModel extends AndroidViewModel {
 
     private LiveData<List<StorePrice>> mStorePricesList;
 
-    public LiveData<List<StorePrice>> getStorePrices(long productId){
+    public LiveData<List<StorePrice>> getStorePrices(String productId){
         if (this.mStorePricesList == null){
             this.mStorePricesList = this.getStorePriceRepository().findProductStorePrices(productId);
         }
@@ -124,7 +124,7 @@ public class ProductInfoFragmentViewModel extends AndroidViewModel {
 
     private LiveData<StorePrice> mBestStorePrice;
 
-    public LiveData<StorePrice> getBestStorePrice(long productId){
+    public LiveData<StorePrice> getBestStorePrice(String productId){
         if (this.mBestStorePrice == null){
             this.mBestStorePrice = this.getStorePriceRepository().findBestProductStorePrice(productId);
         }

@@ -118,11 +118,11 @@ public class ProductInfoFragment extends Fragment {
 
 
 
-    public static ProductInfoFragment newInstance(long productID) {
+    public static ProductInfoFragment newInstance(String productID) {
         ProductInfoFragment fragment = new ProductInfoFragment();
 
         Bundle args = new Bundle();
-        args.putLong(ProductActivity.EXTRA_PRODUCT_ID, productID);
+        args.putString(ProductActivity.EXTRA_PRODUCT_ID, productID);
         fragment.setArguments(args);
         return fragment;
     }
@@ -131,7 +131,7 @@ public class ProductInfoFragment extends Fragment {
     private ProductInfoFragmentBinding mBinding;
     private ProductInfoFragmentViewModel mViewModel;
 
-    private long mCurrentProductID;
+    private String mCurrentProductID;
     private Product mCurrentProduct;
     private StorePrice mCurrentBestProductStorePrice;
     private List<ShoppingList> mShoppingLists;
@@ -154,7 +154,7 @@ public class ProductInfoFragment extends Fragment {
 
         // Get Product ID
         Bundle args = getArguments();
-        mCurrentProductID= args.getLong(ProductActivity.EXTRA_PRODUCT_ID, 0);
+        mCurrentProductID= args.getString(ProductActivity.EXTRA_PRODUCT_ID);
 
     }
 

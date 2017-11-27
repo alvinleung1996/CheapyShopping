@@ -25,7 +25,7 @@ public class AddShoppingListProductRelationActivityViewModel extends AndroidView
 
 
 
-    public void addShoppingListProduct(long shoppingListId, List<Long> productIds, int quantity) {
+    public void addShoppingListProduct(String shoppingListId, List<String> productIds, int quantity) {
         new ShoppingListProductAdder(this.getApplication(), shoppingListId, productIds, quantity).execute();
     }
 
@@ -33,11 +33,11 @@ public class AddShoppingListProductRelationActivityViewModel extends AndroidView
 
         @SuppressLint("StaticFieldLeak")
         private final Context mContext;
-        private final long mShoppingListId;
-        private final List<Long> mProductIds;
+        private final String mShoppingListId;
+        private final List<String> mProductIds;
         private final int mQuantity;
 
-        private ShoppingListProductAdder(Context context, long shoppingListId, List<Long> productIds, int quantity) {
+        private ShoppingListProductAdder(Context context, String shoppingListId, List<String> productIds, int quantity) {
             this.mContext = context.getApplicationContext();
             this.mShoppingListId = shoppingListId;
             this.mProductIds = productIds;
@@ -47,7 +47,7 @@ public class AddShoppingListProductRelationActivityViewModel extends AndroidView
         @Override
         protected long[] doInBackground(Void... voids) {
             List<ShoppingListProductRelation> listProducts = new ArrayList<>(this.mProductIds.size());
-            for (long productId : mProductIds) {
+            for (String productId : mProductIds) {
                 ShoppingListProductRelation relation = new ShoppingListProductRelation();
                 relation.setForeignShoppingListId(mShoppingListId);
                 relation.setForeignProductId(productId);
