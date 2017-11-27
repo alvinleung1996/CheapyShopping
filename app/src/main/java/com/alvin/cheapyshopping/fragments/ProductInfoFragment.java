@@ -14,11 +14,9 @@ import android.graphics.Matrix;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.support.v4.content.FileProvider;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -35,20 +33,18 @@ import com.alvin.cheapyshopping.utils.ImageUpdater;
 import com.alvin.cheapyshopping.ProductActivity;
 import com.alvin.cheapyshopping.R;
 import com.alvin.cheapyshopping.StoreActivity;
-import com.alvin.cheapyshopping.databinding.ProductFragmentBinding;
+import com.alvin.cheapyshopping.databinding.ProductInfoFragmentBinding;
 import com.alvin.cheapyshopping.databinding.ProductStorePriceItemBinding;
 import com.alvin.cheapyshopping.db.entities.Product;
 import com.alvin.cheapyshopping.db.entities.ShoppingList;
 import com.alvin.cheapyshopping.db.entities.Store;
 import com.alvin.cheapyshopping.db.entities.pseudo.StorePrice;
 import com.alvin.cheapyshopping.utils.ImageExpander;
-import com.alvin.cheapyshopping.viewmodels.ProductFragmentViewModel;
+import com.alvin.cheapyshopping.viewmodels.ProductInfoFragmentViewModel;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import static android.support.v4.content.FileProvider.getUriForFile;
@@ -57,7 +53,7 @@ import static android.support.v4.content.FileProvider.getUriForFile;
  * Created by cheng on 11/21/2017.
  */
 
-public class ProductFragment extends Fragment {
+public class ProductInfoFragment extends Fragment {
 
     private static final int REQUEST_IMAGE_CAPTURE = 1;
     private static final String IMAGE_FILE_TYPE = "Product";
@@ -100,7 +96,7 @@ public class ProductFragment extends Fragment {
             holder.mBinding.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View view) {
-                    ProductFragment.this.onStoreClick(view, mStorePrices.get(position).getStore());
+                    ProductInfoFragment.this.onStoreClick(view, mStorePrices.get(position).getStore());
                 }
             });
 
@@ -125,8 +121,8 @@ public class ProductFragment extends Fragment {
 
 
 
-    public static ProductFragment newInstance(long productID) {
-        ProductFragment fragment = new ProductFragment();
+    public static ProductInfoFragment newInstance(long productID) {
+        ProductInfoFragment fragment = new ProductInfoFragment();
 
         Bundle args = new Bundle();
         args.putLong(ProductActivity.EXTRA_PRODUCT_ID, productID);
@@ -135,8 +131,8 @@ public class ProductFragment extends Fragment {
     }
 
 
-    private ProductFragmentBinding mBinding;
-    private ProductFragmentViewModel mViewModel;
+    private ProductInfoFragmentBinding mBinding;
+    private ProductInfoFragmentViewModel mViewModel;
 
     private long mCurrentProductID;
     private Product mCurrentProduct;
@@ -148,7 +144,7 @@ public class ProductFragment extends Fragment {
     private Animator mCurrentAnimator;
 
 
-    public ProductFragment(){
+    public ProductInfoFragment(){
         // Required empty public constructor
     }
 
@@ -168,7 +164,7 @@ public class ProductFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        this.mBinding = ProductFragmentBinding.inflate(inflater, container, false);
+        this.mBinding = ProductInfoFragmentBinding.inflate(inflater, container, false);
 
         return mBinding.getRoot();
     }
@@ -178,7 +174,7 @@ public class ProductFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         // Setup viewModel
-        this.mViewModel = ViewModelProviders.of(this).get(ProductFragmentViewModel.class);
+        this.mViewModel = ViewModelProviders.of(this).get(ProductInfoFragmentViewModel.class);
 
         // Setup recycler view
         this.mBinding.listProductPriceItems.setLayoutManager(new LinearLayoutManager(this.getContext()));
@@ -191,7 +187,7 @@ public class ProductFragment extends Fragment {
         this.mViewModel.getProduct(mCurrentProductID).observe(this, new Observer<Product>() {
             @Override
             public void onChanged(@Nullable Product product) {
-                ProductFragment.this.mCurrentProduct = product;
+                ProductInfoFragment.this.mCurrentProduct = product;
 
                 // Setup Product Basic Info
                 mBinding.setProduct(mCurrentProduct);
@@ -202,7 +198,7 @@ public class ProductFragment extends Fragment {
         this.mViewModel.getStorePrices(mCurrentProductID).observe(this, new Observer<List<StorePrice>>() {
             @Override
             public void onChanged(@Nullable List<StorePrice> storePrices) {
-                ProductFragment.this.mProductStorePriceItemListAdapter.setStorePriceItems(storePrices);
+                ProductInfoFragment.this.mProductStorePriceItemListAdapter.setStorePriceItems(storePrices);
             }
         });
 
@@ -210,8 +206,8 @@ public class ProductFragment extends Fragment {
         this.mViewModel.getBestStorePrice(mCurrentProductID).observe(this, new Observer<StorePrice>() {
             @Override
             public void onChanged(@Nullable StorePrice storePrice) {
-                ProductFragment.this.mCurrentBestProductStorePrice = storePrice;
-                ProductFragment.this.mBinding.setBestPrice(storePrice);
+                ProductInfoFragment.this.mCurrentBestProductStorePrice = storePrice;
+                ProductInfoFragment.this.mBinding.setBestPrice(storePrice);
 
 
                 Log.d("Debug Best price: ", "$" + storePrice.getTotal());
@@ -221,7 +217,7 @@ public class ProductFragment extends Fragment {
                 // Set price update date & time
                 SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
                 String updateDate = formatter.format(storePrice.getCreationTime());
-                ProductFragment.this.mBinding.setBestPriceDate(updateDate);
+                ProductInfoFragment.this.mBinding.setBestPriceDate(updateDate);
 
             }
         });
@@ -297,7 +293,7 @@ public class ProductFragment extends Fragment {
         final List<String> shoppinglistNames = new ArrayList<>();
         final List<Integer> mSelecteditems = new ArrayList<>();
 
-        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ProductFragment.this.getContext());
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ProductInfoFragment.this.getContext());
 
         // Set dialog title
         alertDialogBuilder.setTitle("Save Product");
@@ -375,7 +371,7 @@ public class ProductFragment extends Fragment {
 
 
 
-        Toast.makeText(ProductFragment.this.getContext() ,
+        Toast.makeText(ProductInfoFragment.this.getContext() ,
                 "Added to  " + shoppingLists.size() + " shopping list(s)",
                 Toast.LENGTH_LONG).show();
     }
@@ -391,7 +387,7 @@ public class ProductFragment extends Fragment {
         final int DIALOG_INDEX_CAMERA = 1;
 
         String[] items = new String[] {"Gallery","Camera"};
-        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ProductFragment.this.getContext());
+        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ProductInfoFragment.this.getContext());
         alertDialogBuilder.setTitle("Please select an image");
 
         alertDialogBuilder.setItems(items, new DialogInterface.OnClickListener(){
@@ -399,13 +395,13 @@ public class ProductFragment extends Fragment {
             public void onClick(DialogInterface dialogInterface, int which) {
                 // Choose new product image from gallery
                 if (which == DIALOG_INDEX_GALLERY){
-                    ImageUpdater.getsInstance(ProductFragment.this.getContext(), IMAGE_FILE_TYPE, mCurrentProductID)
+                    ImageUpdater.getsInstance(ProductInfoFragment.this.getContext(), IMAGE_FILE_TYPE, mCurrentProductID)
                             .updateImageFromGallery();
 
                 }
                 // Choose new product image using camera
                 else if (which == DIALOG_INDEX_CAMERA){
-                    ImageUpdater imageUpdater = new ImageUpdater(getActivity() ,ProductFragment.this.getContext(),
+                    ImageUpdater imageUpdater = new ImageUpdater(getActivity() ,ProductInfoFragment.this.getContext(),
                             IMAGE_FILE_TYPE, mCurrentProductID, IMAGE_FOLDER, REQUEST_IMAGE_CAPTURE);
                     imageUpdater.updateImageFromCamera();
 
@@ -428,10 +424,10 @@ public class ProductFragment extends Fragment {
 
     private void setProductImage(){
         String imageFileName = IMAGE_FILE_TYPE + "_" + mCurrentProductID;
-        File storageDir = ProductFragment.this.getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File storageDir = ProductInfoFragment.this.getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File image = new File(storageDir, imageFileName + ".jpg");
         if (image.exists()){
-            Uri photoURI = getUriForFile(ProductFragment.this.getContext(),
+            Uri photoURI = getUriForFile(ProductInfoFragment.this.getContext(),
                     "com.alvin.fileprovider",
                     image);
 

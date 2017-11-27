@@ -2,9 +2,9 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="com.alvin.cheapyshopping.fragments.ProductFragment">
+    tools:context="com.alvin.cheapyshopping.fragments.ProductInfoFragment">
 
-    <data class="ProductFragmentBinding">
+    <data class="ProductInfoFragmentBinding">
         <variable
         name="product"
         type="com.alvin.cheapyshopping.db.entities.Product"/>

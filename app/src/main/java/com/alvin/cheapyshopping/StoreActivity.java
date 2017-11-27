@@ -41,7 +41,7 @@ public class StoreActivity extends AppCompatActivity {
 
 
         this.getSupportFragmentManager().registerFragmentLifecycleCallbacks(new FragmentLifecycleCallbacks(), false);
-        // Start ProductFragment
+        // Start ProductInfoFragment
         if (savedInstanceState == null) { //Prevent adding fragment twice
             this.getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment_container, StoreFragment.newInstance(extras.getLong(EXTRA_STORE_ID)), FRAGMENT_STORE)
@@ -78,7 +78,7 @@ public class StoreActivity extends AppCompatActivity {
         public void onFragmentAttached(FragmentManager fm, Fragment f, Context context) {
             super.onFragmentAttached(fm, f, context);
             if (f instanceof StoreFragment) {
-//                ((ProductFragment) f).setInteractionListener(new ProductFragmentInteractionListener());
+//                ((ProductInfoFragment) f).setInteractionListener(new ProductFragmentInteractionListener());
             }
         }
 

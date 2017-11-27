@@ -5,12 +5,10 @@ import android.arch.core.util.Function;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Transformations;
-import android.util.Log;
 
 import com.alvin.cheapyshopping.db.entities.Account;
 import com.alvin.cheapyshopping.db.entities.Product;
 import com.alvin.cheapyshopping.db.entities.ShoppingList;
-import com.alvin.cheapyshopping.db.entities.Store;
 import com.alvin.cheapyshopping.db.entities.pseudo.StorePrice;
 import com.alvin.cheapyshopping.repositories.AccountRepository;
 import com.alvin.cheapyshopping.repositories.PriceRepository;
@@ -20,15 +18,14 @@ import com.alvin.cheapyshopping.repositories.StorePriceRepository;
 import com.alvin.cheapyshopping.repositories.StoreRepository;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by cheng on 11/25/2017.
  */
 
-public class ProductFragmentViewModel extends AndroidViewModel {
+public class ProductInfoFragmentViewModel extends AndroidViewModel {
 
-    public ProductFragmentViewModel(Application application) {
+    public ProductInfoFragmentViewModel(Application application) {
         super(application);
     }
 
@@ -172,7 +169,7 @@ public class ProductFragmentViewModel extends AndroidViewModel {
                     new Function<Account, LiveData<List<ShoppingList>>>() {
                         @Override
                         public LiveData<List<ShoppingList>> apply(Account input) {
-                            return input == null ? null : ProductFragmentViewModel.this.getShoppingListRepository()
+                            return input == null ? null : ProductInfoFragmentViewModel.this.getShoppingListRepository()
                                     .findAccountShoppingLists(input.getAccountId());
                         }
                     }

@@ -27,7 +27,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:theme="@style/AppTheme.MainActivity">
+            android:theme="@style/AppTheme.NoActionBar.TranslucentStatusBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -40,10 +40,10 @@
             android:label="Add Product"/>
         <activity
             android:name=".ProductActivity"
-            android:theme="@style/AppTheme.ProductActivity"/>
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".StoreActivity"
-            android:theme="@style/AppTheme.ProductActivity" />
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".AddStoreActivity"
             android:label="Add Store">

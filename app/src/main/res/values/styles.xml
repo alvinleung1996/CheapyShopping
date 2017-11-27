@@ -10,26 +10,15 @@
 
     </style>
 
-    <style name="AppTheme.MainActivity">
-
-        <!-- translucent status bar -->
-        <item name="android:windowTranslucentStatus">true</item>
-
+    <style name="AppTheme.NoActionBar">
         <!-- Remove action bar, copied from Theme.AppCompat.Light.NoActionBar -->
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-
     </style>
 
-    <style name="AppTheme.ProductActivity">
-
+    <style name="AppTheme.NoActionBar.TranslucentStatusBar">
         <!-- translucent status bar -->
-        <item name="android:windowTranslucentStatus">false</item>
-
-        <!-- Remove action bar, copied from Theme.AppCompat.Light.NoActionBar -->
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
-
+        <item name="android:windowTranslucentStatus">true</item>
     </style>
 
 </resources>
