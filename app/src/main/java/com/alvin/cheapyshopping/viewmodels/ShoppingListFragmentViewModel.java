@@ -183,7 +183,7 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
             this.product = null;
         }
 
-        private ShoppingListItem(Product product) {
+        private ShoppingListItem(ShoppingListProduct product) {
             this.type = TYPE_PRODUCT;
             this.store = null;
             this.product = product;
@@ -191,7 +191,7 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
 
         public int type;
         public Store store;
-        public Product product;
+        public ShoppingListProduct product;
 
     }
 
@@ -236,7 +236,7 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
                 if (products.size() > 0) {
                     items.add(new ShoppingListItem(store));
 
-                    for (Product product : products) {
+                    for (ShoppingListProduct product : products) {
                         items.add(new ShoppingListItem(product));
                     }
                 }

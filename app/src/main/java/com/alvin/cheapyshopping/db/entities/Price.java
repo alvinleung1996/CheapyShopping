@@ -149,4 +149,19 @@ public class Price {
         this.mForeignStoreId = foreignStoreId;
     }
 
+
+    public double getComputedPrice(int quantity) {
+        switch (this.mType) {
+            case TYPE_SINGLE:
+                return this.mTotal * quantity;
+            case TYPE_MULTIPLE:
+                return this.mTotal * (quantity / this.mQuantity);
+            case TYPE_DISCOUNT_FOR_X:
+                return this.mTotal * this.mDiscount * (quantity / this.mQuantity);
+            case TYPE_BUY_X_GET_Y_FREE:
+                return this.mTotal * (quantity / (this.mQuantity + this.mFreeQuantity));
+            default:
+                return -1;
+        }
+    }
 }

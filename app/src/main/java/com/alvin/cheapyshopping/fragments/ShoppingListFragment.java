@@ -161,19 +161,19 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
             this.mBinding = DataBindingUtil.getBinding(this.itemView);
         }
 
-        private void onBind(Product product) {
-            this.mBinding.setProduct(product);
+        private void onBind(ShoppingListProduct product) {
+            this.mBinding.setShoppingListProduct(product);
             this.mBinding.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    ShoppingListFragment.this.onProductItemClick(view, ProductItemViewHolder.this.mBinding.getProduct());
+                    ShoppingListFragment.this.onProductItemClick(view, ProductItemViewHolder.this.mBinding.getShoppingListProduct());
                 }
             });
         }
 
         @Override
         protected void onRecycled() {
-            this.mBinding.setProduct(null);
+            this.mBinding.setShoppingListProduct(null);
             this.mBinding.setOnClickListener(null);
         }
     }
@@ -475,7 +475,7 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
         this.startActivity(intent);
     }
 
-    private void onProductItemClick(View view, Product product) {
+    private void onProductItemClick(View view, ShoppingListProduct product) {
         Intent intent = new Intent(this.getContext(), ProductActivity.class);
         intent.putExtra(ProductActivity.EXTRA_PRODUCT_ID, product.getProductId());
         this.startActivity(intent);

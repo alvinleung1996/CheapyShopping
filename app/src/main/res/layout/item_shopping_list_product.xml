@@ -6,8 +6,8 @@
 
     <data class="ShoppingListProductItemBinding">
         <variable
-            name="product"
-            type="com.alvin.cheapyshopping.db.entities.Product"/>
+            name="shoppingListProduct"
+            type="com.alvin.cheapyshopping.db.entities.pseudo.ShoppingListProduct"/>
         <variable
             name="onClickListener"
             type="android.view.View.OnClickListener"/>
@@ -19,7 +19,7 @@
         android:orientation="vertical"
         android:background="@drawable/list_item_background"
         android:elevation="2dp"
-        android:onClick="@{onClickListener::onClick}">
+        android:onClick="@{onClickListener}">
 
         <View
             android:layout_width="match_parent"
@@ -47,44 +47,24 @@
                 android:id="@+id/text_product_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:text="@{shoppingListProduct.name, default=`Product name`}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/image_product_photo"
                 app:layout_constraintTop_toTopOf="parent"
-                android:text="@{product.name}"/>
-
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Best Price: $"
-            app:layout_constraintStart_toStartOf="@+id/text_product_name"
-            app:layout_constraintTop_toBottomOf="@+id/text_product_name" />
+                app:layout_constraintEnd_toStartOf="@+id/text_product_best_price"/>
 
             <TextView
                 android:id="@+id/text_product_best_price"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
-                app:layout_constraintBaseline_toBaselineOf="@+id/textView"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/textView" />
-
-            <TextView
-                android:id="@+id/text_product_id"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginTop="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/text_product_name"
-                android:text="@{product.productId}"/>
+                android:text="@{`$`+shoppingListProduct.bestStorePrices[0].getComputedPrice(shoppingListProduct.quantity), default=`$BP`}"/>
 
         </android.support.constraint.ConstraintLayout>
 
