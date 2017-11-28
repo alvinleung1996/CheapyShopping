@@ -11,6 +11,9 @@
         <variable
             name="onClickListener"
             type="android.view.View.OnClickListener"/>
+        <variable
+            name="onLongClickListener"
+            type="android.view.View.OnLongClickListener"/>
     </data>
 
     <LinearLayout
@@ -19,7 +22,8 @@
         android:orientation="vertical"
         android:background="@drawable/list_item_background"
         android:elevation="2dp"
-        android:onClick="@{onClickListener}">
+        android:onClick="@{onClickListener}"
+        android:onLongClick="@{onLongClickListener}">
 
         <View
             android:layout_width="match_parent"

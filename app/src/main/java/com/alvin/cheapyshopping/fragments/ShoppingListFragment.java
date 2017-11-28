@@ -32,7 +32,6 @@ import com.alvin.cheapyshopping.databinding.ShoppingListFragmentBinding;
 import com.alvin.cheapyshopping.databinding.ShoppingListProductItemBinding;
 import com.alvin.cheapyshopping.databinding.ShoppingListStoreItemBinding;
 import com.alvin.cheapyshopping.db.entities.Account;
-import com.alvin.cheapyshopping.db.entities.Product;
 import com.alvin.cheapyshopping.db.entities.ShoppingList;
 import com.alvin.cheapyshopping.db.entities.Store;
 import com.alvin.cheapyshopping.db.entities.pseudo.ShoppingListProduct;

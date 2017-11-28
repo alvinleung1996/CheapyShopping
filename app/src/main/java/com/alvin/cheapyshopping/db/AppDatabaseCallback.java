@@ -58,68 +58,68 @@ public class AppDatabaseCallback extends RoomDatabase.Callback {
                 account.setActiveShoppingListId(list.getShoppingListId());
                 appDb.getAccountDao().updateAccount(account);
 
-                List<Product> products = new ArrayList<>();
-                for (int i = 0; i < 10; ++i) {
-                    Product product = new Product();
-                    product.setProductId(UUID.randomUUID().toString());
-                    product.setName("Product " + i);
-                    product.setDescription("I am product number " + i);
-                    products.add(product);
-                }
-                appDb.getProductDao()
-                        .insertProduct(products.toArray(new Product[products.size()]));
-                products = appDb.getProductDao().getAllProductsNow();
-
-                List<ShoppingListProductRelation> listProducts = new ArrayList<>();
-                for (int i = 0; i < 7; ++i) {
-                    ShoppingListProductRelation listProduct = new ShoppingListProductRelation();
-                    listProduct.setForeignShoppingListId(list.getShoppingListId());
-                    listProduct.setForeignProductId(products.get(i).getProductId());
-                    listProduct.setQuantity(i);
-                    listProducts.add(listProduct);
-                }
-                appDb.getShoppingListProductRelationDao()
-                        .insertShoppingListProductRelation(listProducts.toArray(new ShoppingListProductRelation[listProducts.size()]));
-
-                List<Store> stores = new ArrayList<>();
-                stores.add(this.newStore("ChIJW6SHeIT_AzQR9bGVjdwkzuA", "百佳", "Parknshop - Hill Road", 114.135282, 22.2861835));
-                stores.add(this.newStore("ChIJ07jUtoT_AzQRFzl3vPWyvto", "西寶城", "石塘咀卑路乍街8號", 114.135403, 22.2861676));
-                stores.add(this.newStore("ChIJsz0z94P_AzQR_Ek-nv0PCgQ", "豐澤", "G/F, REAR PORTION, WAH MING CENTRE, 396 DES VOEUX ROAD WEST, Shek Tong Tsui", 114.1367759, 22.2861362));
-                stores.add(this.newStore("ChIJbUt0XoP_AzQRcVo_QMDYI4M","一田超市", "石塘咀干諾道西188號香港商業中心地下", 114.1361631, 22.2870644));
-                stores.add(this.newStore("ChIJ47sSZIb_AzQRysVCSOvGlvQ", "百佳hku", "Chong Yuet Ming Cultural Centre, Lung Fu Shan", 114.1388094, 22.2825287));
-//                for (int i = 0; i < 4; ++i) {
-//                    Store store = new Store();
-//                    store.setName("Store " + i);
-//                    store.setAddress("ShoppingListLocationUpdater " + i);
-//                    stores.add(store);
+//                List<Product> products = new ArrayList<>();
+//                for (int i = 0; i < 10; ++i) {
+//                    Product product = new Product();
+//                    product.setProductId(UUID.randomUUID().toString());
+//                    product.setName("Product " + i);
+//                    product.setDescription("I am product number " + i);
+//                    products.add(product);
 //                }
-                appDb.getStoreDao()
-                        .insertStore(stores.toArray(new Store[stores.size()]));
-                stores = appDb.getStoreDao().getAllStoresNow();
-
-
-                List<Price> prices = new ArrayList<>();
-                for (Product product : products) {
-                    Price price = new Price();
-                    price.setPriceId(UUID.randomUUID().toString());
-                    price.setType(Price.TYPE_SINGLE);
-                    price.setTotal(100);
-                    price.setCreationTime(Calendar.getInstance());
-                    price.setForeignProductId(product.getProductId());
-                    price.setForeignStoreId(stores.get((stores.size() + prices.size()) / stores.size()).getStoreId());
-                    prices.add(price);
-                }
-
-//                Price price = new Price();
-//                price.setType(Price.TYPE_SINGLE);
-//                price.setTotal(30);
-//                price.setForeignProductId(1);
-//                price.setForeignStoreId(3);
-//                price.setCreationTime(Calendar.getInstance());
-//                prices.add(price);
-
-                appDb.getPriceDao()
-                        .insertPrice(prices.toArray(new Price[prices.size()]));
+//                appDb.getProductDao()
+//                        .insertProduct(products.toArray(new Product[products.size()]));
+//                products = appDb.getProductDao().getAllProductsNow();
+//
+//                List<ShoppingListProductRelation> listProducts = new ArrayList<>();
+//                for (int i = 0; i < 7; ++i) {
+//                    ShoppingListProductRelation listProduct = new ShoppingListProductRelation();
+//                    listProduct.setForeignShoppingListId(list.getShoppingListId());
+//                    listProduct.setForeignProductId(products.get(i).getProductId());
+//                    listProduct.setQuantity(i);
+//                    listProducts.add(listProduct);
+//                }
+//                appDb.getShoppingListProductRelationDao()
+//                        .insertShoppingListProductRelation(listProducts.toArray(new ShoppingListProductRelation[listProducts.size()]));
+//
+//                List<Store> stores = new ArrayList<>();
+//                stores.add(this.newStore("ChIJW6SHeIT_AzQR9bGVjdwkzuA", "百佳", "Parknshop - Hill Road", 114.135282, 22.2861835));
+//                stores.add(this.newStore("ChIJ07jUtoT_AzQRFzl3vPWyvto", "西寶城", "石塘咀卑路乍街8號", 114.135403, 22.2861676));
+//                stores.add(this.newStore("ChIJsz0z94P_AzQR_Ek-nv0PCgQ", "豐澤", "G/F, REAR PORTION, WAH MING CENTRE, 396 DES VOEUX ROAD WEST, Shek Tong Tsui", 114.1367759, 22.2861362));
+//                stores.add(this.newStore("ChIJbUt0XoP_AzQRcVo_QMDYI4M","一田超市", "石塘咀干諾道西188號香港商業中心地下", 114.1361631, 22.2870644));
+//                stores.add(this.newStore("ChIJ47sSZIb_AzQRysVCSOvGlvQ", "百佳hku", "Chong Yuet Ming Cultural Centre, Lung Fu Shan", 114.1388094, 22.2825287));
+////                for (int i = 0; i < 4; ++i) {
+////                    Store store = new Store();
+////                    store.setName("Store " + i);
+////                    store.setAddress("ShoppingListLocationUpdater " + i);
+////                    stores.add(store);
+////                }
+//                appDb.getStoreDao()
+//                        .insertStore(stores.toArray(new Store[stores.size()]));
+//                stores = appDb.getStoreDao().getAllStoresNow();
+//
+//
+//                List<Price> prices = new ArrayList<>();
+//                for (Product product : products) {
+//                    Price price = new Price();
+//                    price.setPriceId(UUID.randomUUID().toString());
+//                    price.setType(Price.TYPE_SINGLE);
+//                    price.setTotal(100);
+//                    price.setCreationTime(Calendar.getInstance());
+//                    price.setForeignProductId(product.getProductId());
+//                    price.setForeignStoreId(stores.get((stores.size() + prices.size()) / stores.size()).getStoreId());
+//                    prices.add(price);
+//                }
+//
+////                Price price = new Price();
+////                price.setType(Price.TYPE_SINGLE);
+////                price.setTotal(30);
+////                price.setForeignProductId(1);
+////                price.setForeignStoreId(3);
+////                price.setCreationTime(Calendar.getInstance());
+////                prices.add(price);
+//
+//                appDb.getPriceDao()
+//                        .insertPrice(prices.toArray(new Price[prices.size()]));
 
 
             }
