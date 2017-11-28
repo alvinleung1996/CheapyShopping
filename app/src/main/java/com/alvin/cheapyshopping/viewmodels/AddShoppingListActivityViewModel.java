@@ -12,6 +12,7 @@ import com.alvin.cheapyshopping.db.entities.ShoppingList;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * Created by Alvin on 21/11/2017.
@@ -67,8 +68,10 @@ public class AddShoppingListActivityViewModel extends AndroidViewModel {
         @Override
         protected long[] doInBackground(Void... voids) {
             ShoppingList list = new ShoppingList();
+            list.setShoppingListId(UUID.randomUUID().toString());
             list.setForeignAccountId(this.mAccountId);
             list.setName(mName);
+            list.setCreationTime(Calendar.getInstance());
             return ShoppingListRepository.getInstance(this.mContext).insertShoppingList(list);
         }
 

@@ -338,7 +338,7 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
                 this.mMenuItemShoppingListIdMap.put(item, list.getShoppingListId());
 
                 if (this.mCurrentAccountActiveShoppingList != null
-                        && list.getShoppingListId() == this.mCurrentAccountActiveShoppingList.getShoppingListId()) {
+                        && list.getShoppingListId().equals(this.mCurrentAccountActiveShoppingList.getShoppingListId())) {
                     itemToCheck = item;
                 }
             }
@@ -375,7 +375,7 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
     private void onAddShoppingListOptionSelected(MenuItem item) {
         if (this.mCurrentAccount != null) {
             Intent intent = new Intent(this.getContext(), AddShoppingListActivity.class);
-            intent.putExtra(AddShoppingListActivity.EXTRA_ACCOUNT_ID, this.mCurrentAccount.getActiveShoppingListId());
+            intent.putExtra(AddShoppingListActivity.EXTRA_ACCOUNT_ID, this.mCurrentAccount.getAccountId());
             this.startActivityForResult(intent, REQUEST_ADD_SHOPPING_LIST);
         }
     }
@@ -389,7 +389,7 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
     }
 
     private void onShoppingListOptionSelected(MenuItem item, String shoppingListId) {
-        if (this.mCurrentAccount.getActiveShoppingListId() != shoppingListId) {
+        if (!this.mCurrentAccount.getActiveShoppingListId().equals(shoppingListId)) {
             item.setChecked(true);
             this.mViewModel.setShoppingListId(shoppingListId);
         }
