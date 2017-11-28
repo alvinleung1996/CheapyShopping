@@ -30,7 +30,7 @@ public interface PriceDao {
                 + " WHEN " + Price.TYPE_DISCOUNT_FOR_X + " THEN"
                     + " CASE quantity"
                         + " WHEN :quantity THEN"
-                            + " total * quantity"
+                            + " total * discount"
                     + " END"
                 + " WHEN " + Price.TYPE_BUY_X_GET_Y_FREE + " THEN"
                     + " CASE quantity + free_quantity"

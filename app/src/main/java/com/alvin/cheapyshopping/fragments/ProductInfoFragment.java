@@ -7,17 +7,11 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.media.ExifInterface;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -30,20 +24,16 @@ import android.widget.Toast;
 
 import com.alvin.cheapyshopping.utils.ImageRotate;
 import com.alvin.cheapyshopping.utils.ImageUpdater;
-import com.alvin.cheapyshopping.ProductActivity;
 import com.alvin.cheapyshopping.R;
 import com.alvin.cheapyshopping.StoreActivity;
 import com.alvin.cheapyshopping.databinding.ProductInfoFragmentBinding;
-import com.alvin.cheapyshopping.databinding.ProductStorePriceItemBinding;
 import com.alvin.cheapyshopping.db.entities.Product;
 import com.alvin.cheapyshopping.db.entities.ShoppingList;
 import com.alvin.cheapyshopping.db.entities.Store;
-import com.alvin.cheapyshopping.db.entities.pseudo.StorePrice;
 import com.alvin.cheapyshopping.utils.ImageExpander;
 import com.alvin.cheapyshopping.viewmodels.ProductInfoFragmentViewModel;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,76 +43,19 @@ import java.util.List;
 
 public class ProductInfoFragment extends Fragment {
 
+    private static final String ARGUMENT_PRODUCT_ID = "com.alvin.cheapyshopping.fragments.ProductInfoFragment.ARGUMENT_PRODUCT_ID";
+
     private static final int REQUEST_IMAGE_CAPTURE = 1;
+
     private static final String IMAGE_FILE_TYPE = "Product";
     private static final String IMAGE_FOLDER = "Product";
-
-
-    private class ProductStorePriceListAdapter extends RecyclerView.Adapter<ProductStorePriceListAdapter.ProductStorePriceListItemViewHolder> {
-
-        private List<StorePrice> mStorePrices;
-
-        private ProductStorePriceListAdapter() {
-            this.mStorePrices = new ArrayList<>();
-        }
-
-        public int getItemCount() {
-            return mStorePrices.size();
-        }
-
-        public class ProductStorePriceListItemViewHolder extends RecyclerView.ViewHolder {
-            private ProductStorePriceItemBinding mBinding;
-
-            private ProductStorePriceListItemViewHolder(View v) {
-                super(v);
-                this.mBinding = DataBindingUtil.getBinding(this.itemView);
-            }
-        }
-
-        @Override
-        public ProductStorePriceListItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = ProductStorePriceItemBinding.inflate(LayoutInflater.from(parent.getContext()), parent, false).getRoot();
-            ProductStorePriceListItemViewHolder viewHolder = new ProductStorePriceListItemViewHolder(view);
-            return viewHolder;
-        }
-
-
-        @Override
-        public void onBindViewHolder(ProductStorePriceListItemViewHolder holder, final int position) {
-            holder.mBinding.setStorePrice(mStorePrices.get(position));
-
-            holder.mBinding.setOnClickListener(new View.OnClickListener(){
-                @Override
-                public void onClick(View view) {
-                    ProductInfoFragment.this.onStoreClick(view, mStorePrices.get(position).getStore());
-                }
-            });
-
-            // Set price update date & time
-//            SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy     HH:mm:ss");
-//            String updateDate = formatter.format(mStorePrices.get(position).getCreationTime());
-        }
-
-
-        private void setStorePriceItems(List<StorePrice> items){
-            this.mStorePrices = items;
-            this.notifyDataSetChanged();
-        }
-
-        @Override
-        public void onViewRecycled(ProductStorePriceListItemViewHolder holder) {
-            super.onViewRecycled(holder);
-            holder.mBinding.setStorePrice(null);
-        }
-    } // End of ProductStorePriceListAdapter
 
 
 
     public static ProductInfoFragment newInstance(String productID) {
         ProductInfoFragment fragment = new ProductInfoFragment();
-
         Bundle args = new Bundle();
-        args.putString(ProductActivity.EXTRA_PRODUCT_ID, productID);
+        args.putString(ARGUMENT_PRODUCT_ID, productID);
         fragment.setArguments(args);
         return fragment;
     }
@@ -133,10 +66,6 @@ public class ProductInfoFragment extends Fragment {
 
     private String mCurrentProductID;
     private Product mCurrentProduct;
-    private StorePrice mCurrentBestProductStorePrice;
-    private List<ShoppingList> mShoppingLists;
-
-    private ProductStorePriceListAdapter mProductStorePriceItemListAdapter;
 
     private Animator mCurrentAnimator;
     ImageExpander mImageExpander;
@@ -154,7 +83,7 @@ public class ProductInfoFragment extends Fragment {
 
         // Get Product ID
         Bundle args = getArguments();
-        mCurrentProductID= args.getString(ProductActivity.EXTRA_PRODUCT_ID);
+        mCurrentProductID = args.getString(ARGUMENT_PRODUCT_ID);
 
     }
 
@@ -164,7 +93,6 @@ public class ProductInfoFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         this.mBinding = ProductInfoFragmentBinding.inflate(inflater, container, false);
-
         return mBinding.getRoot();
     }
 
@@ -175,13 +103,6 @@ public class ProductInfoFragment extends Fragment {
         // Setup viewModel
         this.mViewModel = ViewModelProviders.of(this).get(ProductInfoFragmentViewModel.class);
 
-        // Setup recycler view
-        this.mBinding.listProductPriceItems.setLayoutManager(new LinearLayoutManager(this.getContext()));
-        this.mBinding.listProductPriceItems.setNestedScrollingEnabled(false); // For smoother scrolling
-        this.mProductStorePriceItemListAdapter = new ProductStorePriceListAdapter();
-        mBinding.listProductPriceItems.setAdapter(mProductStorePriceItemListAdapter);
-
-
         // Get Product
         this.mViewModel.getProduct(mCurrentProductID).observe(this, new Observer<Product>() {
             @Override
@@ -191,34 +112,6 @@ public class ProductInfoFragment extends Fragment {
                 // Setup Product Basic Info
                 mBinding.setProduct(mCurrentProduct);
                 setProductImage();
-            }
-        });
-
-        // Get StorePrice list
-        this.mViewModel.getStorePrices(mCurrentProductID).observe(this, new Observer<List<StorePrice>>() {
-            @Override
-            public void onChanged(@Nullable List<StorePrice> storePrices) {
-                ProductInfoFragment.this.mProductStorePriceItemListAdapter.setStorePriceItems(storePrices);
-            }
-        });
-
-        // Get best StorePrice
-        this.mViewModel.getBestStorePrice(mCurrentProductID).observe(this, new Observer<StorePrice>() {
-            @Override
-            public void onChanged(@Nullable StorePrice storePrice) {
-                ProductInfoFragment.this.mCurrentBestProductStorePrice = storePrice;
-                ProductInfoFragment.this.mBinding.setBestPrice(storePrice);
-
-
-                Log.d("Debug Best price: ", "$" + storePrice.getTotal());
-                Log.d("Debug: ", "Best price Store - " + storePrice.getStore().getName());
-                Log.d("Debug: ", "Best price  - " + storePrice.getStore().getName());
-
-                // Set price update date & time
-//                SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
-//                String updateDate = formatter.format(storePrice.getCreationTime());
-//                ProductInfoFragment.this.mBinding.setBestPriceDate(updateDate);
-
             }
         });
 

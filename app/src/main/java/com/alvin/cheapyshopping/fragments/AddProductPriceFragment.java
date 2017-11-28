@@ -1,11 +1,11 @@
 package com.alvin.cheapyshopping.fragments;
 
-
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -252,7 +252,6 @@ public class AddProductPriceFragment extends Fragment {
     }
 
 
-
     public void saveInput() {
         if (this.mChoice == null) {
             return;
@@ -260,7 +259,7 @@ public class AddProductPriceFragment extends Fragment {
 
         int priceType;
         double priceTotal;
-        int priceQuantity = -1;
+        int priceQuantity;
         int priceFreeQuantity = -1;
         double priceDiscount = -1;
 
@@ -268,6 +267,7 @@ public class AddProductPriceFragment extends Fragment {
             case Price.TYPE_SINGLE:
                 priceType = Price.TYPE_SINGLE;
                 priceTotal = Double.parseDouble(this.mBinding.inputSinglePrice.getEditText().getText().toString());
+                priceQuantity = 1;
                 break;
 
             case Price.TYPE_MULTIPLE:

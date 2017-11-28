@@ -12,7 +12,7 @@ import com.alvin.cheapyshopping.fragments.AddProductPriceFragment;
 
 public class AddProductPriceActivity extends AppCompatActivity {
 
-    public static final String EXTRA_PRODUCT_ID = "com.alvin.cheapyshopping.AddProductPriceActivity.EXTRA_PRODUCT_ID";
+    public static final String EXTRA_PRODUCT_ID = "com.alvin.cheapyshopping.AddProductPriceActivity.ARGUMENT_PRODUCT_ID";
 
 
     private AddProductPriceActivityBinding mBinding;

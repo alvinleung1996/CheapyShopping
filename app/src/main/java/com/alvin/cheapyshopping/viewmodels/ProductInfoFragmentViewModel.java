@@ -91,44 +91,13 @@ public class ProductInfoFragmentViewModel extends AndroidViewModel {
     ************************************************************************************************
      */
 
+    // Assume the fragment will not change the product id throughout its life time
     private LiveData<Product> mProduct;
-
     public LiveData<Product> getProduct(String productId) {
-
         if (this.mProduct == null) {
             this.mProduct = this.getProductRepository().findProductByProductId(productId);
         }
         return this.mProduct;
-    }
-
-    /*
-    ************************************************************************************************
-    * get storePrice list
-    ************************************************************************************************
-     */
-
-    private LiveData<List<StorePrice>> mStorePricesList;
-
-    public LiveData<List<StorePrice>> getStorePrices(String productId){
-        if (this.mStorePricesList == null){
-            this.mStorePricesList = this.getStorePriceRepository().findProductStorePrices(productId);
-        }
-        return this.mStorePricesList;
-    }
-
-    /*
-    ************************************************************************************************
-    * get best storePrice
-    ************************************************************************************************
-     */
-
-    private LiveData<StorePrice> mBestStorePrice;
-
-    public LiveData<StorePrice> getBestStorePrice(String productId){
-        if (this.mBestStorePrice == null){
-            this.mBestStorePrice = this.getStorePriceRepository().findBestProductStorePrice(productId);
-        }
-        return this.mBestStorePrice;
     }
 
     /*

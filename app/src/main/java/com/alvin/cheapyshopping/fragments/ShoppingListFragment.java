@@ -466,15 +466,18 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
 
 
 
-    private void onStoreItemClick(View view, Store model) {
+    private void onStoreItemClick(View view, Store store) {
+        if (store == null) {
+            return;
+        }
         Intent intent = new Intent(this.getContext(), StoreActivity.class);
-        intent.putExtra(StoreActivity.EXTRA_STORE_ID, model.getStoreId());
+        intent.putExtra(StoreActivity.EXTRA_STORE_ID, store.getStoreId());
         this.startActivity(intent);
     }
 
-    private void onProductItemClick(View view, Product model) {
+    private void onProductItemClick(View view, Product product) {
         Intent intent = new Intent(this.getContext(), ProductActivity.class);
-        intent.putExtra(ProductActivity.EXTRA_PRODUCT_ID, model.getProductId());
+        intent.putExtra(ProductActivity.EXTRA_PRODUCT_ID, product.getProductId());
         this.startActivity(intent);
     }
 

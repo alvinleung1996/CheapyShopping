@@ -10,6 +10,8 @@ import android.os.AsyncTask;
 import com.alvin.cheapyshopping.repositories.ProductRepository;
 import com.alvin.cheapyshopping.db.entities.Product;
 
+import java.util.UUID;
+
 /**
  * Created by Alvin on 19/11/2017.
  */
@@ -29,6 +31,7 @@ public class AddProductFragmentViewModel extends AndroidViewModel {
 
     public void addProduct(String name, String description, Function<long[], Void> callback) {
         Product product = new Product();
+        product.setProductId(UUID.randomUUID().toString());
         product.setName(name);
         product.setDescription(description);
         new InsertProductTask(this.getApplication(), product, callback).execute();

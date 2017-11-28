@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.alvin.cheapyshopping.databinding.AddShoppingListProductRelationActivityBinding;
+import com.alvin.cheapyshopping.fragments.dialogs.ChooseShoppingListProductRelationQuantityDialog;
 import com.alvin.cheapyshopping.fragments.SelectProductFragment;
 import com.alvin.cheapyshopping.viewmodels.AddShoppingListProductRelationActivityViewModel;
 
@@ -81,6 +82,9 @@ public class AddShoppingListProductRelationActivity extends AppCompatActivity {
             super.onFragmentAttached(fm, f, context);
             if (f instanceof SelectProductFragment) {
                 ((SelectProductFragment) f).setInteractionListener(new SelectProductFragmentInteractionListener());
+            } else if (f instanceof ChooseShoppingListProductRelationQuantityDialog) {
+                ((ChooseShoppingListProductRelationQuantityDialog) f)
+                        .setInteractionListener(new ChooseShoppingListProductRelationQuantityFragmentInterfactionListener());
             }
         }
 
@@ -89,6 +93,9 @@ public class AddShoppingListProductRelationActivity extends AppCompatActivity {
             super.onFragmentDetached(fm, f);
             if (f instanceof SelectProductFragment) {
                 ((SelectProductFragment) f).setInteractionListener(null);
+            } else if (f instanceof ChooseShoppingListProductRelationQuantityDialog) {
+                ((ChooseShoppingListProductRelationQuantityDialog) f)
+                        .setInteractionListener(null);
             }
         }
     }
@@ -99,6 +106,8 @@ public class AddShoppingListProductRelationActivity extends AppCompatActivity {
     * SelectStoreFragment Interactions
     ************************************************************************************************
      */
+
+    private List<String> productIds;
 
     private class SelectProductFragmentInteractionListener implements SelectProductFragment.InteractionListener {
 
@@ -112,9 +121,26 @@ public class AddShoppingListProductRelationActivity extends AppCompatActivity {
 
         @Override
         public void onProductItemsSelected(SelectProductFragment fragment, List<String> productIds) {
+            AddShoppingListProductRelationActivity.this.productIds = productIds;
+
+            ChooseShoppingListProductRelationQuantityDialog dialog = ChooseShoppingListProductRelationQuantityDialog.newInstance();
+            dialog.show(AddShoppingListProductRelationActivity.this.getSupportFragmentManager(), null);
+        }
+    }
+
+    private class ChooseShoppingListProductRelationQuantityFragmentInterfactionListener
+            implements ChooseShoppingListProductRelationQuantityDialog.InteractionListener {
+
+        @Override
+        public void onQuantityChosen(int quantity) {
             AddShoppingListProductRelationActivity.this.mViewModel
-                    .addShoppingListProduct(AddShoppingListProductRelationActivity.this.mShoppingListId, productIds, 1);
-            AddShoppingListProductRelationActivity.this.finishActivity(productIds);
+                    .addShoppingListProduct(
+                            AddShoppingListProductRelationActivity.this.mShoppingListId,
+                            AddShoppingListProductRelationActivity.this.productIds,
+                            quantity
+                    );
+            AddShoppingListProductRelationActivity.this
+                    .finishActivity(AddShoppingListProductRelationActivity.this.productIds);
         }
     }
 
