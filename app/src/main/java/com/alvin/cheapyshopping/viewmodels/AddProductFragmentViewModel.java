@@ -52,6 +52,7 @@ public class AddProductFragmentViewModel extends AndroidViewModel {
 
         @Override
         protected long[] doInBackground(Void... voids) {
+            mProduct.setProductId(UUID.randomUUID().toString());
             return ProductRepository.getInstance(this.mContext).insertProduct(this.mProduct);
         }
 

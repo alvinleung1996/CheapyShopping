@@ -12,6 +12,8 @@ import android.os.AsyncTask;
 import com.alvin.cheapyshopping.repositories.StoreRepository;
 import com.alvin.cheapyshopping.db.entities.Store;
 
+import java.util.UUID;
+
 /**
  * Created by Alvin on 19/11/2017.
  */
@@ -55,6 +57,7 @@ public class AddStoreFragmentViewModel extends AndroidViewModel {
 
         @Override
         protected long[] doInBackground(Void... voids) {
+            mStore.setStoreId(UUID.randomUUID().toString());
             return StoreRepository.getInstance(this.mContext).insertStore(this.mStore);
         }
 

@@ -144,9 +144,9 @@ public class AddProductFragment extends Fragment {
 
         this.mViewModel.addProduct(productName, productDesscription, new Function<long[], Void>() {
             @Override
-            public Void apply(long[] storeIds) {
+            public Void apply(long[] productIds) {
                 if (AddProductFragment.this.mInteractionListener != null) {
-                    AddProductFragment.this.mInteractionListener.onNewProductAdded(AddProductFragment.this, storeIds[0]);
+                    AddProductFragment.this.mInteractionListener.onNewProductAdded(AddProductFragment.this, productIds[0]);
                 }
                 return null;
             }

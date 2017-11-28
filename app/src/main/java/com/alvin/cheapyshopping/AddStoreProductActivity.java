@@ -10,6 +10,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.alvin.cheapyshopping.databinding.AddStoreProductActivityBinding;
+import com.alvin.cheapyshopping.fragments.AddProductFragment;
 import com.alvin.cheapyshopping.fragments.AddProductPriceFragment;
 import com.alvin.cheapyshopping.fragments.SelectProductFragment;
 import com.alvin.cheapyshopping.fragments.StoreListFragment;
@@ -26,6 +27,7 @@ public class AddStoreProductActivity extends AppCompatActivity {
 
     private static final String FRAGMENT_SELECT_PRODUCT = "com.alvin.cheapyshopping.AddStoreProductActivity.FRAGMENT_SELECT_PRODUCT";
     private static final String FRAGMENT_ADD_PRODUCT_PRICE = "com.alvin.cheapyshopping.AddStoreProductActivity.FRAGMENT_ADD_PRODUCT_PRICE";
+    private static final String FRAGMENT_ADD_PRODUCT = "com.alvin.cheapyshopping.AddStoreProductActivity.FRAGMENT_ADD_PRODUCT";
 
 
     private AddStoreProductActivityBinding mBinding;
@@ -83,6 +85,10 @@ public class AddStoreProductActivity extends AppCompatActivity {
             super.onFragmentAttached(fm, f, context);
             if (f instanceof SelectProductFragment) {
                 ((SelectProductFragment) f).setInteractionListener(new SelectProductFragmentInteractionListener());
+            } else if(f instanceof AddProductPriceFragment){
+                ((AddProductPriceFragment) f).setInteractionListener(new AddProductPriceFragmentInteractionListener());
+            } else if(f instanceof AddProductFragment){
+                ((AddProductFragment) f).setInteractionListener(new AddProductFragmentInteractionListener());
             }
         }
 
@@ -91,6 +97,10 @@ public class AddStoreProductActivity extends AppCompatActivity {
             super.onFragmentDetached(fm, f);
             if (f instanceof SelectProductFragment) {
                 ((SelectProductFragment) f).setInteractionListener(null);
+            } else if (f instanceof AddProductPriceFragment) {
+                ((AddProductPriceFragment) f).setInteractionListener(null);
+            } else if (f instanceof AddProductFragment) {
+                ((AddProductFragment) f).setInteractionListener(null);
             }
         }
     }
@@ -106,12 +116,15 @@ public class AddStoreProductActivity extends AppCompatActivity {
         @Override
         public void onAddProductOptionSelected(SelectProductFragment fragment) {
             Toast.makeText(AddStoreProductActivity.this,"Add new product", Toast.LENGTH_LONG).show();
+            AddStoreProductActivity.this.getSupportFragmentManager().popBackStack();
+            AddStoreProductActivity.this.getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, AddProductFragment.newInstance(true), FRAGMENT_ADD_PRODUCT);
         }
 
         @Override
         public void onProductItemsSelected(SelectProductFragment fragment, List<String> products) {
             Toast.makeText(AddStoreProductActivity.this,"Selected product", Toast.LENGTH_LONG).show();
-            mSelectedProductId = products.get(0);
+            AddStoreProductActivity.this.mSelectedProductId = products.get(0);
             AddStoreProductActivity.this.getSupportFragmentManager().popBackStack();
             AddStoreProductActivity.this.getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container, AddProductPriceFragment.newInstance(mSelectedProductId, true, mStoreId), FRAGMENT_ADD_PRODUCT_PRICE)
@@ -119,22 +132,50 @@ public class AddStoreProductActivity extends AppCompatActivity {
                     .commit();
         }
 
-        /*
-        ************************************************************************************************
-        * AddProductPriceFragment Interaction
-        ************************************************************************************************
-         */
+    }
 
-        private class AddProductPriceFragmentInteractionListener implements AddProductPriceFragment.InteractionListener{
-            @Override
-            public void onDiscardNewPriceOptionSelected(AddProductPriceFragment fragment) {
+    /*
+    ************************************************************************************************
+    * AddProductPriceFragment Interaction
+    ************************************************************************************************
+     */
 
-            }
-            @Override
-            public void onNewPriceAdded(AddProductPriceFragment fragment, long rowId) {
-                Toast.makeText(AddStoreProductActivity.this,"Product added", Toast.LENGTH_LONG).show();
-                AddStoreProductActivity.this.finish();
-            }
+    private class AddProductPriceFragmentInteractionListener implements AddProductPriceFragment.InteractionListener{
+        @Override
+        public void onDiscardNewPriceOptionSelected(AddProductPriceFragment fragment) {
+            Toast.makeText(AddStoreProductActivity.this, "Add product action cancelled", Toast.LENGTH_LONG).show();
+            AddStoreProductActivity.this.finish();
+        }
+        @Override
+        public void onNewPriceAdded(AddProductPriceFragment fragment, long rowId) {
+            Toast.makeText(AddStoreProductActivity.this,"Product added", Toast.LENGTH_LONG).show();
+            AddStoreProductActivity.this.finish();
+        }
+    }
+
+    /*
+    ************************************************************************************************
+    * AddProductFragment Interaction
+    ************************************************************************************************
+     */
+
+    private class AddProductFragmentInteractionListener implements AddProductFragment.InteractionListener{
+        @Override
+        public void onDiscardOptionSelected(AddProductFragment fragment) {
+            Toast.makeText(AddStoreProductActivity.this, "Add product action cancelled", Toast.LENGTH_LONG).show();
+            AddStoreProductActivity.this.finish();
+        }
+
+        @Override
+        public void onNewProductAdded(AddProductFragment fragment, long productId) {
+            Toast.makeText(AddStoreProductActivity.this,"Selected product", Toast.LENGTH_LONG).show();
+            // TODO: fix productId type
+//            AddStoreProductActivity.this.mSelectedProductId = productId;
+//            AddStoreProductActivity.this.getSupportFragmentManager().popBackStack();
+//            AddStoreProductActivity.this.getSupportFragmentManager().beginTransaction()
+//                    .replace(R.id.fragment_container, AddProductPriceFragment.newInstance(mSelectedProductId, true, mStoreId), FRAGMENT_ADD_PRODUCT_PRICE)
+//                    .addToBackStack(null)
+//                    .commit();
         }
     }
 
