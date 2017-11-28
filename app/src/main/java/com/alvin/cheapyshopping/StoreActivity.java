@@ -4,6 +4,7 @@ package com.alvin.cheapyshopping;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -128,8 +129,9 @@ public class StoreActivity extends AppCompatActivity {
             super(fragmentManager);
         }
 
-        SparseArray<Fragment> registeredFragments = new SparseArray<Fragment>();
+        SparseArray<Fragment> registeredFragments = new SparseArray<>();
 
+        @NonNull
         @Override
         public Object instantiateItem(ViewGroup container, int position) {
             Fragment fragment = (Fragment) super.instantiateItem(container, position);
@@ -156,7 +158,8 @@ public class StoreActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             switch (position) {
                 case 0:
-                    return StoreInfoFragment.newInstance(StoreActivity.this.mStoreId);
+                    mActiveFragment = StoreInfoFragment.newInstance(StoreActivity.this.mStoreId);
+                    return mActiveFragment;
                 case 1:
                     return StoreProductPricesFragment.newInstance(StoreActivity.this.mStoreId);
                 default:
@@ -171,7 +174,7 @@ public class StoreActivity extends AppCompatActivity {
                 case 0:
                     return "Info";
                 case 1:
-                    return "Product Prices";
+                    return "Products";
                 default:
                     return null;
             }
