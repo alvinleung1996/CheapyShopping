@@ -118,7 +118,9 @@ public class AddStoreProductActivity extends AppCompatActivity {
             Toast.makeText(AddStoreProductActivity.this,"Add new product", Toast.LENGTH_LONG).show();
             AddStoreProductActivity.this.getSupportFragmentManager().popBackStack();
             AddStoreProductActivity.this.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, AddProductFragment.newInstance(true), FRAGMENT_ADD_PRODUCT);
+                    .replace(R.id.fragment_container, AddProductFragment.newInstance(true), FRAGMENT_ADD_PRODUCT)
+                    .addToBackStack(null)
+                    .commit();
         }
 
         @Override
