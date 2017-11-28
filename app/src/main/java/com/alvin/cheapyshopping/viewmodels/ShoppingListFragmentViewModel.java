@@ -7,15 +7,19 @@ import android.arch.core.util.Function;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.Transformations;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
+import com.alvin.cheapyshopping.db.entities.ShoppingListProductRelation;
 import com.alvin.cheapyshopping.db.entities.pseudo.ShoppingListProduct;
 import com.alvin.cheapyshopping.repositories.AccountRepository;
 import com.alvin.cheapyshopping.repositories.BestPriceRelationRepository;
+import com.alvin.cheapyshopping.repositories.ShoppingListProductRelationRepository;
 import com.alvin.cheapyshopping.repositories.ShoppingListProductRepository;
 import com.alvin.cheapyshopping.repositories.ShoppingListRepository;
 import com.alvin.cheapyshopping.db.entities.Account;
@@ -289,6 +293,64 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
     public void refreshBestPriceRelations(Activity activity, String shoppingListId) {
         ShoppingListLocationUpdater.getsInstance(this.getApplication()).updateShoppingListCenterCoordinate(activity, shoppingListId);
         this.getBestPriceRelationRepository().refreshBestPriceRelation(shoppingListId);
+    }
+
+
+    /*
+    ************************************************************************************************
+    * update shopping list product relation quantity
+    ************************************************************************************************
+     */
+
+    public LiveData<Integer> updateShoppingListProductRelationQuantity(String shoppingListId, String productId, int quantity) {
+        MutableLiveData<Integer> result = new MutableLiveData<>();
+        new ShoppingListProductRelationQuantityUpdater(this.getApplication(), shoppingListId, productId, quantity, result).execute();
+        return result;
+    }
+
+    private static class ShoppingListProductRelationQuantityUpdater extends AsyncTask<Void, Void, Void> {
+
+        @SuppressLint("StaticFieldLeak")
+        private final Context mContext;
+        private final String mShoppingListId;
+        private final String mProductId;
+        private final int mQuantity;
+        private final MutableLiveData<Integer> result;
+
+        private ShoppingListProductRelationQuantityUpdater(
+                Context context, String shoppingListId, String productId, int quantity,
+                MutableLiveData<Integer> result) {
+            this.mContext = context.getApplicationContext();
+            this.mShoppingListId = shoppingListId;
+            this.mProductId = productId;
+            this.mQuantity = quantity;
+            this.result = result;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            ShoppingListProductRelationRepository repository
+                    = ShoppingListProductRelationRepository.getInstance(this.mContext);
+
+
+            ShoppingListProductRelation relation
+                    = repository.getShoppingListProductRelationNow(this.mShoppingListId, this.mProductId);
+
+            if (relation == null) {
+                Log.e("Shopping List", "Cannot find relation! splId: " + this.mShoppingListId + ", pId: " + this.mProductId);
+                return null;
+            }
+
+            BestPriceRelationRepository.getInstance(this.mContext)
+                    .deleteShoppingListProductBestPrice(this.mShoppingListId, this.mProductId);
+
+            relation.setQuantity(this.mQuantity);
+
+            int ret = repository.updateShoppingListProductRelation(relation);
+            this.result.postValue(ret);
+
+            return null;
+        }
     }
 
 }

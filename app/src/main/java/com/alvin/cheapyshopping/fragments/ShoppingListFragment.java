@@ -35,6 +35,7 @@ import com.alvin.cheapyshopping.db.entities.Account;
 import com.alvin.cheapyshopping.db.entities.ShoppingList;
 import com.alvin.cheapyshopping.db.entities.Store;
 import com.alvin.cheapyshopping.db.entities.pseudo.ShoppingListProduct;
+import com.alvin.cheapyshopping.fragments.dialogs.ChooseShoppingListProductRelationQuantityDialog;
 import com.alvin.cheapyshopping.viewmodels.ShoppingListFragmentViewModel;
 import com.alvin.cheapyshopping.viewmodels.ShoppingListFragmentViewModel.ShoppingListItem;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -168,12 +169,19 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
                     ShoppingListFragment.this.onProductItemClick(view, ProductItemViewHolder.this.mBinding.getShoppingListProduct());
                 }
             });
+            this.mBinding.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    return ShoppingListFragment.this.onProductItemLongClick(view, ProductItemViewHolder.this.mBinding.getShoppingListProduct());
+                }
+            });
         }
 
         @Override
         protected void onRecycled() {
             this.mBinding.setShoppingListProduct(null);
             this.mBinding.setOnClickListener(null);
+            this.mBinding.setOnLongClickListener(null);
         }
     }
 
@@ -478,6 +486,25 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
         Intent intent = new Intent(this.getContext(), ProductActivity.class);
         intent.putExtra(ProductActivity.EXTRA_PRODUCT_ID, product.getProductId());
         this.startActivity(intent);
+    }
+
+    private boolean onProductItemLongClick(View view, final ShoppingListProduct product) {
+        // TODO refactor into separate activity
+        ChooseShoppingListProductRelationQuantityDialog dialog
+                = ChooseShoppingListProductRelationQuantityDialog.newInstance();
+        dialog.setInteractionListener(new ChooseShoppingListProductRelationQuantityDialog.InteractionListener() {
+            @Override
+            public void onQuantityChosen(int quantity) {
+                ShoppingListFragment.this.mViewModel
+                        .updateShoppingListProductRelationQuantity(
+                                product.getForeignShoppingListId(),
+                                product.getProductId(),
+                                quantity
+                        );
+            }
+        });
+        dialog.show(this.getFragmentManager(), null);
+        return true;
     }
 
 }

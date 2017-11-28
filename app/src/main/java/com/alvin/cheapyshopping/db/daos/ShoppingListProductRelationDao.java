@@ -31,6 +31,12 @@ public interface ShoppingListProductRelationDao {
     LiveData<List<ShoppingListProductRelation>> findShoppingListProductRelations(String shoppingListId);
 
 
+    @Query("SELECT * FROM ShoppingListProductRelation R"
+            + " WHERE R.foreign_shopping_list_id = :shoppingListId"
+            + " AND R.foreign_product_id = :productId")
+    LiveData<ShoppingListProductRelation> getShoppingListProductRelation(String shoppingListId, String productId);
+
+
     /*
     ************************************************************************************************
     * Query, Sync
@@ -40,6 +46,12 @@ public interface ShoppingListProductRelationDao {
     @Query("SELECT * FROM ShoppingListProductRelation"
             + " WHERE ShoppingListProductRelation.foreign_shopping_list_id = :shoppingListId")
     List<ShoppingListProductRelation> findShoppingListProductRelationsNow(String shoppingListId);
+
+
+    @Query("SELECT * FROM ShoppingListProductRelation R"
+            + " WHERE R.foreign_shopping_list_id = :shoppingListId"
+            + " AND R.foreign_product_id = :productId")
+    ShoppingListProductRelation getShoppingListProductRelationNow(String shoppingListId, String productId);
 
     /*
     ************************************************************************************************
