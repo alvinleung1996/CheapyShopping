@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 import com.alvin.cheapyshopping.repositories.ProductRepository;
 import com.alvin.cheapyshopping.db.entities.Product;
 
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -29,7 +30,7 @@ public class AddProductFragmentViewModel extends AndroidViewModel {
     ************************************************************************************************
      */
 
-    public void addProduct(String name, String description, Function<long[], Void> callback) {
+    public void addProduct(String name, String description, Function<String, Void> callback) {
         Product product = new Product();
         product.setProductId(UUID.randomUUID().toString());
         product.setName(name);
@@ -37,27 +38,28 @@ public class AddProductFragmentViewModel extends AndroidViewModel {
         new InsertProductTask(this.getApplication(), product, callback).execute();
     }
 
-    private static class InsertProductTask extends AsyncTask<Void, Void, long[]> {
+    private static class InsertProductTask extends AsyncTask<Void, Void, String> {
 
         @SuppressLint("StaticFieldLeak")
         private Context mContext;
         private Product mProduct;
-        private Function<long[], Void> mCallback;
+        private Function<String, Void> mCallback;
 
-        private InsertProductTask(Context context, Product product, Function<long[], Void> mCallback) {
+        private InsertProductTask(Context context, Product product, Function<String, Void> mCallback) {
             this.mContext = context.getApplicationContext();
             this.mProduct = product;
             this.mCallback = mCallback;
         }
 
         @Override
-        protected long[] doInBackground(Void... voids) {
+        protected String doInBackground(Void... voids) {
             mProduct.setProductId(UUID.randomUUID().toString());
-            return ProductRepository.getInstance(this.mContext).insertProduct(this.mProduct);
+            ProductRepository.getInstance(this.mContext).insertProduct(this.mProduct);
+            return mProduct.getProductId();
         }
 
         @Override
-        protected void onPostExecute(long[] productIds) {
+        protected void onPostExecute(String productIds) {
             if (this.mCallback != null) {
                 this.mCallback.apply(productIds);
             }

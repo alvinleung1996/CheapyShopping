@@ -72,13 +72,13 @@ public class AddProductActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onNewProductAdded(AddProductFragment fragment, long productId) {
+        public void onNewProductAdded(AddProductFragment fragment, String productId) {
             AddProductActivity.this.finishActivityWithResult(productId);
         }
     }
 
 
-    private void finishActivityWithResult(Long productId) {
+    private void finishActivityWithResult(String productId) {
         if (productId != null) {
             Intent data = new Intent();
             data.putExtra(EXTRA_ADDED_PRODUCT_ID, productId);

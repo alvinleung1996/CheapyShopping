@@ -3,6 +3,7 @@ package com.alvin.cheapyshopping;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.os.Debug;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -169,15 +170,14 @@ public class AddStoreProductActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onNewProductAdded(AddProductFragment fragment, long productId) {
+        public void onNewProductAdded(AddProductFragment fragment, String productId) {
             Toast.makeText(AddStoreProductActivity.this,"Selected product", Toast.LENGTH_LONG).show();
-            // TODO: fix productId type
-//            AddStoreProductActivity.this.mSelectedProductId = productId;
-//            AddStoreProductActivity.this.getSupportFragmentManager().popBackStack();
-//            AddStoreProductActivity.this.getSupportFragmentManager().beginTransaction()
-//                    .replace(R.id.fragment_container, AddProductPriceFragment.newInstance(mSelectedProductId, true, mStoreId), FRAGMENT_ADD_PRODUCT_PRICE)
-//                    .addToBackStack(null)
-//                    .commit();
+            AddStoreProductActivity.this.mSelectedProductId = productId;
+            AddStoreProductActivity.this.getSupportFragmentManager().popBackStack();
+            AddStoreProductActivity.this.getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, AddProductPriceFragment.newInstance(mSelectedProductId, true, mStoreId), FRAGMENT_ADD_PRODUCT_PRICE)
+                    .addToBackStack(null)
+                    .commit();
         }
     }
 

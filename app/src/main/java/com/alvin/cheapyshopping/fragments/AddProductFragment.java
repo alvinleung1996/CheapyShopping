@@ -26,7 +26,7 @@ public class AddProductFragment extends Fragment {
 
         void onDiscardOptionSelected(AddProductFragment fragment);
 
-        void onNewProductAdded(AddProductFragment fragment, long productId);
+        void onNewProductAdded(AddProductFragment fragment, String productId);
 
     }
 
@@ -142,11 +142,11 @@ public class AddProductFragment extends Fragment {
             return;
         }
 
-        this.mViewModel.addProduct(productName, productDesscription, new Function<long[], Void>() {
+        this.mViewModel.addProduct(productName, productDesscription, new Function<String, Void>() {
             @Override
-            public Void apply(long[] productIds) {
+            public Void apply(String productId) {
                 if (AddProductFragment.this.mInteractionListener != null) {
-                    AddProductFragment.this.mInteractionListener.onNewProductAdded(AddProductFragment.this, productIds[0]);
+                    AddProductFragment.this.mInteractionListener.onNewProductAdded(AddProductFragment.this, productId);
                 }
                 return null;
             }
