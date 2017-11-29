@@ -4,22 +4,15 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.view.Gravity;
-import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-
-import com.alvin.cheapyshopping.databinding.ChooseImageSourceDialogBinding;
 
 /**
  * Created by cheng on 11/29/2017.
  */
 
 public class ConfirmDialog extends DialogFragment {
-    public static final String DIALOG_OK = "com.alvin.cheapyshopping.ChoosePictureSourceDialog.DIALOG_GALLERY";
-    public static final String DIALOG_CANCEL = "com.alvin.cheapyshopping.ChoosePictureSourceDialog.DIALOG_CAMERA";
+    public static final String DIALOG_OK = "com.alvin.cheapyshopping.ChoosePictureSourceDialog.DIALOG_OK";
+    public static final String DIALOG_CANCEL = "com.alvin.cheapyshopping.ChoosePictureSourceDialog.DIALOG_CANCEL";
     public static final String ARGUMENT_MESSAGE = "com.alvin.cheapyshopping.ChoosePictureSourceDialog.ARGUMENT_MESSAGE";
 
 

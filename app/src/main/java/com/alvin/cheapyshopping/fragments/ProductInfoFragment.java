@@ -4,14 +4,13 @@ package com.alvin.cheapyshopping.fragments;
 import android.animation.Animator;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.arch.core.util.Function;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -30,6 +29,8 @@ import android.widget.Toast;
 
 
 import com.alvin.cheapyshopping.fragments.dialogs.ChoosePictureSourceDialog;
+import com.alvin.cheapyshopping.fragments.dialogs.ChooseShoppingListProductRelationQuantityDialog;
+import com.alvin.cheapyshopping.fragments.dialogs.ChooseShoppingListsDialog;
 import com.alvin.cheapyshopping.fragments.dialogs.ConfirmDialog;
 import com.alvin.cheapyshopping.utils.ImageRotater;
 import com.alvin.cheapyshopping.R;
@@ -184,7 +185,7 @@ public class ProductInfoFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.item_save:
-                selectShoppingListDialog();
+                saveProductToShoppingLists();
                 return true;
             case R.id.item_edit:
                 // TODO: Edit product information
@@ -199,96 +200,59 @@ public class ProductInfoFragment extends Fragment {
 
     /*
     ************************************************************************************************
-    * Dialog for selecting shopping list
+    * Dialogs for adding product to shopping List
     ************************************************************************************************
      */
 
-    public void selectShoppingListDialog() {
-        final List<ShoppingList> mDialogShoppingLists = new ArrayList<>();
-        final List<String> shoppinglistNames = new ArrayList<>();
-        final List<Integer> mSelecteditems = new ArrayList<>();
-
-        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ProductInfoFragment.this.getContext());
-
-        // Set dialog title
-        alertDialogBuilder.setTitle("Save Product");
-
-
-        // Set dialog main message
-        alertDialogBuilder.setTitle("Please select the shopping list");
-
-        // Get shopping lists and select
-        mViewModel.findCurrentAccountShoppingLists().observe(this, new Observer<List<ShoppingList>>() {
+    public void saveProductToShoppingLists() {
+        // Only add to shopping list(s) without the product
+        mViewModel.findShoppingListsNotContainProductNow(mCurrentProductID, new Function<List<ShoppingList>, Void>() {
             @Override
-            public void onChanged(@Nullable List<ShoppingList> shoppingLists) {
+            public Void apply(List<ShoppingList> shoppingLists) {
+                boolean canProceed = false;
                 if (shoppingLists != null){
-
-                    // Add shopping list names
-                    for (int i = 0; i < shoppingLists.size(); i++){
-                        shoppinglistNames.add(shoppingLists.get(i).getName());
-                        mDialogShoppingLists.add(shoppingLists.get(i));
+                    if(shoppingLists.size() > 0){
+                        canProceed = true;
                     }
-
-                    // Convert List<String> to Array
-                    String[] items = shoppinglistNames.toArray(new String[0]);
-
-                    // Set items for the alert dialog
-                    alertDialogBuilder.setMultiChoiceItems(items, null, new DialogInterface.OnMultiChoiceClickListener() {
+                }
+                if (canProceed){
+                    ChooseShoppingListsDialog dialog = ChooseShoppingListsDialog.newInstance(shoppingLists);
+                    dialog.show(ProductInfoFragment.this.getFragmentManager(), null);
+                    dialog.setInteractionListener(new ChooseShoppingListsDialog.InteractionListener() {
                         @Override
-                        public void onClick(DialogInterface dialogInterface, int index, boolean isChecked) {
-                            if (isChecked) {
-                                // If the user checked the item, add it to the selected items
-                                mSelecteditems.add(index);
-                            } else if (mSelecteditems.contains(index)) {
-                                // Else, if the item is already in the array, remove it
-                                mSelecteditems.remove(Integer.valueOf(index));
+                        public void onSelectShoppingListsConfirmed(List<ShoppingList> shoppingLists) {
+                            // Get ShoppingLists' ID
+                            List<String> shoppingListIds = new ArrayList<>(shoppingLists.size());
+                            for(ShoppingList shoppingList: shoppingLists){
+                                shoppingListIds.add(shoppingList.getShoppingListId());
                             }
-
+                            ProductInfoFragment.this.saveProductToSelectedShoppingLists(shoppingListIds);
                         }
                     });
+                }else {
+                    ConfirmDialog dialog = ConfirmDialog.newInstance("No available shopping list.");
+                    dialog.show(ProductInfoFragment.this.getFragmentManager(), null);
                 }
+                return null;
             }
         });
-
-
-        // Set the action buttons
-        alertDialogBuilder.setPositiveButton("Confirm", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int index) {
-
-                // Filter for checked shoppinglist from ArrayList
-                List<ShoppingList> mSelectedShoppingLists = new ArrayList<>();
-                for(int i = 0; i < mSelecteditems.size(); i++){
-                    mSelectedShoppingLists.add(mDialogShoppingLists.get(mSelecteditems.get(i)));
-                }
-
-                saveProductToShopplingLists(mSelectedShoppingLists);
-
-
-            }
-        });
-
-        alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
-            }
-        });
-
-        alertDialogBuilder.show();
 
     }
 
-    private void saveProductToShopplingLists(List<ShoppingList> shoppingLists){
+    private void saveProductToSelectedShoppingLists(final List<String> shoppingListIds){
+        // Choose the quantity to be added
+        ChooseShoppingListProductRelationQuantityDialog dialog = ChooseShoppingListProductRelationQuantityDialog.newInstance();
+        dialog.setInteractionListener(new ChooseShoppingListProductRelationQuantityDialog.InteractionListener() {
+            @Override
+            public void onQuantityChosen(int quantity) {
+                mViewModel.addProductToShoppingLists(mCurrentProductID, shoppingListIds, quantity);
 
-        // TODO: add product to shopping list
-        // check if the product is already in the shopping list
-
-
-
-        Toast.makeText(ProductInfoFragment.this.getContext() ,
-                "Added to  " + shoppingLists.size() + " shopping list(s)",
-                Toast.LENGTH_LONG).show();
+                Toast.makeText(ProductInfoFragment.this.getContext() ,
+                        "Added to  " + shoppingListIds.size() + " shopping list(s)",
+                        Toast.LENGTH_LONG).show();
+            }
+        });
+        dialog.show(this.getFragmentManager(), null);
     }
 
     /*
@@ -314,14 +278,12 @@ public class ProductInfoFragment extends Fragment {
                 }
             }
         });
-
         dialog.show(this.getFragmentManager(), null);
 
     }
 
-
+    // Get image from camera
     private void newImageFromCamera(){
-
         // Check for existing image and delete
         if (mImageFile.exists()){
             mImageFile.delete();
@@ -338,10 +300,9 @@ public class ProductInfoFragment extends Fragment {
             takePictureIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);
             this.startActivityForResult(takePictureIntent, REQUEST_IMAGE_FROM_CAMERA);
         }
-
-
     }
 
+    // Get image from gallery
     private void newImageFromGallery(){
         // TODO: fix image rotation problem
 
@@ -357,6 +318,7 @@ public class ProductInfoFragment extends Fragment {
         this.startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_IMAGE_FROM_GALLERY);
     }
 
+    // Delete existing custom image
     private void deleteImage(){
         final ConfirmDialog dialog = ConfirmDialog.newInstance("Confirm delete product image?");
         dialog.setInteractionListener(new ConfirmDialog.InteractionListener() {
@@ -377,6 +339,7 @@ public class ProductInfoFragment extends Fragment {
     }
 
 
+    // Setup the product image. Check if not custom image, set as default
     private void setProductImage(boolean isCustom){
         // Get new image name and path
         String imageFileName = IMAGE_FILE_TYPE + "_" + mCurrentProductID;
@@ -392,7 +355,6 @@ public class ProductInfoFragment extends Fragment {
         } else {
             mBinding.imageProduct.setImageResource(R.drawable.ic_product_black_24dp);
         }
-
     }
 
     /*
@@ -410,7 +372,7 @@ public class ProductInfoFragment extends Fragment {
 
     /*
     ************************************************************************************************
-    * Activity result
+    * Activity result, mainly for image capture function
     ************************************************************************************************
      */
 
@@ -451,13 +413,9 @@ public class ProductInfoFragment extends Fragment {
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 50, outputStream);
             }
 
-//            // Update image immediately
-//            mBinding.imageProduct.setImageBitmap(bitmap);
-
             // Update database
             mCurrentProduct.setImageExist(true);
             mViewModel.addCustomProductImage(mCurrentProduct);
-
 
         } catch (Exception e) {
             Toast.makeText(getActivity(), "Failed to import image", Toast.LENGTH_SHORT)

@@ -83,6 +83,20 @@ public class ShoppingListRepository {
     }
 
 
+    private Map<String, LiveData<List<ShoppingList>>> mShoppingListsNotContainProductCache;
+    public LiveData<List<ShoppingList>> findShoppingListsNotContainProduct(String productId) {
+        if (this.mShoppingListsNotContainProductCache == null) {
+            this.mShoppingListsNotContainProductCache = new ArrayMap<>();
+        }
+        if (!this.mShoppingListsNotContainProductCache.containsKey(productId)) {
+            this.mShoppingListsNotContainProductCache
+                    .put(productId, this.getShoppingListDao()
+                            .findShoppingListsNotContainProduct(productId));
+        }
+        return this.mShoppingListsNotContainProductCache.get(productId);
+    }
+
+
     /*
     ************************************************************************************************
     * Query, Sync
@@ -95,6 +109,20 @@ public class ShoppingListRepository {
 
     public List<ShoppingList> findAccountShoppingListsNow(String accountId) {
         return this.getShoppingListDao().findAccountShoppingListsNow(accountId);
+    }
+
+
+    private Map<String, List<ShoppingList>> mShoppingListsNotContainProductCacheNow;
+    public List<ShoppingList> findShoppingListsNotContainProductNow(String productId) {
+        if (this.mShoppingListsNotContainProductCacheNow == null) {
+            this.mShoppingListsNotContainProductCacheNow = new ArrayMap<>();
+        }
+        if (!this.mShoppingListsNotContainProductCacheNow.containsKey(productId)) {
+            this.mShoppingListsNotContainProductCacheNow
+                    .put(productId, this.getShoppingListDao()
+                            .findShoppingListsNotContainProductNow(productId));
+        }
+        return this.mShoppingListsNotContainProductCacheNow.get(productId);
     }
 
 

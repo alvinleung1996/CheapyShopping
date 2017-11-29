@@ -30,6 +30,20 @@ public interface ShoppingListDao {
     @Query("SELECT * FROM ShoppingList WHERE foreign_account_id = :accountId")
     LiveData<List<ShoppingList>> findAccountShoppingLists(String accountId);
 
+//    @Query("SELECT * FROM Product P WHERE ("
+//            + "SELECT COUNT(*) FROM Product P0 INNER JOIN ShoppingListProductRelation R"
+//            + " ON P0.product_id = R.foreign_product_id"
+//            + " WHERE P.product_id = P0.product_id AND R.foreign_shopping_list_id = :shoppingListId"
+//            + ") = 0")
+//    LiveData<List<Product>> findProductsNotInShoppingList(String shoppingListId);
+
+
+    @Query("SELECT * FROM ShoppingList S WHERE (" +
+            "SELECT COUNT(*) FROM ShoppingListProductRelation R " +
+            "WHERE R.foreign_shopping_list_id = S.shopping_list_id " +
+            "AND R.foreign_product_id = :productId) = 0")
+
+    LiveData<List<ShoppingList>> findShoppingListsNotContainProduct(String productId);
 
     /*
     ************************************************************************************************
@@ -42,6 +56,13 @@ public interface ShoppingListDao {
 
     @Query("SELECT * FROM ShoppingList WHERE foreign_account_id = :accountId")
     List<ShoppingList> findAccountShoppingListsNow(String accountId);
+
+    @Query("SELECT * FROM ShoppingList S WHERE (" +
+            "SELECT COUNT(*) FROM ShoppingListProductRelation R " +
+            "WHERE R.foreign_shopping_list_id = S.shopping_list_id " +
+            "AND R.foreign_product_id = :productId) = 0")
+
+    List<ShoppingList> findShoppingListsNotContainProductNow(String productId);
 
 
     /*
