@@ -2,16 +2,23 @@ package com.alvin.cheapyshopping.fragments;
 
 
 import android.animation.Animator;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -22,8 +29,9 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 
-import com.alvin.cheapyshopping.utils.ImageRotate;
-import com.alvin.cheapyshopping.utils.ImageUpdater;
+import com.alvin.cheapyshopping.fragments.dialogs.ChoosePictureSourceDialog;
+import com.alvin.cheapyshopping.fragments.dialogs.ConfirmDialog;
+import com.alvin.cheapyshopping.utils.ImageRotater;
 import com.alvin.cheapyshopping.R;
 import com.alvin.cheapyshopping.StoreActivity;
 import com.alvin.cheapyshopping.databinding.ProductInfoFragmentBinding;
@@ -34,6 +42,8 @@ import com.alvin.cheapyshopping.utils.ImageExpander;
 import com.alvin.cheapyshopping.viewmodels.ProductInfoFragmentViewModel;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,10 +55,10 @@ public class ProductInfoFragment extends Fragment {
 
     private static final String ARGUMENT_PRODUCT_ID = "com.alvin.cheapyshopping.fragments.ProductInfoFragment.ARGUMENT_PRODUCT_ID";
 
-    private static final int REQUEST_IMAGE_CAPTURE = 1;
+    private static final int REQUEST_IMAGE_FROM_CAMERA = 1;
+    private static final int REQUEST_IMAGE_FROM_GALLERY = 2;
 
     private static final String IMAGE_FILE_TYPE = "Product";
-    private static final String IMAGE_FOLDER = "Product";
 
 
 
@@ -67,9 +77,12 @@ public class ProductInfoFragment extends Fragment {
     private String mCurrentProductID;
     private Product mCurrentProduct;
 
+
     private Animator mCurrentAnimator;
-    ImageExpander mImageExpander;
-    Bitmap mBitmap;
+    private ImageExpander mImageExpander;
+    private Uri mImageUri;
+    private Bitmap mBitmap;
+    private File mImageFile;
 
 
     public ProductInfoFragment(){
@@ -111,29 +124,32 @@ public class ProductInfoFragment extends Fragment {
 
                 // Setup Product Basic Info
                 mBinding.setProduct(mCurrentProduct);
-                setProductImage();
+
+                // Setup product image
+                if (product.isImageExist()){
+                    setProductImage(true);
+                }else{
+                    setProductImage(false);
+                }
             }
         });
-
-        // Setup product image
-        setProductImage();
 
 
         // Product Image Click to zoom
         this.mBinding.imageProduct.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (mImageExpander == null){
-                    mImageExpander = new ImageExpander(getContext(), mCurrentAnimator, mBinding.container,
-                            mBinding.imageProduct, mBinding.imageProductZoomed,
-                            300);
-                }
-                if (mBitmap != null){
-                    mImageExpander.setBitmap(mBitmap);
-                }else {
-                    mImageExpander.setImgResId(R.drawable.ic_product_black_24dp);
-                }
-                mImageExpander.expandImage();
+//                if (mImageExpander == null){
+//                    mImageExpander = new ImageExpander(getContext(), mCurrentAnimator, mBinding.container,
+//                            mBinding.imageProduct, mBinding.imageProductZoomed,
+//                            300);
+//                }
+//                if (mBitmap != null){
+//                    mImageExpander.setBitmap(mBitmap);
+//                }else {
+//                    mImageExpander.setImgResId(R.drawable.ic_product_black_24dp);
+//                }
+//                mImageExpander.expandImage();
             }
         });
 
@@ -143,7 +159,6 @@ public class ProductInfoFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 updateImage();
-                setProductImage();
             }
         } );
 
@@ -283,60 +298,101 @@ public class ProductInfoFragment extends Fragment {
      */
 
     private void updateImage(){
-        final int DIALOG_INDEX_GALLERY = 0;
-        final int DIALOG_INDEX_CAMERA = 1;
-
-        String[] items = new String[] {"Gallery","Camera"};
-        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(ProductInfoFragment.this.getContext());
-        alertDialogBuilder.setTitle("Please select an image");
-
-        alertDialogBuilder.setItems(items, new DialogInterface.OnClickListener(){
+        final ChoosePictureSourceDialog dialog = ChoosePictureSourceDialog.newInstance();
+        dialog.setInteractionListener(new ChoosePictureSourceDialog.InteractionListener() {
             @Override
-            public void onClick(DialogInterface dialogInterface, int which) {
-                // Choose new product image from gallery
-                if (which == DIALOG_INDEX_GALLERY){
-                    ImageUpdater.getsInstance(ProductInfoFragment.this.getContext(), IMAGE_FILE_TYPE, mCurrentProductID)
-                            .updateImageFromGallery();
-
+            public void PictureSourceActionChosen(String action) {
+                if (action != null){
+                    dialog.dismiss();
+                    if (action.equals(ChoosePictureSourceDialog.DIALOG_CAMERA)){
+                        ProductInfoFragment.this.newImageFromCamera();;
+                    }else if(action.equals(ChoosePictureSourceDialog.DIALOG_GALLERY)){
+                        ProductInfoFragment.this.newImageFromGallery();;
+                    }else if(action.equals(ChoosePictureSourceDialog.DIALOG_DELETE)){
+                        ProductInfoFragment.this.deleteImage();;
+                    }
                 }
-                // Choose new product image using camera
-                else if (which == DIALOG_INDEX_CAMERA){
-                    ImageUpdater imageUpdater = new ImageUpdater(getActivity() ,ProductInfoFragment.this.getContext(),
-                            IMAGE_FILE_TYPE, mCurrentProductID, IMAGE_FOLDER, REQUEST_IMAGE_CAPTURE);
-                    imageUpdater.updateImageFromCamera();
-
-                    Log.d("Debug", "current product id: " + mCurrentProductID);
-                }
-
             }
         });
 
-        alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
-            }
-        });
+        dialog.show(this.getFragmentManager(), null);
 
-        alertDialogBuilder.show();
     }
 
 
-    private void setProductImage(){
-        String imageFileName = IMAGE_FILE_TYPE + "_" + mCurrentProductID;
-        File storageDir = ProductInfoFragment.this.getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = new File(storageDir, imageFileName + ".jpg");
-        if (image.exists()){
+    private void newImageFromCamera(){
 
-            mBitmap = ImageRotate.getsInstance(this.getContext()).rotateImage(image);
-
-            // Update image view with rotated bitmap
-            mBinding.imageProduct.setImageBitmap(mBitmap);
-            mBinding.imageProductZoomed.setImageBitmap(mBitmap);
-
-            // Reset image view
-            mBinding.imageProduct.invalidate();
+        // Check for existing image and delete
+        if (mImageFile.exists()){
+            mImageFile.delete();
         }
+
+        // New intent for camera
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (takePictureIntent.resolveActivity(this.getContext().getPackageManager()) != null) {
+            Uri photoURI = FileProvider.getUriForFile(this.getContext(),
+                    "com.alvin.fileprovider",
+                    mImageFile);
+            mImageUri = photoURI;
+            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+            takePictureIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);
+            this.startActivityForResult(takePictureIntent, REQUEST_IMAGE_FROM_CAMERA);
+        }
+
+
+    }
+
+    private void newImageFromGallery(){
+        // TODO: fix image rotation problem
+
+        // Check for existing image and delete
+        if (mImageFile.exists()){
+            mImageFile.delete();
+        }
+
+        // Intent for gallery
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        this.startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_IMAGE_FROM_GALLERY);
+    }
+
+    private void deleteImage(){
+        final ConfirmDialog dialog = ConfirmDialog.newInstance("Confirm delete product image?");
+        dialog.setInteractionListener(new ConfirmDialog.InteractionListener() {
+            @Override
+            public void onOKAction() {
+                if(mImageFile.exists()){
+                    mImageFile.delete();
+                    //Update database
+                    mCurrentProduct.setImageExist(false);
+                    mViewModel.removeCustomProductImage(mCurrentProduct);
+                }
+            }
+            @Override
+            public void onCancelAction() {dialog.dismiss();}
+        });
+
+        dialog.show(this.getFragmentManager(), null);
+    }
+
+
+    private void setProductImage(boolean isCustom){
+        // Get new image name and path
+        String imageFileName = IMAGE_FILE_TYPE + "_" + mCurrentProductID;
+        File storageDir = this.getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        mImageFile = new File(storageDir, imageFileName + ".jpg");
+
+        if (isCustom){
+            if (mImageFile.exists()){
+                mBitmap = ImageRotater.getsInstance(this.getContext()).rotateImage(mImageFile);
+                // Update image view with rotated bitmap
+                mBinding.imageProduct.setImageBitmap(mBitmap);
+            }
+        } else {
+            mBinding.imageProduct.setImageResource(R.drawable.ic_product_black_24dp);
+        }
+
     }
 
     /*
@@ -349,6 +405,65 @@ public class ProductInfoFragment extends Fragment {
         Intent intent = new Intent(this.getContext(), StoreActivity.class);
         intent.putExtra(StoreActivity.EXTRA_STORE_ID, store.getStoreId());
         this.startActivity(intent);
+    }
+
+
+    /*
+    ************************************************************************************************
+    * Activity result
+    ************************************************************************************************
+     */
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode){
+            case REQUEST_IMAGE_FROM_CAMERA:
+                if (resultCode == Activity.RESULT_OK){
+                    Uri selectedImage = this.mImageUri;
+                    imageUpdateFromActivityResult(selectedImage, REQUEST_IMAGE_FROM_CAMERA);
+
+                }
+                break;
+            case REQUEST_IMAGE_FROM_GALLERY:
+                if (resultCode == Activity.RESULT_OK){
+                    Uri selectedImage = data.getData();
+                    imageUpdateFromActivityResult(selectedImage, REQUEST_IMAGE_FROM_GALLERY);
+                }
+                break;
+
+        }
+    }
+
+    private void imageUpdateFromActivityResult(Uri selectedImageUri, int request){
+        getActivity().getContentResolver().notifyChange(selectedImageUri, null);
+        ContentResolver cr = getActivity().getContentResolver();
+        Bitmap bitmap;
+        try {
+            bitmap = android.provider.MediaStore.Images.Media
+                    .getBitmap(cr, selectedImageUri);
+
+
+            if (request == REQUEST_IMAGE_FROM_GALLERY){
+                // Copy image to app dir and compress
+                OutputStream outputStream;
+                outputStream = new FileOutputStream(mImageFile);
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, outputStream);
+            }
+
+//            // Update image immediately
+//            mBinding.imageProduct.setImageBitmap(bitmap);
+
+            // Update database
+            mCurrentProduct.setImageExist(true);
+            mViewModel.addCustomProductImage(mCurrentProduct);
+
+
+        } catch (Exception e) {
+            Toast.makeText(getActivity(), "Failed to import image", Toast.LENGTH_SHORT)
+                    .show();
+            Log.e("Update image error", e.toString());
+        }
     }
 
 

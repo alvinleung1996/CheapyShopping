@@ -32,6 +32,7 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
+
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -41,27 +42,29 @@
 
                 <ImageView
                     android:id="@+id/image_product"
-                    android:contentDescription="Product Image"
                     android:layout_width="0dp"
                     android:layout_height="280dp"
-                    android:background="@color/white"
+                    android:background="@drawable/background_product_image"
+                    android:contentDescription="Product Image"
                     android:elevation="2dp"
-                    android:src="@drawable/ic_product_black_24dp"
                     android:scaleType="fitCenter"
-                    app:layout_constraintTop_toTopOf="parent"
+                    android:padding="10dp"
+                    android:src="@drawable/ic_product_black_24dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"/>
 
 
 
                 <ImageView
                     android:id="@+id/image_edit"
-                    android:layout_width="25dp"
-                    android:layout_height="25dp"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginEnd="10dp"
-                    android:background="@drawable/frame_box_black_filled_white"
-                    android:padding="3dp"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginEnd="15dp"
+                    android:background="@drawable/background_circule_light_blue"
+                    android:padding="7dp"
                     android:elevation="2dp"
                     android:src="@drawable/ic_edit_black_24dp"
                     android:tint="@color/black"
@@ -69,22 +72,6 @@
                     app:layout_constraintTop_toTopOf="parent"/>
 
 
-                <RatingBar
-                    android:id="@+id/ratingbar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="5dp"
-                    android:layout_marginStart="5dp"
-                    android:elevation="4dp"
-                    android:numStars="5"
-                    android:rating="3.5"
-                    android:scaleX="0.5"
-                    android:scaleY="0.5"
-                    android:transformPivotX="0dp"
-                    android:transformPivotY="0dp"
-                    android:isIndicator="false"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"/>
 
                 <TextView
                     android:id="@+id/text_product_name"
@@ -100,6 +87,22 @@
                     android:gravity="center"
                     app:layout_constraintTop_toBottomOf="@id/image_product"/>
 
+                <RatingBar
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    style= "@style/CustomRatingBar"
+                    android:id="@+id/ratingBar"
+                    android:numStars="5"
+                    android:rating="3"
+                    android:stepSize="0.01"
+                    android:elevation="4dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="5dp"
+                    android:isIndicator="false"
+                    app:layout_constraintTop_toBottomOf="@id/text_product_name"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+
                 <TextView
                     android:id="@+id/text_best_price_title"
                     android:layout_width="0dp"
@@ -114,7 +117,7 @@
                     android:layout_height="wrap_content"
                     android:text="@{bestPrice != null ? Double.toString(bestPrice.total) : `Not yet computed`}"
                     android:textSize="20sp"
-                    app:layout_constraintTop_toBottomOf="@id/text_product_name"
+                    app:layout_constraintTop_toBottomOf="@id/ratingBar"
                     app:layout_constraintStart_toEndOf="@id/text_best_price_title"
                     app:layout_constraintEnd_toEndOf="parent"/>
 
@@ -155,18 +158,19 @@
             bounds.
             -->
 
-            <ImageView
-                android:id="@+id/image_product_zoomed"
-                android:contentDescription="Product Image zoomed"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/white"
-                android:src="@drawable/ic_product_black_24dp"
-                android:visibility="invisible"
-                />
+            <!--<ImageView-->
+                <!--android:id="@+id/image_product_zoomed"-->
+                <!--android:contentDescription="Product Image zoomed"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:background="@color/white"-->
+                <!--android:src="@drawable/ic_product_black_24dp"-->
+                <!--android:visibility="invisible"-->
+                <!--/>-->
         </FrameLayout>
 
 
     </android.support.v4.widget.NestedScrollView>
+
 
 </layout>

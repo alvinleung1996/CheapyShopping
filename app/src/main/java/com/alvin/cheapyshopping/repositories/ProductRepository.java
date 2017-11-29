@@ -104,6 +104,7 @@ public class ProductRepository {
         return this.mProductCache.get(productId);
     }
 
+
     /*
     ************************************************************************************************
     * Query, Sync

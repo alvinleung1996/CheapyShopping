@@ -1,10 +1,13 @@
 package com.alvin.cheapyshopping.viewmodels;
 
+import android.annotation.SuppressLint;
 import android.app.Application;
 import android.arch.core.util.Function;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Transformations;
+import android.content.Context;
+import android.os.AsyncTask;
 
 import com.alvin.cheapyshopping.db.entities.Account;
 import com.alvin.cheapyshopping.db.entities.Product;
@@ -98,6 +101,40 @@ public class ProductInfoFragmentViewModel extends AndroidViewModel {
             this.mProduct = this.getProductRepository().findProductByProductId(productId);
         }
         return this.mProduct;
+    }
+
+    /*
+    ************************************************************************************************
+    * remove / add custom product image
+    ************************************************************************************************
+     */
+
+    public void removeCustomProductImage(Product product){
+        product.setImageExist(false);
+        new UpdateProductImageTask(this.getApplication(), product).execute();
+    }
+
+    public void addCustomProductImage(Product product){
+        product.setImageExist(true);
+        new UpdateProductImageTask(this.getApplication(), product).execute();
+    }
+
+    private static class UpdateProductImageTask extends AsyncTask<Void, Void, Void> {
+
+        @SuppressLint("StaticFieldLeak")
+        private Context mContext;
+        private Product mProduct;
+
+        private UpdateProductImageTask(Context context, Product product) {
+            this.mContext = context.getApplicationContext();
+            this.mProduct = product;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            ProductRepository.getInstance(this.mContext).updateProduct(mProduct);
+            return null;
+        }
     }
 
     /*

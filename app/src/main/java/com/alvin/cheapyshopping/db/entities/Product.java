@@ -20,9 +20,11 @@ public class Product {
     @ColumnInfo(name = "name")
     private String mName;
 
-    @ColumnInfo(name="description")
+    @ColumnInfo(name = "description")
     private String mDescription;
 
+    @ColumnInfo(name = "image_exist")
+    private boolean mImageExist = false;
 
     public String getProductId() {
         return this.mProductId;
@@ -48,4 +50,11 @@ public class Product {
         this.mDescription = description;
     }
 
+    public boolean isImageExist(){
+        return this.mImageExist;
+    }
+
+    public void setImageExist(boolean imageExist) {
+        mImageExist = imageExist;
+    }
 }

@@ -14,27 +14,29 @@ import java.io.File;
  * Created by cheng on 11/27/2017.
  */
 
-public class ImageRotate {
+public class ImageRotater {
 
     @SuppressLint("StaticFieldLeak")
-    private static ImageRotate sInstance;
+    private static ImageRotater sInstance;
 
-    public static ImageRotate getsInstance(Context context) {
+    public static ImageRotater getsInstance(Context context) {
         if (sInstance == null) {
-            sInstance = new ImageRotate(context);
+            sInstance = new ImageRotater(context);
         }
         return sInstance;
     }
 
     private Context mContext;
+    private Bitmap mBitmap;
 
-    private ImageRotate(Context context){
+    private ImageRotater(Context context){
         this.mContext = context;
     }
 
-    public Bitmap rotateImage(File image){
+    public Bitmap rotateImage(final File image){
+        mBitmap = BitmapFactory.decodeFile(image.getAbsolutePath());
+
         // Rotate the image
-        Bitmap bitmap = BitmapFactory.decodeFile(image.getAbsolutePath());
         try {
             ExifInterface exif = new ExifInterface(image.getAbsolutePath());
             int orientation = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 1);
@@ -49,12 +51,14 @@ public class ImageRotate {
             else if (orientation == 8) {
                 matrix.postRotate(270);
             }
-            bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true); // rotating bitmap
+            ImageRotater.this.mBitmap = Bitmap.createBitmap(mBitmap, 0, 0, mBitmap.getWidth(), mBitmap.getHeight(), matrix, true); // rotating bitmap
         }
         catch (Exception e) {
-
+            Log.e("Rotate bitmap error", e.toString());
         }
-        return bitmap;
+
+        return mBitmap;
+
     }
 
 }

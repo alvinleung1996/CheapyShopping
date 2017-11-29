@@ -69,7 +69,7 @@
                     android:tint="@color/grey"
                     android:src="@drawable/ic_phone_black_24dp"
                     app:layout_constraintStart_toStartOf="@+id/text_store_name"
-                    app:layout_constraintTop_toBottomOf="@+id/text_store_name" />
+                    app:layout_constraintTop_toBottomOf="@+id/text_store_name"/>
 
                 <TextView
                     android:id="@+id/text_store_phone"
@@ -79,7 +79,8 @@
                     android:text="1111 1111"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/image_store_phone"
-                    app:layout_constraintTop_toTopOf="@id/image_store_phone"/>
+                    app:layout_constraintTop_toTopOf="@id/image_store_phone"
+                    android:autoLink="phone"/>
 
                 <ImageView
                     android:id="@+id/image_store_opening_hours"
