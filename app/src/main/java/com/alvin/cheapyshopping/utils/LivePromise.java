@@ -14,6 +14,7 @@ public abstract class LivePromise<X, Y> {
 
     private final MutableLiveData<Y> mRejectData;
 
+    @SuppressWarnings("WeakerAccess")
     protected LivePromise() {
         this.mResolveData = new MutableLiveData<>();
         this.mRejectData = new MutableLiveData<>();
