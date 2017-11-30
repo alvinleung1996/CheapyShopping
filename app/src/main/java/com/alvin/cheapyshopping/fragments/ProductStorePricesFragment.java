@@ -3,14 +3,18 @@ package com.alvin.cheapyshopping.fragments;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -30,6 +34,9 @@ public class ProductStorePricesFragment extends Fragment {
 
     private static final String ARGUMENT_PRODUCT_ID = "com.alvin.cheapyshopping.fragments.ProductStorePricesFragment.ARGUMENT_PRODUCT_ID";
 
+    public interface InteractionListener {
+        void onGoToStoreClicked(String storeId);
+    }
 
     public static ProductStorePricesFragment newInstance(String productId) {
         Bundle args = new Bundle();
@@ -39,9 +46,9 @@ public class ProductStorePricesFragment extends Fragment {
         return fragment;
     }
 
+    private InteractionListener mInteractionListener;
 
     private String productId;
-
     private ProductStorePricesFragmentViewModel mViewModel;
 
     private ProductStorePricesFragmentBinding mBinding;
@@ -86,6 +93,8 @@ public class ProductStorePricesFragment extends Fragment {
         this.mBinding.listStorePrices.setAdapter(this.mStorePriceListAdapter);
         this.mBinding.listStorePrices.setLayoutManager(new LinearLayoutManager(this.getContext(), LinearLayoutManager.VERTICAL, false));
 
+        registerForContextMenu(this.mBinding.listStorePrices);
+
         this.mViewModel.findProductStorePrices(this.productId).observe(this, new Observer<List<StorePrice>>() {
             @Override
             public void onChanged(@Nullable List<StorePrice> storePrices) {
@@ -95,7 +104,32 @@ public class ProductStorePricesFragment extends Fragment {
         });
     }
 
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        String storeId ;
+        try{
+            storeId = this.mStorePriceListAdapter.getStoreId();
+        }catch (Exception e){
+            Log.d("Context Menu: ",e.getLocalizedMessage(),e);
+            return super.onContextItemSelected(item);
+        }
 
+        if(storeId != null){
+            this.onGoToStoreClicked(storeId);
+        }
+
+        return super.onContextItemSelected(item);
+    }
+
+    public void setInteractionListener(InteractionListener interactionListener) {
+        this.mInteractionListener = interactionListener;
+    }
+
+    private void onGoToStoreClicked(String storeId){
+        if(this.mInteractionListener != null){
+            this.mInteractionListener.onGoToStoreClicked(storeId);
+        }
+    }
 
     /*
     ************************************************************************************************
@@ -106,6 +140,15 @@ public class ProductStorePricesFragment extends Fragment {
     private class StorePriceListAdapter extends RecyclerView.Adapter<StorePriceItemHolder> {
 
         private List<StorePrice> mStorePrices;
+        public String mStoreId;
+
+        public String getStoreId(){
+            return mStoreId;
+        }
+
+        public void setStoreId(String storeId){
+            this.mStoreId = storeId;
+        }
 
         private StorePriceListAdapter() {
             this.mStorePrices = new ArrayList<>();
@@ -122,8 +165,15 @@ public class ProductStorePricesFragment extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(StorePriceItemHolder holder, int position) {
+        public void onBindViewHolder(StorePriceItemHolder holder, final int position) {
             holder.onBind(this.mStorePrices.get(position));
+            holder.mBinding.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    setStoreId(mStorePrices.get(position).getForeignStoreId());
+                    return false;
+                }
+            });
         }
 
         @Override
@@ -138,9 +188,9 @@ public class ProductStorePricesFragment extends Fragment {
 
     }
 
-    private class StorePriceItemHolder extends RecyclerView.ViewHolder {
+    private class StorePriceItemHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
 
-        private final ProductStorePriceItemBinding mBinding;
+        public final ProductStorePriceItemBinding mBinding;
 
         private StorePriceItemHolder(ViewGroup parent) {
             super(ProductStorePriceItemBinding
@@ -148,6 +198,8 @@ public class ProductStorePricesFragment extends Fragment {
                     .getRoot());
             this.mBinding = DataBindingUtil.getBinding(this.itemView);
             this.mBinding.setCreationTimeFormatter(new SimpleDateFormat("dd-MM-yyyy HH:mm:ss"));
+
+            parent.setOnCreateContextMenuListener(this);
         }
 
         private void onBind(StorePrice storePrice) {
@@ -160,22 +212,19 @@ public class ProductStorePricesFragment extends Fragment {
                 }
             });
 
-            this.mBinding.containerStorePrice.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-
-                    return false;
-                }
-            });
-
-
-
         }
 
         private void onRecycled() {
             this.mBinding.setStorePrice(null);
             this.mBinding.setOnClickListener(null);
+            this.mBinding.setOnLongClickListener(null);
         }
+
+        @Override
+        public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
+            contextMenu.add("Go to store");
+        }
+
     }
 
 
@@ -194,4 +243,11 @@ public class ProductStorePricesFragment extends Fragment {
         Log.d("item", "price long clicked");
         return true;
     }
+
+
+    /*
+    ************************************************************************************************
+    * Context Menu
+    ************************************************************************************************
+     */
 }

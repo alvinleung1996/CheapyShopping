@@ -53,8 +53,10 @@ public class ProductActivity extends AppCompatActivity {
 
     private String mProductId;
 
+    // Fab variables
     private boolean isFabOpen = false;
     private Animation FabOpen, FabClose, FabRClockwise, FabRAnticlockwise;
+    // Variables for adding product to shopping lists
     private List<ShoppingList> mAvailableShoppingListsFromDB;
     private boolean mSaveProductToShoppingListButtonIsClicked = false;
 
@@ -116,8 +118,10 @@ public class ProductActivity extends AppCompatActivity {
             public void onPageSelected(int position) {
                 mActiveFragment = mFragmentPageAdapter.getRegisteredFragment(mBinding.viewPager.getCurrentItem());
                 if (position == 0){
+                    // Product Info Fragment
                     ProductActivity.this.mBinding.fabMain.setImageDrawable(getResources().getDrawable(R.drawable.ic_keyboard_arrow_up_white_24dp));
                 } else {
+                    // Product Store Price Fragment
                     ProductActivity.this.mBinding.fabMain.setImageDrawable(getResources().getDrawable(R.drawable.ic_add_white_24dp));
                     if (isFabOpen){
                         onProductInfoFragmentMainFabButtonClick();
@@ -185,7 +189,9 @@ public class ProductActivity extends AppCompatActivity {
                     mActiveFragment = ProductInfoFragment.newInstance(ProductActivity.this.mProductId);
                     return mActiveFragment;
                 case 1:
-                    return ProductStorePricesFragment.newInstance(ProductActivity.this.mProductId);
+                    Fragment fragment = ProductStorePricesFragment.newInstance(ProductActivity.this.mProductId);
+                    ((ProductStorePricesFragment) fragment).setInteractionListener(new AddProductStorePricesFragmentInteractionListener());
+                    return fragment;
                 default:
                     return null;
             }
@@ -203,6 +209,25 @@ public class ProductActivity extends AppCompatActivity {
                     return null;
             }
         }
+    }
+
+    /*
+    ************************************************************************************************
+    * Fragment Interaction
+    ************************************************************************************************
+     */
+
+    private class AddProductStorePricesFragmentInteractionListener implements
+            ProductStorePricesFragment.InteractionListener{
+        @Override
+        public void onGoToStoreClicked(String storeId) {
+            Intent intent = new Intent(ProductActivity.this, StoreActivity.class);
+            intent.putExtra(StoreActivity.EXTRA_STORE_ID, storeId);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish();
+        }
+
     }
 
     /*
