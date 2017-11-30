@@ -64,7 +64,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/text_store_name"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="@+id/text_store_name"
-                android:text="@{store.address + `simple`}"/>
+                android:text="@{store.address}"/>
 
         </android.support.constraint.ConstraintLayout>
 

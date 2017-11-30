@@ -10,6 +10,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.util.ArraySet;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.alvin.cheapyshopping.db.entities.ShoppingList;
@@ -74,7 +75,7 @@ public class ShoppingListLocationUpdater {
     private Set<String> mShoppingListsToUpdate;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private Task<Location> mRunningLocationTask;
-    public void updateShoppingListCenterCoordinate(Activity activity, String shoppingListId) {
+    public void updateShoppingListCenterCoordinate(AppCompatActivity activity, String shoppingListId) {
         if (this.mShoppingListsToUpdate == null) {
             this.mShoppingListsToUpdate = new ArraySet<>();
         }
@@ -91,46 +92,35 @@ public class ShoppingListLocationUpdater {
 
             if (ContextCompat.checkSelfPermission(this.mContext, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-                this.mFusedLocationProviderClient.getLastLocation().addOnSuccessListener(new OnSuccessListener<Location>() {
+                LocationManager.getInstance(this.mContext).updateLocation(activity)
+                        .observeResolve(activity, location -> {
 
-                    @Override
-                    public void onSuccess(final Location location) {
-                        final ShoppingListLocationUpdater updater = ShoppingListLocationUpdater.this;
+                    final ShoppingListLocationUpdater updater = ShoppingListLocationUpdater.this;
 
-                        if (location == null) {
-                            Toast.makeText(updater.mContext, "Cannot find location!", Toast.LENGTH_SHORT).show();
-                            return;
+                    String text = "Longtitude: " + location.getLongitude() + ", Latitude: " + location.getLatitude();
+                    Toast.makeText(updater.mContext, text, Toast.LENGTH_SHORT).show();
+
+                    new Thread(() -> {
+
+                        if (updater.mShoppingListsToUpdate != null) {
+
+                            List<ShoppingList> listToUpdate = new ArrayList<>();
+
+                            for (String id : updater.mShoppingListsToUpdate) {
+                                ShoppingList shoppingList = ShoppingListLocationUpdater.this.getShoppingListRepository()
+                                        .findShoppingListNow(id);
+
+                                shoppingList.setCenterLongitude(location.getLongitude());
+                                shoppingList.setCenterLatitude(location.getLatitude());
+
+                                listToUpdate.add(shoppingList);
+                            }
+
+                            ShoppingListLocationUpdater.this.getShoppingListRepository().updateShoppingList(
+                                    listToUpdate.toArray(new ShoppingList[listToUpdate.size()]));
                         }
 
-                        String text = "Longtitude: " + location.getLongitude() + ", Latitude: " + location.getLatitude();
-                        Toast.makeText(updater.mContext, text, Toast.LENGTH_SHORT).show();
-
-
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-
-                                if (updater.mShoppingListsToUpdate != null) {
-
-                                    List<ShoppingList> listToUpdate = new ArrayList<>();
-
-                                    for (String id : updater.mShoppingListsToUpdate) {
-                                        ShoppingList shoppingList = ShoppingListLocationUpdater.this.getShoppingListRepository()
-                                                .findShoppingListNow(id);
-
-                                        shoppingList.setCenterLongitude(location.getLongitude());
-                                        shoppingList.setCenterLatitude(location.getLatitude());
-
-                                        listToUpdate.add(shoppingList);
-                                    }
-
-                                    ShoppingListLocationUpdater.this.getShoppingListRepository().updateShoppingList(
-                                            listToUpdate.toArray(new ShoppingList[listToUpdate.size()]));
-                                }
-
-                            }
-                        }).start();
-                    }
+                    }).start();
                 });
 
             } else {

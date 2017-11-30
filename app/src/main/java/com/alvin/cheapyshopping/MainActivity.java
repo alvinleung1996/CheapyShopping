@@ -35,7 +35,7 @@ import com.alvin.cheapyshopping.db.entities.Store;
 import com.alvin.cheapyshopping.viewmodels.AccountFragmentViewModel;
 import com.alvin.cheapyshopping.viewmodels.MainActivityViewModel;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     private static final int REQUEST_ADD_SHOPPING_LIST_PRODUCT = 1;
     private static final int REQUEST_ADD_STORE = 2;
