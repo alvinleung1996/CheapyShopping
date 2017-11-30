@@ -32,11 +32,23 @@ public class ConfirmDialog extends DialogFragment {
         return dialogFragment;
     }
 
+    public static ConfirmDialog newInstance(String dialogMessage, boolean showCancel) {
+        ConfirmDialog dialogFragment = new ConfirmDialog();
+        Bundle args = new Bundle();
+        args.putString(ARGUMENT_MESSAGE, dialogMessage);
+        dialogFragment.setArguments(args);
+
+        dialogFragment.showCancel = showCancel;
+
+        return dialogFragment;
+    }
+
 
 
     private ConfirmDialog.InteractionListener mInteractionListener;
 
     private String mDialogMessage;
+    private boolean showCancel = true;
 
     public ConfirmDialog() {}
 
@@ -47,7 +59,7 @@ public class ConfirmDialog extends DialogFragment {
         Bundle args = getArguments();
         mDialogMessage = args.getString(ARGUMENT_MESSAGE);
 
-        AlertDialog dialog = new AlertDialog.Builder(getActivity())
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(getActivity())
                 .setTitle("Alert")
                 .setMessage(mDialogMessage)
                 .setPositiveButton("OK", new DialogInterface.OnClickListener() {
@@ -55,16 +67,18 @@ public class ConfirmDialog extends DialogFragment {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         ConfirmDialog.this.onActionChosen(DIALOG_OK);
                     }
-                })
-                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        ConfirmDialog.this.onActionChosen(DIALOG_CANCEL);
-                    }
-                })
-                .create();
+                });
+        if (showCancel){
+            dialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    ConfirmDialog.this.onActionChosen(DIALOG_CANCEL);
+                }
+            });
+        }
 
-        return dialog;
+
+        return dialogBuilder.create();
     }
 
     public void setInteractionListener(ConfirmDialog.InteractionListener listener) {

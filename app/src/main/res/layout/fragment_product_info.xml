@@ -82,7 +82,7 @@
                     android:textColor="@color/white"
                     android:textStyle="bold"
                     android:padding="5dp"
-                    android:background="@color/colorAccent"
+                    android:background="@drawable/background_toolbar"
                     android:elevation="2dp"
                     android:gravity="center"
                     app:layout_constraintTop_toBottomOf="@id/image_product"/>

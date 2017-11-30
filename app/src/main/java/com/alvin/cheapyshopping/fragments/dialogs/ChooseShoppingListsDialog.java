@@ -90,7 +90,11 @@ public class ChooseShoppingListsDialog extends DialogFragment{
                         for(int i = 0; i < mSelectedItems.size(); i++){
                             selectedShoppingLists.add(mShoppingLists.get(mSelectedItems.get(i)));
                         }
-                        onShoppingListsSelected(selectedShoppingLists);
+                        if (selectedShoppingLists.size() > 0){
+                            onShoppingListsSelected(selectedShoppingLists);
+                        }else {
+                            dismiss();
+                        }
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

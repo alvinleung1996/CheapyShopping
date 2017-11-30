@@ -159,6 +159,17 @@ public class ProductStorePricesFragment extends Fragment {
                             StorePriceItemHolder.this.mBinding.getStorePrice());
                 }
             });
+
+            this.mBinding.containerStorePrice.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+
+                    return false;
+                }
+            });
+
+
+
         }
 
         private void onRecycled() {
@@ -177,5 +188,10 @@ public class ProductStorePricesFragment extends Fragment {
 
     private void onStorePriceItemClick(View view, StorePrice storePrice) {
         Log.d("item", "price clicked");
+    }
+
+    private boolean onStorePriceItemLongClick(View view, StorePrice storePrice){
+        Log.d("item", "price long clicked");
+        return true;
     }
 }

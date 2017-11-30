@@ -41,6 +41,7 @@ import com.alvin.cheapyshopping.db.entities.ShoppingList;
 import com.alvin.cheapyshopping.db.entities.Store;
 import com.alvin.cheapyshopping.utils.ImageExpander;
 import com.alvin.cheapyshopping.viewmodels.ProductInfoFragmentViewModel;
+import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -78,7 +79,6 @@ public class ProductInfoFragment extends Fragment {
     private String mCurrentProductID;
     private Product mCurrentProduct;
 
-
     private Animator mCurrentAnimator;
     private ImageExpander mImageExpander;
     private Uri mImageUri;
@@ -93,7 +93,7 @@ public class ProductInfoFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.setHasOptionsMenu(true);
+        this.setHasOptionsMenu(false);
 
         // Get Product ID
         Bundle args = getArguments();
@@ -166,94 +166,6 @@ public class ProductInfoFragment extends Fragment {
     }
 
 
-
-
-    /*
-    ************************************************************************************************
-    * Menu
-    ************************************************************************************************
-     */
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.product_fragment_menu, menu);
-    }
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.item_save:
-                saveProductToShoppingLists();
-                return true;
-            case R.id.item_edit:
-                // TODO: Edit product information
-                return true;
-            case R.id.item_add_price:
-                // TODO: Add new price
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-
-    /*
-    ************************************************************************************************
-    * Dialogs for adding product to shopping List
-    ************************************************************************************************
-     */
-
-    public void saveProductToShoppingLists() {
-        // Only add to shopping list(s) without the product
-        mViewModel.findShoppingListsNotContainProductNow(mCurrentProductID, new Function<List<ShoppingList>, Void>() {
-            @Override
-            public Void apply(List<ShoppingList> shoppingLists) {
-                boolean canProceed = false;
-                if (shoppingLists != null){
-                    if(shoppingLists.size() > 0){
-                        canProceed = true;
-                    }
-                }
-                if (canProceed){
-                    ChooseShoppingListsDialog dialog = ChooseShoppingListsDialog.newInstance(shoppingLists);
-                    dialog.show(ProductInfoFragment.this.getFragmentManager(), null);
-                    dialog.setInteractionListener(new ChooseShoppingListsDialog.InteractionListener() {
-                        @Override
-                        public void onSelectShoppingListsConfirmed(List<ShoppingList> shoppingLists) {
-                            // Get ShoppingLists' ID
-                            List<String> shoppingListIds = new ArrayList<>(shoppingLists.size());
-                            for(ShoppingList shoppingList: shoppingLists){
-                                shoppingListIds.add(shoppingList.getShoppingListId());
-                            }
-                            ProductInfoFragment.this.saveProductToSelectedShoppingLists(shoppingListIds);
-                        }
-                    });
-                }else {
-                    ConfirmDialog dialog = ConfirmDialog.newInstance("No available shopping list.");
-                    dialog.show(ProductInfoFragment.this.getFragmentManager(), null);
-                }
-                return null;
-            }
-        });
-
-    }
-
-    private void saveProductToSelectedShoppingLists(final List<String> shoppingListIds){
-        // Choose the quantity to be added
-        ChooseShoppingListProductRelationQuantityDialog dialog = ChooseShoppingListProductRelationQuantityDialog.newInstance();
-        dialog.setInteractionListener(new ChooseShoppingListProductRelationQuantityDialog.InteractionListener() {
-            @Override
-            public void onQuantityChosen(int quantity) {
-                mViewModel.addProductToShoppingLists(mCurrentProductID, shoppingListIds, quantity);
-
-                Toast.makeText(ProductInfoFragment.this.getContext() ,
-                        "Added to  " + shoppingListIds.size() + " shopping list(s)",
-                        Toast.LENGTH_LONG).show();
-            }
-        });
-        dialog.show(this.getFragmentManager(), null);
-    }
 
     /*
     ************************************************************************************************

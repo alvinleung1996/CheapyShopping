@@ -88,6 +88,7 @@ public class StoreActivity extends AppCompatActivity {
             }
         });
 
+        // Floating Action Button change based on page
         this.mBinding.viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
