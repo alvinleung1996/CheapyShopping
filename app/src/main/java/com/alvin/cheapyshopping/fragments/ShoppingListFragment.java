@@ -6,8 +6,10 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -56,7 +58,9 @@ import java.util.List;
 import java.util.Map;
 
 
-public class ShoppingListFragment extends Fragment implements MainActivity.FloatingActionButtonInteractionListener {
+public class ShoppingListFragment extends Fragment implements
+        MainActivity.FloatingActionButtonInteractionListener,
+        MainActivity.BottomSheetInteractionListener {
 
     private static final int REQUEST_ADD_SHOPPING_LIST = 1;
 
@@ -473,6 +477,24 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
     }
 
 
+    /*
+    ************************************************************************************************
+    * Bottom Sheet
+    ************************************************************************************************
+     */
+
+    @Override
+    public boolean onConfigureBottomSheet(BottomSheetFragment bottomSheetFragment) {
+        bottomSheetFragment.show();
+        return true;
+    }
+
+
+    /*
+    ************************************************************************************************
+    * List Item
+    ************************************************************************************************
+     */
 
     private void onStoreItemClick(View view, Store store) {
         if (store == null) {
