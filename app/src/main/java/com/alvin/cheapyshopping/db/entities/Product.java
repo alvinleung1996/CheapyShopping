@@ -26,6 +26,9 @@ public class Product {
     @ColumnInfo(name = "image_exist")
     private boolean mImageExist = false;
 
+    @ColumnInfo(name = "rating")
+    private double mRating = 0;
+
     public String getProductId() {
         return this.mProductId;
     }
@@ -56,5 +59,13 @@ public class Product {
 
     public void setImageExist(boolean imageExist) {
         mImageExist = imageExist;
+    }
+
+    public double getRating(){
+        return this.mRating;
+    }
+
+    public void setRating(double rating){
+        this.mRating = rating;
     }
 }

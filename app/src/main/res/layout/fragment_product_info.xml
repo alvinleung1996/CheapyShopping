@@ -27,11 +27,6 @@
             android:id="@+id/container"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
 
             <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
@@ -93,12 +88,12 @@
                     style= "@style/CustomRatingBar"
                     android:id="@+id/ratingBar"
                     android:numStars="5"
-                    android:rating="3"
+                    android:rating="0"
                     android:stepSize="0.01"
                     android:elevation="4dp"
                     android:layout_marginTop="10dp"
                     android:layout_marginStart="5dp"
-                    android:isIndicator="false"
+                    android:isIndicator="true"
                     app:layout_constraintTop_toBottomOf="@id/text_product_name"
                     app:layout_constraintStart_toStartOf="parent"/>
 
@@ -145,11 +140,9 @@
                     android:layout_marginBottom="5dp"
                     android:text="@{product != null ? product.description : `Not yet computed`}"
                     app:layout_constraintTop_toBottomOf="@id/text_product_description_title"/>
+
             </android.support.constraint.ConstraintLayout>
 
-
-
-        </LinearLayout>
 
             <!-- This initially-hidden ImageView will hold the expanded/zoomed version of
             the images above. Without transformations applied, it takes up the entire

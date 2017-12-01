@@ -41,5 +41,5 @@ dependencies {
     implementation 'android.arch.persistence.room:runtime:1.0.0'
     annotationProcessor "android.arch.persistence.room:compiler:1.0.0"
     compile 'de.hdodenhof:circleimageview:2.2.0'
-    compile files ('library/gson-2.8.2.jar')
+    compile files('library/gson-2.8.2.jar')
 }

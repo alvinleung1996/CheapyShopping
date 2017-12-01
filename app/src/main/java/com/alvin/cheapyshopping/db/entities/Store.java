@@ -30,6 +30,12 @@ public class Store {
     @ColumnInfo(name = "latitude")
     private double mLatitude;
 
+    @ColumnInfo(name = "image_exist")
+    private boolean mImageExist = false;
+
+    @ColumnInfo(name = "rating")
+    private double mRating = 0;
+
 
     public String getStoreId() {
         return this.mStoreId;
@@ -69,5 +75,21 @@ public class Store {
 
     public void setLatitude(double latitude) {
         this.mLatitude = latitude;
+    }
+
+    public boolean isImageExist() {
+        return mImageExist;
+    }
+
+    public void setImageExist(boolean imageExist) {
+        mImageExist = imageExist;
+    }
+
+    public double getRating() {
+        return mRating;
+    }
+
+    public void setRating(double rating) {
+        mRating = rating;
     }
 }

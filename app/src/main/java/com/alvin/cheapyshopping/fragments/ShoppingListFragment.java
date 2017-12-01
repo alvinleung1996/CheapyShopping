@@ -4,7 +4,9 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -12,6 +14,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.util.ArrayMap;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,6 +39,7 @@ import com.alvin.cheapyshopping.db.entities.ShoppingList;
 import com.alvin.cheapyshopping.db.entities.Store;
 import com.alvin.cheapyshopping.db.entities.pseudo.ShoppingListProduct;
 import com.alvin.cheapyshopping.fragments.dialogs.ChooseShoppingListProductRelationQuantityDialog;
+import com.alvin.cheapyshopping.utils.ImageRotater;
 import com.alvin.cheapyshopping.viewmodels.ShoppingListFragmentViewModel;
 import com.alvin.cheapyshopping.viewmodels.ShoppingListFragmentViewModel.ShoppingListItem;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -50,6 +54,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -143,6 +148,21 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
                     ShoppingListFragment.this.onStoreItemClick(view, StoreItemViewHolder.this.mBinding.getStore());
                 }
             });
+
+
+            // TODO: not working if not computed
+//            if (store.isImageExist()){
+//                String imageFileName = "Store" + "_" + store.getStoreId();
+//                File storageDir = ShoppingListFragment.this.getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+//                File imageFile = new File(storageDir, imageFileName + ".jpg");
+//                if (imageFile.exists()) {
+//                    Bitmap bitmap = ImageRotater.getsInstance(ShoppingListFragment.this.getContext()).rotateImage(imageFile);
+//                    // Update image view with rotated bitmap
+//                    mBinding.imageStorePhoto.setImageBitmap(bitmap);
+//                }
+//            } else {
+//                mBinding.imageStorePhoto.setImageResource(R.drawable.ic_product_black_24dp);
+//            }
         }
 
         @Override
@@ -175,6 +195,23 @@ public class ShoppingListFragment extends Fragment implements MainActivity.Float
                     return ShoppingListFragment.this.onProductItemLongClick(view, ProductItemViewHolder.this.mBinding.getShoppingListProduct());
                 }
             });
+
+
+            // Setup photo
+
+
+            if (product.isImageExist()){
+                String imageFileName = "Product" + "_" + product.getProductId();
+                File storageDir = ShoppingListFragment.this.getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                File imageFile = new File(storageDir, imageFileName + ".jpg");
+                if (imageFile.exists()) {
+                    Bitmap bitmap = ImageRotater.getsInstance(ShoppingListFragment.this.getContext()).rotateImage(imageFile);
+                    // Update image view with rotated bitmap
+                    mBinding.imageProductPhoto.setImageBitmap(bitmap);
+                }
+            } else {
+                mBinding.imageProductPhoto.setImageResource(R.drawable.ic_product_black_24dp);
+            }
         }
 
         @Override

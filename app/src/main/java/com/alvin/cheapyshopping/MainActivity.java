@@ -6,6 +6,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
+import android.graphics.Bitmap;
+import android.os.Environment;
 import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -32,8 +34,11 @@ import com.alvin.cheapyshopping.fragments.ProductListFragment;
 import com.alvin.cheapyshopping.fragments.ShoppingListFragment;
 import com.alvin.cheapyshopping.fragments.StoreListFragment;
 import com.alvin.cheapyshopping.db.entities.Store;
+import com.alvin.cheapyshopping.utils.ImageRotater;
 import com.alvin.cheapyshopping.viewmodels.AccountFragmentViewModel;
 import com.alvin.cheapyshopping.viewmodels.MainActivityViewModel;
+
+import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -62,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
     private MainActivityViewModel mViewModel;
 
     private ActionBarDrawerToggle mDrawerToggle;
+    private Account mAccount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,9 +185,28 @@ public class MainActivity extends AppCompatActivity {
             public void onChanged(@Nullable Account account) {
                 if (account != null){
                     mDrawerHeaderBinding.setAccount(account);
+                    mAccount = account;
+                    setAccountImage(account.isImageExist());
                 }
             }
         });
+    }
+
+    // Setup the profile image. Check if not custom image, set as default
+    private void setAccountImage(boolean isCustom){
+        String imageFileName = "Account" + "_" + mAccount.getAccountId();
+        File storageDir = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File imageFile = new File(storageDir, imageFileName + ".jpg");
+
+        if (isCustom){
+            if (imageFile.exists()) {
+                Bitmap bitmap = ImageRotater.getsInstance(this).rotateImage(imageFile);
+                // Update image view with rotated bitmap
+                mDrawerHeaderBinding.navAccountPic.setImageBitmap(bitmap);
+            }
+        } else{
+            mDrawerHeaderBinding.navAccountPic.setImageResource(R.drawable.ic_account_circle_white);
+        }
     }
 
 

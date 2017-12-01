@@ -1,10 +1,8 @@
 package com.alvin.cheapyshopping.fragments;
 
 
-import android.app.AlertDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
@@ -21,7 +19,6 @@ import com.alvin.cheapyshopping.R;
 import com.alvin.cheapyshopping.databinding.AccountFragmentBinding;
 import com.alvin.cheapyshopping.db.entities.Account;
 import com.alvin.cheapyshopping.utils.ImageRotater;
-import com.alvin.cheapyshopping.utils.ImageUpdater;
 import com.alvin.cheapyshopping.viewmodels.AccountFragmentViewModel;
 
 import java.io.File;
@@ -52,8 +49,8 @@ public class AccountFragment extends Fragment {
     private AccountFragmentBinding mBinding;
     private AccountFragmentViewModel mViewModel;
 
-    private String mCurrentAccountId;
-    private Bitmap mBitmap;
+    private String mAccountId;
+    private Account mAccount;
 
 
     public AccountFragment(){}
@@ -84,7 +81,11 @@ public class AccountFragment extends Fragment {
             @Override
             public void onChanged(@Nullable Account account) {
                 mBinding.setAccount(account);
-                setAccountImage();
+                mAccount = account;
+                mAccountId = account.getAccountId();
+
+                // Setup account image
+                setAccountImage(account.isImageExist());
             }
         });
 
@@ -93,8 +94,12 @@ public class AccountFragment extends Fragment {
         mBinding.imageEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                updateImage();
-                setAccountImage();
+                UpdateImageFragment updateImageFragment = UpdateImageFragment.newInstance(mAccountId, "Account");
+                updateImageFragment.setInteractionListener(new UpdateImageFragmentInteractionListener());
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(mBinding.container.getId(), updateImageFragment)
+                        .addToBackStack(null)
+                        .commit();
             }
         });
 
@@ -132,57 +137,34 @@ public class AccountFragment extends Fragment {
     ************************************************************************************************
      */
 
-    private void updateImage(){
-        final int DIALOG_INDEX_GALLERY = 0;
-        final int DIALOG_INDEX_CAMERA = 1;
-
-        String[] items = new String[] {"Gallery","Camera"};
-        final AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(AccountFragment.this.getContext());
-        alertDialogBuilder.setTitle("Please select an image");
-
-        alertDialogBuilder.setItems(items, new DialogInterface.OnClickListener(){
-            @Override
-            public void onClick(DialogInterface dialogInterface, int which) {
-                // Choose new product image from gallery
-                if (which == DIALOG_INDEX_GALLERY){
-                    ImageUpdater.getsInstance(AccountFragment.this.getContext(), IMAGE_FILE_TYPE, mCurrentAccountId)
-                            .updateImageFromGallery();
-
-                }
-                // Choose new product image using camera
-                else if (which == DIALOG_INDEX_CAMERA){
-                    ImageUpdater imageUpdater = new ImageUpdater(getActivity() ,AccountFragment.this.getContext(),
-                            IMAGE_FILE_TYPE, mCurrentAccountId, IMAGE_FOLDER, REQUEST_IMAGE_FROM_CAMERA);
-                    imageUpdater.updateImageFromCamera();
-
-                }
-
+    private class UpdateImageFragmentInteractionListener implements
+            UpdateImageFragment.InteractionListener{
+        @Override
+        public void onGetImageUpdateResult(String result) {
+            if (result.equals(UpdateImageFragment.IMAGE_UPDATED)){
+                mViewModel.addCustomAccountImage(mAccount);
+            }else if(result.equals(UpdateImageFragment.IMAGE_DELETED)){
+                mViewModel.removeCustomAccountImage(mAccount);
             }
-        });
-
-        alertDialogBuilder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                dialogInterface.dismiss();
-            }
-        });
-
-        alertDialogBuilder.show();
+            // Remove the UpdateImageFragment
+            getActivity().getSupportFragmentManager().popBackStack();
+        }
     }
 
-
-    private void setAccountImage(){
-        String imageFileName = IMAGE_FILE_TYPE + "_" + mCurrentAccountId;
+    // Setup the profile image. Check if not custom image, set as default
+    private void setAccountImage(boolean isCustom){
+        String imageFileName = IMAGE_FILE_TYPE + "_" + mAccountId;
         File storageDir = AccountFragment.this.getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = new File(storageDir, imageFileName + ".jpg");
-        if (image.exists()){
-            mBitmap = ImageRotater.getsInstance(AccountFragment.this.getContext()).rotateImage(image);
+        File imageFile = new File(storageDir, imageFileName + ".jpg");
 
-            // Update image view with rotated bitmap
-            mBinding.imageProfile.setImageBitmap(mBitmap);
-
-            // Reset image view
-            mBinding.imageProfile.invalidate();
+        if (isCustom){
+            if (imageFile.exists()) {
+                Bitmap bitmap = ImageRotater.getsInstance(this.getContext()).rotateImage(imageFile);
+                // Update image view with rotated bitmap
+                mBinding.imageProfile.setImageBitmap(bitmap);
+            }
+        } else{
+            mBinding.imageProfile.setImageResource(R.drawable.ic_account_circle_white);
         }
     }
 

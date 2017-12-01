@@ -49,6 +49,9 @@ public class Account {
     @ColumnInfo(name = "account_password")
     private String mAccountPassword;
 
+    @ColumnInfo(name = "image_exist")
+    private boolean mImageExist = false;
+
 
     public String getAccountId() {
         return this.mAccountId;
@@ -112,5 +115,13 @@ public class Account {
 
     public void setAccountPassword(String accountPassword) {
         mAccountPassword = accountPassword;
+    }
+
+    public boolean isImageExist() {
+        return mImageExist;
+    }
+
+    public void setImageExist(boolean imageExist) {
+        mImageExist = imageExist;
     }
 }

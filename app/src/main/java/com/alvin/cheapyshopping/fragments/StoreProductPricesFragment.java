@@ -4,7 +4,9 @@ package com.alvin.cheapyshopping.fragments;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,13 +16,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.alvin.cheapyshopping.R;
 import com.alvin.cheapyshopping.databinding.StoreProductPriceItemBinding;
 import com.alvin.cheapyshopping.databinding.StoreProductPricesFragmentBinding;
 import com.alvin.cheapyshopping.db.entities.Product;
 import com.alvin.cheapyshopping.db.entities.pseudo.ProductPrice;
 import com.alvin.cheapyshopping.db.entities.pseudo.StorePrice;
+import com.alvin.cheapyshopping.utils.ImageRotater;
 import com.alvin.cheapyshopping.viewmodels.StoreProductPricesFragmentViewModel;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -152,8 +157,8 @@ public class StoreProductPricesFragment extends Fragment {
             this.mBinding.setCreationTimeFormatter(new SimpleDateFormat("dd-MM-yyyy HH:mm:ss"));
         }
 
-        private void onBind(ProductPrice storePrice) {
-            this.mBinding.setProductPrice(storePrice);
+        private void onBind(ProductPrice productPrice) {
+            this.mBinding.setProductPrice(productPrice);
             this.mBinding.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -161,6 +166,22 @@ public class StoreProductPricesFragment extends Fragment {
                             ProductPriceItemHolder.this.mBinding.getProductPrice());
                 }
             });
+
+
+            // Setup photo
+            String imageFileName = "Product" + "_" + productPrice.getProduct().getProductId();
+            File storageDir = StoreProductPricesFragment.this.getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+            File imageFile = new File(storageDir, imageFileName + ".jpg");
+
+            if (productPrice.getProduct().isImageExist()){
+                if (imageFile.exists()) {
+                    Bitmap bitmap = ImageRotater.getsInstance(StoreProductPricesFragment.this.getContext()).rotateImage(imageFile);
+                    // Update image view with rotated bitmap
+                    mBinding.imageProductPhoto.setImageBitmap(bitmap);
+                }
+            } else {
+                mBinding.imageProductPhoto.setImageResource(R.drawable.ic_product_black_24dp);
+            }
         }
 
         private void onRecycled() {

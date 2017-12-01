@@ -2,11 +2,13 @@ package com.alvin.cheapyshopping.fragments.dialogs;
 
 
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -21,6 +23,7 @@ public class ChoosePictureSourceDialog extends DialogFragment{
     public static final String DIALOG_GALLERY = "com.alvin.cheapyshopping.ChoosePictureSourceDialog.DIALOG_GALLERY";
     public static final String DIALOG_CAMERA = "com.alvin.cheapyshopping.ChoosePictureSourceDialog.DIALOG_CAMERA";
     public static final String DIALOG_DELETE = "com.alvin.cheapyshopping.ChoosePictureSourceDialog.DIALOG_DELETE";
+    public static final String DIALOG_CANCEL = "com.alvin.cheapyshopping.ChoosePictureSourceDialog.DIALOG_CANCEL";
 
 
     public interface InteractionListener {
@@ -60,6 +63,8 @@ public class ChoosePictureSourceDialog extends DialogFragment{
         wlp.width = WindowManager.LayoutParams.MATCH_PARENT;
         window.setAttributes(wlp);
 
+
+
         mBinding.containerCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -81,7 +86,15 @@ public class ChoosePictureSourceDialog extends DialogFragment{
             }
         });
 
+        dialog.setCanceledOnTouchOutside(true);
+
         return dialog;
+    }
+
+    @Override
+    public void onCancel(DialogInterface dialog) {
+        super.onCancel(dialog);
+        onActionChosen(DIALOG_CANCEL);
     }
 
     public void setInteractionListener(ChoosePictureSourceDialog.InteractionListener listener) {
@@ -93,5 +106,6 @@ public class ChoosePictureSourceDialog extends DialogFragment{
             this.mInteractionListener.PictureSourceActionChosen(action);
         }
     }
+
 
 }

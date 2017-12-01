@@ -3,12 +3,9 @@ package com.alvin.cheapyshopping.fragments;
 
 import android.animation.Animator;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.arch.core.util.Function;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.ContentResolver;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -20,34 +17,25 @@ import android.os.Bundle;
 import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 
 import com.alvin.cheapyshopping.fragments.dialogs.ChoosePictureSourceDialog;
-import com.alvin.cheapyshopping.fragments.dialogs.ChooseShoppingListProductRelationQuantityDialog;
-import com.alvin.cheapyshopping.fragments.dialogs.ChooseShoppingListsDialog;
 import com.alvin.cheapyshopping.fragments.dialogs.ConfirmDialog;
 import com.alvin.cheapyshopping.utils.ImageRotater;
 import com.alvin.cheapyshopping.R;
 import com.alvin.cheapyshopping.StoreActivity;
 import com.alvin.cheapyshopping.databinding.ProductInfoFragmentBinding;
 import com.alvin.cheapyshopping.db.entities.Product;
-import com.alvin.cheapyshopping.db.entities.ShoppingList;
 import com.alvin.cheapyshopping.db.entities.Store;
 import com.alvin.cheapyshopping.utils.ImageExpander;
 import com.alvin.cheapyshopping.viewmodels.ProductInfoFragmentViewModel;
-import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by cheng on 11/21/2017.
@@ -81,9 +69,6 @@ public class ProductInfoFragment extends Fragment {
 
     private Animator mCurrentAnimator;
     private ImageExpander mImageExpander;
-    private Uri mImageUri;
-    private Bitmap mBitmap;
-    private File mImageFile;
 
 
     public ProductInfoFragment(){
@@ -125,13 +110,10 @@ public class ProductInfoFragment extends Fragment {
 
                 // Setup Product Basic Info
                 mBinding.setProduct(mCurrentProduct);
+                mBinding.ratingBar.setRating((float)product.getRating());
 
                 // Setup product image
-                if (product.isImageExist()){
-                    setProductImage(true);
-                }else{
-                    setProductImage(false);
-                }
+                setProductImage(product.isImageExist());
             }
         });
 
@@ -159,12 +141,17 @@ public class ProductInfoFragment extends Fragment {
         this.mBinding.imageEdit.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
-                updateImage();
+                UpdateImageFragment updateImageFragment = UpdateImageFragment.newInstance(mCurrentProductID, "Product");
+                updateImageFragment.setInteractionListener(new UpdateImageFragmentInteractionListener());
+                getActivity().getSupportFragmentManager().beginTransaction()
+                        .replace(mBinding.container.getId(), updateImageFragment)
+                        .addToBackStack(null)
+                        .commit();
+
             }
         } );
 
     }
-
 
 
     /*
@@ -173,81 +160,18 @@ public class ProductInfoFragment extends Fragment {
     ************************************************************************************************
      */
 
-    private void updateImage(){
-        final ChoosePictureSourceDialog dialog = ChoosePictureSourceDialog.newInstance();
-        dialog.setInteractionListener(new ChoosePictureSourceDialog.InteractionListener() {
-            @Override
-            public void PictureSourceActionChosen(String action) {
-                if (action != null){
-                    dialog.dismiss();
-                    if (action.equals(ChoosePictureSourceDialog.DIALOG_CAMERA)){
-                        ProductInfoFragment.this.newImageFromCamera();;
-                    }else if(action.equals(ChoosePictureSourceDialog.DIALOG_GALLERY)){
-                        ProductInfoFragment.this.newImageFromGallery();;
-                    }else if(action.equals(ChoosePictureSourceDialog.DIALOG_DELETE)){
-                        ProductInfoFragment.this.deleteImage();;
-                    }
-                }
+    private class UpdateImageFragmentInteractionListener implements
+            UpdateImageFragment.InteractionListener{
+        @Override
+        public void onGetImageUpdateResult(String result) {
+            if (result.equals(UpdateImageFragment.IMAGE_UPDATED)){
+                mViewModel.addCustomProductImage(mCurrentProduct);
+            }else if(result.equals(UpdateImageFragment.IMAGE_DELETED)){
+                mViewModel.removeCustomProductImage(mCurrentProduct);
             }
-        });
-        dialog.show(this.getFragmentManager(), null);
-
-    }
-
-    // Get image from camera
-    private void newImageFromCamera(){
-        // Check for existing image and delete
-        if (mImageFile.exists()){
-            mImageFile.delete();
+            // Remove the UpdateImageFragment
+            getActivity().getSupportFragmentManager().popBackStack();
         }
-
-        // New intent for camera
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (takePictureIntent.resolveActivity(this.getContext().getPackageManager()) != null) {
-            Uri photoURI = FileProvider.getUriForFile(this.getContext(),
-                    "com.alvin.fileprovider",
-                    mImageFile);
-            mImageUri = photoURI;
-            takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-            takePictureIntent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);
-            this.startActivityForResult(takePictureIntent, REQUEST_IMAGE_FROM_CAMERA);
-        }
-    }
-
-    // Get image from gallery
-    private void newImageFromGallery(){
-        // TODO: fix image rotation problem
-
-        // Check for existing image and delete
-        if (mImageFile.exists()){
-            mImageFile.delete();
-        }
-
-        // Intent for gallery
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        this.startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_IMAGE_FROM_GALLERY);
-    }
-
-    // Delete existing custom image
-    private void deleteImage(){
-        final ConfirmDialog dialog = ConfirmDialog.newInstance("Confirm delete product image?");
-        dialog.setInteractionListener(new ConfirmDialog.InteractionListener() {
-            @Override
-            public void onOKAction() {
-                if(mImageFile.exists()){
-                    mImageFile.delete();
-                    //Update database
-                    mCurrentProduct.setImageExist(false);
-                    mViewModel.removeCustomProductImage(mCurrentProduct);
-                }
-            }
-            @Override
-            public void onCancelAction() {dialog.dismiss();}
-        });
-
-        dialog.show(this.getFragmentManager(), null);
     }
 
 
@@ -256,13 +180,13 @@ public class ProductInfoFragment extends Fragment {
         // Get new image name and path
         String imageFileName = IMAGE_FILE_TYPE + "_" + mCurrentProductID;
         File storageDir = this.getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        mImageFile = new File(storageDir, imageFileName + ".jpg");
+        File imageFile = new File(storageDir, imageFileName + ".jpg");
 
         if (isCustom){
-            if (mImageFile.exists()){
-                mBitmap = ImageRotater.getsInstance(this.getContext()).rotateImage(mImageFile);
+            if (imageFile.exists()){
+                Bitmap bitmap = ImageRotater.getsInstance(this.getContext()).rotateImage(imageFile);
                 // Update image view with rotated bitmap
-                mBinding.imageProduct.setImageBitmap(mBitmap);
+                mBinding.imageProduct.setImageBitmap(bitmap);
             }
         } else {
             mBinding.imageProduct.setImageResource(R.drawable.ic_product_black_24dp);
@@ -281,60 +205,6 @@ public class ProductInfoFragment extends Fragment {
         this.startActivity(intent);
     }
 
-
-    /*
-    ************************************************************************************************
-    * Activity result, mainly for image capture function
-    ************************************************************************************************
-     */
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode){
-            case REQUEST_IMAGE_FROM_CAMERA:
-                if (resultCode == Activity.RESULT_OK){
-                    Uri selectedImage = this.mImageUri;
-                    imageUpdateFromActivityResult(selectedImage, REQUEST_IMAGE_FROM_CAMERA);
-
-                }
-                break;
-            case REQUEST_IMAGE_FROM_GALLERY:
-                if (resultCode == Activity.RESULT_OK){
-                    Uri selectedImage = data.getData();
-                    imageUpdateFromActivityResult(selectedImage, REQUEST_IMAGE_FROM_GALLERY);
-                }
-                break;
-
-        }
-    }
-
-    private void imageUpdateFromActivityResult(Uri selectedImageUri, int request){
-        getActivity().getContentResolver().notifyChange(selectedImageUri, null);
-        ContentResolver cr = getActivity().getContentResolver();
-        Bitmap bitmap;
-        try {
-            bitmap = android.provider.MediaStore.Images.Media
-                    .getBitmap(cr, selectedImageUri);
-
-
-            if (request == REQUEST_IMAGE_FROM_GALLERY){
-                // Copy image to app dir and compress
-                OutputStream outputStream;
-                outputStream = new FileOutputStream(mImageFile);
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 50, outputStream);
-            }
-
-            // Update database
-            mCurrentProduct.setImageExist(true);
-            mViewModel.addCustomProductImage(mCurrentProduct);
-
-        } catch (Exception e) {
-            Toast.makeText(getActivity(), "Failed to import image", Toast.LENGTH_SHORT)
-                    .show();
-            Log.e("Update image error", e.toString());
-        }
-    }
 
 
 }
