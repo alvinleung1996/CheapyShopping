@@ -8,8 +8,11 @@ import android.content.Context;
 import android.os.AsyncTask;
 
 import com.alvin.cheapyshopping.db.entities.Account;
-import com.alvin.cheapyshopping.db.entities.Product;
+import com.alvin.cheapyshopping.db.entities.Rank;
 import com.alvin.cheapyshopping.repositories.AccountRepository;
+import com.alvin.cheapyshopping.repositories.RankRepository;
+
+import java.util.List;
 
 /**
  * Created by cheng on 11/26/2017.
@@ -36,6 +39,15 @@ public class AccountFragmentViewModel extends AndroidViewModel {
         return mAccountRepository;
     }
 
+    private RankRepository mRankRepository;
+
+    private RankRepository getRankRepository(){
+        if(mRankRepository == null){
+            this.mRankRepository = RankRepository.getInstance(this.getApplication());
+        }
+        return mRankRepository;
+    }
+
     /*
     ************************************************************************************************
     * Find current account
@@ -50,6 +62,15 @@ public class AccountFragmentViewModel extends AndroidViewModel {
         return this.mCurrentAccount;
     }
 
+
+    private LiveData<List<Rank>> mCurrentAccountRanks;
+    public LiveData<List<Rank>> getCurrentAccountRanks(){
+        if(this.mCurrentAccountRanks == null){
+            this.mCurrentAccountRanks = this.getRankRepository().getCurrentAccountRanks();
+        }
+        return mCurrentAccountRanks;
+    }
+
     /*
     ************************************************************************************************
     * remove / add custom account image
@@ -58,21 +79,21 @@ public class AccountFragmentViewModel extends AndroidViewModel {
 
     public void removeCustomAccountImage(Account account){
         account.setImageExist(false);
-        new UpdateProductImageTask(this.getApplication(), account).execute();
+        new UpdateAccountImageTask(this.getApplication(), account).execute();
     }
 
     public void addCustomAccountImage(Account account){
         account.setImageExist(true);
-        new UpdateProductImageTask(this.getApplication(), account).execute();
+        new UpdateAccountImageTask(this.getApplication(), account).execute();
     }
 
-    private static class UpdateProductImageTask extends AsyncTask<Void, Void, Void> {
+    private static class UpdateAccountImageTask extends AsyncTask<Void, Void, Void> {
 
         @SuppressLint("StaticFieldLeak")
         private Context mContext;
         private Account mAccount;
 
-        private UpdateProductImageTask(Context context, Account account) {
+        private UpdateAccountImageTask(Context context, Account account) {
             this.mContext = context.getApplicationContext();
             this.mAccount = account;
         }

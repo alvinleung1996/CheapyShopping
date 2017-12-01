@@ -9,6 +9,7 @@ import android.util.Log;
 import com.alvin.cheapyshopping.db.AppDatabase;
 import com.alvin.cheapyshopping.db.daos.AccountDao;
 import com.alvin.cheapyshopping.db.entities.Account;
+import com.alvin.cheapyshopping.db.entities.Rank;
 
 import java.util.List;
 import java.util.Map;
@@ -84,6 +85,7 @@ public class AccountRepository {
         }
         return this.mAccountCache.get(accountId);
     }
+
 
 
     /*

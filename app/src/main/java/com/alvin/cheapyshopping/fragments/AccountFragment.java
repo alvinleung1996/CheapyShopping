@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,10 +19,12 @@ import android.view.ViewGroup;
 import com.alvin.cheapyshopping.R;
 import com.alvin.cheapyshopping.databinding.AccountFragmentBinding;
 import com.alvin.cheapyshopping.db.entities.Account;
+import com.alvin.cheapyshopping.db.entities.Rank;
 import com.alvin.cheapyshopping.utils.ImageRotater;
 import com.alvin.cheapyshopping.viewmodels.AccountFragmentViewModel;
 
 import java.io.File;
+import java.util.List;
 
 /**
  * Created by cheng on 11/26/2017.
@@ -49,7 +52,6 @@ public class AccountFragment extends Fragment {
     private AccountFragmentBinding mBinding;
     private AccountFragmentViewModel mViewModel;
 
-    private String mAccountId;
     private Account mAccount;
 
 
@@ -82,10 +84,23 @@ public class AccountFragment extends Fragment {
             public void onChanged(@Nullable Account account) {
                 mBinding.setAccount(account);
                 mAccount = account;
-                mAccountId = account.getAccountId();
 
                 // Setup account image
                 setAccountImage(account.isImageExist());
+            }
+        });
+
+        // Get current account ranks
+        this.mViewModel.getCurrentAccountRanks().observe(this, new Observer<List<Rank>>() {
+            @Override
+            public void onChanged(@Nullable List<Rank> ranks) {
+                if(ranks != null){
+                    mBinding.textAccountRank.setText(ranks.get(0).getRank());
+                    // Setup rank progress bar
+                    if(mAccount != null){
+                        updateRankProgressBar(ranks.get(0).getMinScore(), ranks.get(0).getMaxScore(), mAccount.getAccountScore());
+                    }
+                }
             }
         });
 
@@ -94,7 +109,7 @@ public class AccountFragment extends Fragment {
         mBinding.imageEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                UpdateImageFragment updateImageFragment = UpdateImageFragment.newInstance(mAccountId, "Account");
+                UpdateImageFragment updateImageFragment = UpdateImageFragment.newInstance(mAccount.getAccountId(), "Account");
                 updateImageFragment.setInteractionListener(new UpdateImageFragmentInteractionListener());
                 getActivity().getSupportFragmentManager().beginTransaction()
                         .replace(mBinding.container.getId(), updateImageFragment)
@@ -153,7 +168,7 @@ public class AccountFragment extends Fragment {
 
     // Setup the profile image. Check if not custom image, set as default
     private void setAccountImage(boolean isCustom){
-        String imageFileName = IMAGE_FILE_TYPE + "_" + mAccountId;
+        String imageFileName = IMAGE_FILE_TYPE + "_" + mAccount.getAccountId();
         File storageDir = AccountFragment.this.getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
         File imageFile = new File(storageDir, imageFileName + ".jpg");
 
@@ -166,6 +181,18 @@ public class AccountFragment extends Fragment {
         } else{
             mBinding.imageProfile.setImageResource(R.drawable.ic_account_circle_white);
         }
+    }
+
+    /*
+    ************************************************************************************************
+    * Update rank progress bar
+    ************************************************************************************************
+     */
+
+    private void updateRankProgressBar(int minRankScore, int maxRankScore, int accountScore){
+        int progress;
+        progress = 100 * (accountScore - minRankScore) / (maxRankScore - minRankScore);
+        mBinding.progressBarRank.setProgress(progress);
     }
 
 

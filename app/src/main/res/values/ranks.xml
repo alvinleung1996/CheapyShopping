@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="rank_0">Rank 0</string>
+    <string name="rank_1">Rank 1</string>
+    <string name="rank_2">Rank 2</string>
+    <string name="rank_3">Rank 3</string>
+    <string name="rank_4">Rank 4</string>
+    <string name="rank_5">Rank 5</string>
+    <string name="rank_6">Rank 6</string>
+    <string name="rank_7">Rank 7</string>
+    <string name="rank_8">Rank 8</string>
+    <string name="rank_9">Rank 9</string>
+    <string name="rank_10">Rank 10</string>
+
+</resources>

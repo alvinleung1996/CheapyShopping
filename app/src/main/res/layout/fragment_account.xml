@@ -215,7 +215,7 @@
                             app:layout_constraintTop_toBottomOf="@id/progress_bar_rank"/>
 
                         <TextView
-                            android:id="@+id/text_account_badge_rank"
+                            android:id="@+id/text_account_rank"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:text="RANK TITLE"

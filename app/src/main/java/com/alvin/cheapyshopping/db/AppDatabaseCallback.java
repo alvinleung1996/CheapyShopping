@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import com.alvin.cheapyshopping.db.entities.Account;
 import com.alvin.cheapyshopping.db.entities.Price;
 import com.alvin.cheapyshopping.db.entities.Product;
+import com.alvin.cheapyshopping.db.entities.Rank;
 import com.alvin.cheapyshopping.db.entities.ShoppingList;
 import com.alvin.cheapyshopping.db.entities.ShoppingListProductRelation;
 import com.alvin.cheapyshopping.db.entities.Store;
@@ -120,6 +121,22 @@ public class AppDatabaseCallback extends RoomDatabase.Callback {
 
                 appDb.getPriceDao()
                         .insertPrice(prices.toArray(new Price[prices.size()]));
+
+                List<Rank> ranks = new ArrayList<>();
+                int rankScoreIncrement = 500;
+                for (int i = 0; i <= 10 ;i++){
+                    Rank rank = new Rank();
+                    rank.setRankId(UUID.randomUUID().toString());
+                    rank.setRank("Rank " + i);
+                    rank.setMinScore(i * rankScoreIncrement);
+                    rank.setMaxScore(rank.getMinScore() + rankScoreIncrement);
+
+                    ranks.add(rank);
+                }
+
+                appDb.getRankDao()
+                        .insertRank(ranks.toArray(new Rank[ranks.size()]));
+
 
 
             }

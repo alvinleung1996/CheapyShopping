@@ -7,33 +7,38 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
-import com.alvin.cheapyshopping.db.entities.Account;
 import com.alvin.cheapyshopping.db.entities.Rank;
 
 import java.util.List;
 
 /**
- * Created by Alvin on 21/11/2017.
+ * Created by cheng on 12/1/2017.
  */
-
 @Dao
-public interface AccountDao {
-
+public interface RankDao {
     /*
     ************************************************************************************************
     * Query, Async
     ************************************************************************************************
      */
 
-    @Query("SELECT * FROM Account")
-    LiveData<List<Account>> getAllAccounts();
+    @Query("SELECT * From Rank R WHERE :score >= R.min_score ORDER BY R.min_score DESC")
+    LiveData<List<Rank>> getRanksByScore(int score);
 
-    // TODO other method?
-    @Query("SELECT * FROM Account LIMIT 1")
-    LiveData<Account> getCurrentAccount();
 
-    @Query("SELECT * FROM Account WHERE account_id = :accountId")
-    LiveData<Account> findAccountByAccountId(String accountId);
+//        @Query("SELECT * FROM Rank R2 WHERE R2.rank_id IN" +
+//            "(SELECT R.rank_id FROM Rank R, Account A " +
+//            "WHERE A.account_score >= R.min_score " +
+//            "AND A.account_id IN (SELECT * FROM Account LIMIT 1))" +
+//            "ORDER BY R2.min_score DESC " )
+    @Query("SELECT R.* FROM Rank R , Account A " +
+            "WHERE A.account_score >= R.min_score " +
+            "AND A.account_id = (SELECT account_id FROM Account LIMIT 1) " +
+            "ORDER BY R.min_score DESC")
+//            "AND A.account_id IN " +
+//            "(SELECT * FROM Account LIMIT 1)")
+    LiveData<List<Rank>> getCurrentAccountRanks();
+
 
 
     /*
@@ -42,32 +47,23 @@ public interface AccountDao {
     ************************************************************************************************
      */
 
-    // Use by sample data
-    @Query("SELECT * FROM Account")
-    List<Account> getAllAccountsNow();
-
-    // Use by shopping list fragment view model
-    @Query("SELECT * FROM Account LIMIT 1")
-    // TODO other method?
-    Account getCurrentAccountNow();
-
-    @Query("SELECT * FROM Account WHERE account_id = :accountId")
-    Account findAccountByAccountIdNow(String accountId);
+    @Query("SELECT * From Rank R WHERE :score > R.min_score ORDER BY R.min_score DESC ")
+    List<Rank> getRanksByScoreNow(int score);
 
 
-    /*
+        /*
     ************************************************************************************************
     * Other
     ************************************************************************************************
      */
 
     @Insert
-    long[] insertAccount(Account... accounts);
+    long[] insertRank(Rank... ranks);
 
     @Update
-    int updateAccount(Account... accounts);
+    int updateRank(Rank... ranks);
 
     @Delete
-    int deleteAccount(Account... accounts);
+    int deleteRank(Rank... ranks);
 
 }
