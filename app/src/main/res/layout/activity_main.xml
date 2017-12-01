@@ -48,7 +48,8 @@
                 class="com.alvin.cheapyshopping.fragments.BottomSheetFragment"
                 app:behavior_peekHeight="64dp"
                 app:behavior_hideable="true"
-                app:layout_behavior="@string/bottom_sheet_behavior"/>
+                app:layout_behavior="@string/bottom_sheet_behavior"
+                tools:layout="@layout/fragment_shopping_list_bottom_sheet"/>
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/fab_plus"

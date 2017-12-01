@@ -7,22 +7,21 @@ import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
 import android.util.ArrayMap;
-import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -34,6 +33,7 @@ import com.alvin.cheapyshopping.ProductActivity;
 import com.alvin.cheapyshopping.R;
 import com.alvin.cheapyshopping.SampleMapsActivity;
 import com.alvin.cheapyshopping.StoreActivity;
+import com.alvin.cheapyshopping.databinding.ShoppingListBottomSheetContentFragmentBinding;
 import com.alvin.cheapyshopping.databinding.ShoppingListFragmentBinding;
 import com.alvin.cheapyshopping.databinding.ShoppingListProductItemBinding;
 import com.alvin.cheapyshopping.databinding.ShoppingListStoreItemBinding;
@@ -520,9 +520,30 @@ public class ShoppingListFragment extends Fragment implements
     ************************************************************************************************
      */
 
+    private static final String FRAGMENT_BOTTOM_SHEET = "com.alvin.cheapyshopping.fragments";
+
     @Override
     public boolean onConfigureBottomSheet(BottomSheetFragment bottomSheetFragment) {
+        int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 128, this.getResources().getDisplayMetrics());
+
+        CoordinatorLayout.LayoutParams layoutParams = bottomSheetFragment.getLayoutParams();
+        layoutParams.height = height;
+        bottomSheetFragment.setLayoutParams(layoutParams);
+
+        bottomSheetFragment.setPeekHeight(height);
+
         bottomSheetFragment.show();
+
+        // Need to delay otherwise wired animation
+        bottomSheetFragment.getView().post(() -> {
+            bottomSheetFragment.setHideable(false);
+        });
+
+
+        if (bottomSheetFragment.getContentFragment(FRAGMENT_BOTTOM_SHEET) == null) {
+            BottomSheetContentFragment contentFragment = BottomSheetContentFragment.newInstance();
+            bottomSheetFragment.setContentFragment(contentFragment, FRAGMENT_BOTTOM_SHEET);
+        }
         return true;
     }
 
@@ -565,6 +586,42 @@ public class ShoppingListFragment extends Fragment implements
         });
         dialog.show(this.getFragmentManager(), null);
         return true;
+    }
+
+
+    /*
+    ************************************************************************************************
+    * Bottom Sheet Fragment
+    ************************************************************************************************
+     */
+
+    public static class BottomSheetContentFragment extends Fragment {
+
+        private static BottomSheetContentFragment newInstance() {
+            return new BottomSheetContentFragment();
+        }
+
+        private ShoppingListBottomSheetContentFragmentBinding mBinding;
+        private ShoppingListFragmentViewModel mViewModel;
+
+        public BottomSheetContentFragment() {
+
+        }
+
+        @Nullable
+        @Override
+        public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+            this.mBinding = ShoppingListBottomSheetContentFragmentBinding.inflate(inflater, container, false);
+            return this.mBinding.getRoot();
+        }
+
+        @Override
+        public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+            super.onActivityCreated(savedInstanceState);
+            // Share the same view model class with the shopping list fragment
+            // However they are separate instances
+            this.mViewModel = ViewModelProviders.of(this).get(ShoppingListFragmentViewModel.class);
+        }
     }
 
 }

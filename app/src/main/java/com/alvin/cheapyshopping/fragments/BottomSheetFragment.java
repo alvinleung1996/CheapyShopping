@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +25,7 @@ public class BottomSheetFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         this.mBinding = BottomSheetFragmentBinding.inflate(inflater, container, false);
+        this.mBinding.getRoot().setOnTouchListener((view, motionEvent) -> true);
         return this.mBinding.getRoot();
     }
 
@@ -47,5 +49,39 @@ public class BottomSheetFragment extends Fragment {
 
     public void show() {
         this.mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
+    }
+
+    public CoordinatorLayout.LayoutParams getLayoutParams() {
+        return (CoordinatorLayout.LayoutParams) this.getView().getLayoutParams();
+    }
+
+    public void setLayoutParams(CoordinatorLayout.LayoutParams layoutParams) {
+        this.getView().setLayoutParams(layoutParams);
+    }
+
+    public boolean isHideable() {
+        return this.mBottomSheetBehavior.isHideable();
+    }
+
+    public void setHideable(boolean hideable) {
+        this.mBottomSheetBehavior.setHideable(hideable);
+    }
+
+    public Fragment getContentFragment(String tag) {
+        return this.getChildFragmentManager().findFragmentByTag(tag);
+    }
+
+    public int getPeekHeight() {
+        return this.mBottomSheetBehavior.getPeekHeight();
+    }
+
+    public void setPeekHeight(int peekHeight) {
+        this.mBottomSheetBehavior.setPeekHeight(peekHeight);
+    }
+
+    public void setContentFragment(Fragment fragment, String tag) {
+        this.getChildFragmentManager().beginTransaction()
+                .replace(this.mBinding.fragmentContainer.getId(), fragment, tag)
+                .commit();
     }
 }

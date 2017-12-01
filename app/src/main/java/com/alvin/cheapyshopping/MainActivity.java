@@ -265,6 +265,7 @@ public class MainActivity extends BaseActivity {
                     .onConfigureBottomSheet(this.mBottomSheetFragment);
         }
         if (!show) {
+            this.mBottomSheetFragment.setHideable(true);
             this.mBottomSheetFragment.hide();
         }
     }
