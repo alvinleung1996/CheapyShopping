@@ -54,7 +54,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/image_product_photo"
                 app:layout_constraintTop_toTopOf="parent"
-                android:text="@{product.name + `simple`}"/>
+                android:text="@{product.name}"/>
 
             <TextView
                 android:id="@+id/text_product_id"

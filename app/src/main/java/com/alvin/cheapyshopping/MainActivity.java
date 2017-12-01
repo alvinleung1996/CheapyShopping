@@ -6,11 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
+import android.support.annotation.IdRes;
 import android.graphics.Bitmap;
 import android.os.Environment;
 import android.support.annotation.MainThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -24,12 +26,14 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.alvin.cheapyshopping.databinding.DrawerHeaderBinding;
 import com.alvin.cheapyshopping.databinding.MainActivityBinding;
 import com.alvin.cheapyshopping.db.entities.Account;
 import com.alvin.cheapyshopping.fragments.AccountFragment;
+import com.alvin.cheapyshopping.fragments.BottomSheetFragment;
 import com.alvin.cheapyshopping.fragments.ProductListFragment;
 import com.alvin.cheapyshopping.fragments.ShoppingListFragment;
 import com.alvin.cheapyshopping.fragments.StoreListFragment;
@@ -37,10 +41,8 @@ import com.alvin.cheapyshopping.db.entities.Store;
 import com.alvin.cheapyshopping.utils.ImageRotater;
 import com.alvin.cheapyshopping.viewmodels.AccountFragmentViewModel;
 import com.alvin.cheapyshopping.viewmodels.MainActivityViewModel;
-
 import java.io.File;
-
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     private static final int REQUEST_ADD_SHOPPING_LIST_PRODUCT = 1;
     private static final int REQUEST_ADD_STORE = 2;
@@ -61,6 +63,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public interface BottomSheetInteractionListener {
+
+        boolean onConfigureBottomSheet(BottomSheetFragment bottomSheetFragment);
+
+    }
+
 
     private MainActivityBinding mBinding;
     private DrawerHeaderBinding mDrawerHeaderBinding;
@@ -69,6 +77,8 @@ public class MainActivity extends AppCompatActivity {
     private ActionBarDrawerToggle mDrawerToggle;
     private Account mAccount;
 
+    private BottomSheetFragment mBottomSheetFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,6 +86,8 @@ public class MainActivity extends AppCompatActivity {
         this.mBinding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         this.mDrawerHeaderBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.drawer_header, mBinding.drawer, false);
         this.mViewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
+
+        this.mBottomSheetFragment = (BottomSheetFragment) this.getSupportFragmentManager().findFragmentById(R.id.bottom_sheet);
 
         this.getSupportFragmentManager().registerFragmentLifecycleCallbacks(new FragmentLifecycleCallbacks(), false);
 
@@ -87,27 +99,20 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Toolbar
-        this.setSupportActionBar((Toolbar) this.mBinding.toolbar);
+        this.setSupportActionBar(this.mBinding.toolbar);
+        //noinspection ConstantConditions
         this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Drawer
-        this.mBinding.drawer.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                return MainActivity.this.onDrawerMenuItemSelected(item);
-            }
-        });
+        this.mBinding.drawer.setNavigationItemSelectedListener(MainActivity.this::onDrawerMenuItemSelected);
         this.mBinding.drawer.addHeaderView(mDrawerHeaderBinding.getRoot());
-        this.mDrawerHeaderBinding.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view) {
-                MainActivity.this.getSupportFragmentManager().popBackStack();
-                MainActivity.this.getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container, AccountFragment.newInstance(), FRAGMENT_ACCOUNT)
-                        .addToBackStack(null)
-                        .commit();
-                MainActivity.this.mBinding.drawerLayout.closeDrawer(MainActivity.this.mBinding.drawer);
-            }
+        this.mDrawerHeaderBinding.setOnClickListener(view -> {
+            MainActivity.this.getSupportFragmentManager().popBackStack();
+            MainActivity.this.getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container, AccountFragment.newInstance(), FRAGMENT_ACCOUNT)
+                    .addToBackStack(null)
+                    .commit();
+            MainActivity.this.mBinding.drawerLayout.closeDrawer(MainActivity.this.mBinding.drawer);
         });
 
         // Setup drawer account information
@@ -115,12 +120,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Floating action buttons
-        this.mBinding.fabPlus.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                MainActivity.this.onFabClick((FloatingActionButton) view);
-            }
-        });
+        this.mBinding.fabPlus.setOnClickListener(view -> MainActivity.this.onFabClick((FloatingActionButton) view));
 
         // Drawer Toggle
         this.mDrawerToggle = new ActionBarDrawerToggle(this, this.mBinding.drawerLayout, R.string.message_drawer_open, R.string.message_drawer_close);
@@ -180,14 +180,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void setupDrawerHeader(){
 
-        this.mViewModel.findCurrentAccount().observe(this, new Observer<Account>() {
-            @Override
-            public void onChanged(@Nullable Account account) {
-                if (account != null){
-                    mDrawerHeaderBinding.setAccount(account);
-                    mAccount = account;
-                    setAccountImage(account.isImageExist());
-                }
+        this.mViewModel.findCurrentAccount().observe(this, account -> {
+            if (account != null){
+                mDrawerHeaderBinding.setAccount(account);
+                mAccount = account;
+                setAccountImage(account.isImageExist());
             }
         });
     }
@@ -255,6 +252,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    /*
+    ************************************************************************************************
+    * Bottom Sheet Interactions
+    ************************************************************************************************
+     */
+
+    private void configureBottomSheet() {
+        boolean show = false;
+        if (this.mActiveFragment != null && this.mActiveFragment instanceof BottomSheetInteractionListener) {
+            show = ((BottomSheetInteractionListener) this.mActiveFragment)
+                    .onConfigureBottomSheet(this.mBottomSheetFragment);
+        }
+        if (!show) {
+            this.mBottomSheetFragment.hide();
+        }
+    }
+
+
 
     /*
     ************************************************************************************************
@@ -269,8 +284,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onFragmentAttached(FragmentManager fm, Fragment f, Context context) {
             super.onFragmentAttached(fm, f, context);
-            if (f instanceof ShoppingListFragment) {
-            } else if (f instanceof StoreListFragment) {
+            if (f instanceof StoreListFragment) {
                 ((StoreListFragment) f).setInteractableListener(new StoreListFragmentInteractionListener());
             }
         }
@@ -302,6 +316,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             MainActivity.this.configureFab();
+            MainActivity.this.configureBottomSheet();
         }
 
         @Override
@@ -311,14 +326,14 @@ public class MainActivity extends AppCompatActivity {
                 MainActivity.this.mActiveFragment = null;
 
                 MainActivity.this.configureFab();
+                MainActivity.this.configureBottomSheet();
             }
         }
 
         @Override
         public void onFragmentDetached(FragmentManager fm, Fragment f) {
             super.onFragmentDetached(fm, f);
-            if (f instanceof ShoppingListFragment) {
-            } else if (f instanceof StoreListFragment) {
+            if (f instanceof StoreListFragment) {
                 ((StoreListFragment) f).setInteractableListener(null);
             }
         }

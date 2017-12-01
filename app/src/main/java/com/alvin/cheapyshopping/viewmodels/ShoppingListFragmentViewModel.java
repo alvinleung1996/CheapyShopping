@@ -13,6 +13,7 @@ import android.arch.lifecycle.Transformations;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.alvin.cheapyshopping.db.entities.ShoppingListProductRelation;
@@ -290,7 +291,7 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
     ************************************************************************************************
      */
 
-    public void refreshBestPriceRelations(Activity activity, String shoppingListId) {
+    public void refreshBestPriceRelations(AppCompatActivity activity, String shoppingListId) {
         ShoppingListLocationUpdater.getsInstance(this.getApplication()).updateShoppingListCenterCoordinate(activity, shoppingListId);
         this.getBestPriceRelationRepository().refreshBestPriceRelation(shoppingListId);
     }

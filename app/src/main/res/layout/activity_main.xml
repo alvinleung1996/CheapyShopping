@@ -13,29 +13,42 @@
         android:id="@+id/drawer_layout"
         tools:context="com.alvin.cheapyshopping.MainActivity">
 
-        <android.support.constraint.ConstraintLayout
+        <android.support.design.widget.CoordinatorLayout
+            android:id="@+id/coordinator_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <include
-                android:id="@+id/toolbar"
-                layout="@layout/toolbar"
-                android:layout_width="0dp"
-                android:layout_height="?attr/actionBarSize"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
             <FrameLayout
                 android:id="@+id/fragment_container"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/toolbar">
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
             </FrameLayout>
 
+            <android.support.design.widget.AppBarLayout
+                android:id="@+id/app_bar_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="?attr/actionBarSize"
+                    android:background="@color/transparent"
+                    app:layout_scrollFlags="scroll|snap|enterAlways"
+                    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+                    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
+            </android.support.design.widget.AppBarLayout>
+
+            <fragment
+                android:id="@+id/bottom_sheet"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                class="com.alvin.cheapyshopping.fragments.BottomSheetFragment"
+                app:behavior_peekHeight="64dp"
+                app:behavior_hideable="true"
+                app:layout_behavior="@string/bottom_sheet_behavior"/>
 
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/fab_plus"
@@ -46,10 +59,9 @@
                 android:layout_marginBottom="30dp"
                 android:layout_marginEnd="20dp"
                 app:pressedTranslationZ="12dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"/>
+                android:layout_gravity="bottom|end"/>
 
-        </android.support.constraint.ConstraintLayout>
+        </android.support.design.widget.CoordinatorLayout>
 
         <!-- Navigation drawer -->
         <android.support.design.widget.NavigationView
@@ -57,8 +69,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:id="@+id/drawer"
-            app:menu="@menu/drawer_menu">
-        </android.support.design.widget.NavigationView>
+            app:menu="@menu/drawer_menu"/>
 
     </android.support.v4.widget.DrawerLayout>
 
