@@ -24,6 +24,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.alvin.cheapyshopping.AddShoppingListActivity;
@@ -367,10 +368,6 @@ public class ShoppingListFragment extends Fragment implements
                 this.onAddShoppingListOptionSelected(item);
                 return true;
 
-            case R.id.item_refresh_best_price:
-                this.onRefreshBestPriceOptionSelected(item);
-                return true;
-
             case R.id.item_sample_map_activity:
                 Intent intent = new Intent(this.getContext(), SampleMapsActivity.class);
                 this.startActivity(intent);
@@ -389,14 +386,6 @@ public class ShoppingListFragment extends Fragment implements
             Intent intent = new Intent(this.getContext(), AddShoppingListActivity.class);
             intent.putExtra(AddShoppingListActivity.EXTRA_ACCOUNT_ID, this.mCurrentAccount.getAccountId());
             this.startActivityForResult(intent, REQUEST_ADD_SHOPPING_LIST);
-        }
-    }
-
-    private void onRefreshBestPriceOptionSelected(MenuItem item) {
-        if (this.mCurrentAccountActiveShoppingList != null) {
-            this.mViewModel.refreshBestPriceRelations(
-                    (BaseActivity) this.getActivity(),
-                    this.mCurrentAccountActiveShoppingList.getShoppingListId());
         }
     }
 
@@ -468,7 +457,7 @@ public class ShoppingListFragment extends Fragment implements
 
     @Override
     public void onFloatingActionButtonClick(FloatingActionButton button) {
-        if (this.mCurrentAccount != null && this.mCurrentAccount.getActiveShoppingListId() != null) {
+        if (this.mCurrentAccountActiveShoppingList != null) {
             Intent intent = new Intent(this.getContext(), AddShoppingListProductRelationActivity.class);
             intent.putExtra(AddShoppingListProductRelationActivity.EXTRA_SHOPPING_LIST_ID,
                     this.mCurrentAccountActiveShoppingList.getShoppingListId());
@@ -568,6 +557,8 @@ public class ShoppingListFragment extends Fragment implements
         private ShoppingListBottomSheetContentFragmentBinding mBinding;
         private ShoppingListFragmentViewModel mViewModel;
 
+        private ShoppingList mCurrentAccountActiveShoppingList;
+
         public BottomSheetContentFragment() {
 
         }
@@ -585,6 +576,22 @@ public class ShoppingListFragment extends Fragment implements
             // Share the same view model class with the shopping list fragment
             // However they are separate instances
             this.mViewModel = ViewModelProviders.of(this).get(ShoppingListFragmentViewModel.class);
+
+            this.mViewModel.findCurrentAccountActiveShoppingList().observe(this, shoppingList ->
+                    this.mCurrentAccountActiveShoppingList = shoppingList);
+
+            this.mViewModel.findCurrentAccountActiveShoppingListTotal().observe(this, total ->
+                    this.mBinding.setTotal(total));
+
+            this.mBinding.setOnComputeButtonClickListener(v -> this.onComputeButtonClick((ImageButton) v));
+        }
+
+        private void onComputeButtonClick(ImageButton button) {
+            if (this.mCurrentAccountActiveShoppingList != null) {
+                this.mViewModel.refreshBestPriceRelations(
+                        (BaseActivity) this.getActivity(),
+                        this.mCurrentAccountActiveShoppingList.getShoppingListId());
+            }
         }
     }
 

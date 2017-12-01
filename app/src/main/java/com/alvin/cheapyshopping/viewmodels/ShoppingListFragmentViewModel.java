@@ -149,6 +149,49 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
 
     /*
     ************************************************************************************************
+    * get Shopping List Products: depend on current account active shopping list
+    * Used by bottom sheet
+    ************************************************************************************************
+     */
+
+    private LiveData<List<ShoppingListProduct>> mCurrentAccountActiveShoppingListProductsCache;
+    public LiveData<List<ShoppingListProduct>> findCurrentAccountActiveShoppingListProducts() {
+        if (this.mCurrentAccountActiveShoppingListProductsCache == null) {
+            this.mCurrentAccountActiveShoppingListProductsCache = Transformations.switchMap(
+                this.findCurrentAccountActiveShoppingList(),
+                list -> list == null ? null : this.getShoppingListProductRepository()
+                        .findShoppingListProducts(list.getShoppingListId())
+            );
+        }
+        return this.mCurrentAccountActiveShoppingListProductsCache;
+    }
+
+
+    private LiveData<Double> mCurrentAccountActiveShoppingListTotal;
+    public LiveData<Double> findCurrentAccountActiveShoppingListTotal() {
+        if (this.mCurrentAccountActiveShoppingListTotal == null) {
+            this.mCurrentAccountActiveShoppingListTotal = Transformations.map(
+                    this.findCurrentAccountActiveShoppingListProducts(),
+                    products -> {
+                        if (products == null) {
+                            return null;
+                        }
+                        double total = 0.0;
+                        for (ShoppingListProduct product : products) {
+                            if (!product.getBestStorePrices().isEmpty()) {
+                                total += product.getBestStorePrices().get(0)
+                                        .getComputedPrice(product.getQuantity());
+                            }
+                        }
+                        return total;
+                    }
+            );
+        }
+        return this.mCurrentAccountActiveShoppingListTotal;
+    }
+
+    /*
+    ************************************************************************************************
     * get Grouped Shopping List Products: depend on current account active shopping list
     ************************************************************************************************
      */
@@ -157,14 +200,20 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
     public LiveData<Map<Store, List<ShoppingListProduct>>> findCurrentAccountGroupedActiveShoppingListProducts() {
         if (this.mCurrentAccountGroupedActiveShoppingListProductsCache == null) {
             this.mCurrentAccountGroupedActiveShoppingListProductsCache = Transformations.switchMap(
-                this.findCurrentAccountActiveShoppingList(),
-                list -> list == null ? null : ShoppingListFragmentViewModel.this.getShoppingListProductRepository()
-                        .findGroupedShoppingListProducts(list.getShoppingListId())
+                    this.findCurrentAccountActiveShoppingList(),
+                    list -> list == null ? null : this.getShoppingListProductRepository()
+                            .findGroupedShoppingListProducts(list.getShoppingListId())
             );
         }
         return this.mCurrentAccountGroupedActiveShoppingListProductsCache;
     }
 
+
+    /*
+    ************************************************************************************************
+    * get Shopping List Product List Item: depend on Grouped Shopping List Products
+    ************************************************************************************************
+     */
 
     public class ShoppingListItem {
 

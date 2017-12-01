@@ -3,7 +3,6 @@ package com.alvin.cheapyshopping.repositories;
 import android.annotation.SuppressLint;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
-import android.arch.lifecycle.Observer;
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.ArrayMap;
@@ -93,12 +92,9 @@ public class ShoppingListProductRepository {
         return this.mShoppingListProductsCache.get(shoppingListId);
     }
 
-    private static final Comparator<ShoppingListProduct> sShoppingListProductComparator = new Comparator<ShoppingListProduct>() {
-        @Override
-        public int compare(ShoppingListProduct a, ShoppingListProduct b) {
-            return a.getProductId().compareTo(b.getProductId());
-        }
-    };
+    private static final Comparator<ShoppingListProduct> sShoppingListProductComparator
+            = (a, b) -> a.getProductId().compareTo(b.getProductId());
+
     private class ShoppingListProductAssembler extends MediatorLiveData<List<ShoppingListProduct>> {
 
         private List<LiveData<List<StorePrice>>> mSources;
@@ -108,13 +104,8 @@ public class ShoppingListProductRepository {
         private ShoppingListProductAssembler(final String shoppingListId) {
             this.addSource(
                 ShoppingListProductRepository.this.findPartialShoppingListProducts(shoppingListId),
-                new Observer<List<ShoppingListProduct>>() {
-                    @Override
-                    public void onChanged(@Nullable List<ShoppingListProduct> partialShoppingListProducts) {
-                        ShoppingListProductAssembler.this
-                                .onPartialShoppingListProductsChanged(shoppingListId, partialShoppingListProducts);
-                    }
-                }
+                partialShoppingListProducts -> ShoppingListProductAssembler.this
+                        .onPartialShoppingListProductsChanged(shoppingListId, partialShoppingListProducts)
             );
         }
 
@@ -152,12 +143,7 @@ public class ShoppingListProductRepository {
 
                 this.addSource(
                     source,
-                    new Observer<List<StorePrice>>() {
-                        @Override
-                        public void onChanged(@Nullable List<StorePrice> bestPrices) {
-                            ShoppingListProductAssembler.this.onBestStorePriceChanged(product, bestPrices);
-                        }
-                    }
+                    bestPrices -> this.onBestStorePriceChanged(product, bestPrices)
                 );
             }
 
@@ -190,6 +176,7 @@ public class ShoppingListProductRepository {
 
     }
 
+
     private Map<String, LiveData<List<ShoppingListProduct>>> mPartialShoppingListProductsCache;
     private LiveData<List<ShoppingListProduct>> findPartialShoppingListProducts(String shoppingListId) {
         if (this.mPartialShoppingListProductsCache == null) {
@@ -219,13 +206,7 @@ public class ShoppingListProductRepository {
         private ShoppingListProductsGrouper(String shoppingListId) {
             this.addSource(
                 ShoppingListProductRepository.this.findShoppingListProducts(shoppingListId),
-                new Observer<List<ShoppingListProduct>>() {
-                    @Override
-                    public void onChanged(@Nullable List<ShoppingListProduct> shoppingListProducts) {
-                        ShoppingListProductsGrouper.this
-                                .onShoppingListProductsChanged(shoppingListProducts);
-                    }
-                }
+                this::onShoppingListProductsChanged
             );
         }
 
@@ -293,7 +274,7 @@ public class ShoppingListProductRepository {
                 String storeId = store.getStoreId();
 
                 if (!idResult.containsKey(storeId)) {
-                    idResult.put(storeId, new ArrayList<ShoppingListProduct>());
+                    idResult.put(storeId, new ArrayList<>());
                 }
 
                 idResult.get(storeId).add(product);
@@ -302,7 +283,7 @@ public class ShoppingListProductRepository {
             } else {
 
                 if (!idResult.containsKey(null)) {
-                    idResult.put(null, new ArrayList<ShoppingListProduct>());
+                    idResult.put(null, new ArrayList<>());
                 }
 
                 idResult.get(null).add(product);
