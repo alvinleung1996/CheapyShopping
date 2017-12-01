@@ -1,46 +1,37 @@
 package com.alvin.cheapyshopping;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
-import android.support.annotation.IdRes;
 import android.graphics.Bitmap;
+import android.os.Bundle;
 import android.os.Environment;
-import android.support.annotation.MainThread;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
-import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
+import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.alvin.cheapyshopping.databinding.DrawerHeaderBinding;
 import com.alvin.cheapyshopping.databinding.MainActivityBinding;
 import com.alvin.cheapyshopping.db.entities.Account;
+import com.alvin.cheapyshopping.db.entities.Store;
 import com.alvin.cheapyshopping.fragments.AccountFragment;
 import com.alvin.cheapyshopping.fragments.BottomSheetFragment;
 import com.alvin.cheapyshopping.fragments.ProductListFragment;
 import com.alvin.cheapyshopping.fragments.ShoppingListFragment;
 import com.alvin.cheapyshopping.fragments.StoreListFragment;
-import com.alvin.cheapyshopping.db.entities.Store;
 import com.alvin.cheapyshopping.utils.ImageRotater;
-import com.alvin.cheapyshopping.viewmodels.AccountFragmentViewModel;
 import com.alvin.cheapyshopping.viewmodels.MainActivityViewModel;
+
 import java.io.File;
 public class MainActivity extends BaseActivity {
 
@@ -248,6 +239,34 @@ public class MainActivity extends BaseActivity {
         if (this.mActiveFragment != null && this.mActiveFragment instanceof FloatingActionButtonInteractionListener) {
             ((FloatingActionButtonInteractionListener) this.mActiveFragment)
                     .onFloatingActionButtonClick(button);
+        }
+    }
+
+
+    public static class FloatingActionButtonBehavior extends FloatingActionButton.Behavior {
+
+        public FloatingActionButtonBehavior() {
+            super();
+        }
+
+        public FloatingActionButtonBehavior(Context context, AttributeSet attrs) {
+            super(context, attrs);
+        }
+
+        @Override
+        public boolean layoutDependsOn(CoordinatorLayout parent, FloatingActionButton child, View dependency) {
+            return dependency.getId() == R.id.bottom_sheet || super.layoutDependsOn(parent, child, dependency);
+        }
+
+        @Override
+        public boolean onDependentViewChanged(CoordinatorLayout parent, FloatingActionButton child, View dependency) {
+            boolean handled = super.onDependentViewChanged(parent, child, dependency);
+            if (dependency.getId() == R.id.bottom_sheet) {
+                float translateY = dependency.getY() - parent.getHeight();
+                child.setTranslationY(translateY);
+                handled = true;
+            }
+            return handled;
         }
     }
 

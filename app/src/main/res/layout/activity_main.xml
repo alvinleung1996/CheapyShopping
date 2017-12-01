@@ -60,7 +60,8 @@
                 android:layout_marginBottom="30dp"
                 android:layout_marginEnd="20dp"
                 app:pressedTranslationZ="12dp"
-                android:layout_gravity="bottom|end"/>
+                android:layout_gravity="bottom|end"
+                app:layout_behavior="com.alvin.cheapyshopping.MainActivity$FloatingActionButtonBehavior"/>
 
         </android.support.design.widget.CoordinatorLayout>
 
