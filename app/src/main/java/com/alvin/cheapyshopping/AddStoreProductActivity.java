@@ -15,6 +15,7 @@ import com.alvin.cheapyshopping.fragments.AddProductFragment;
 import com.alvin.cheapyshopping.fragments.AddProductPriceFragment;
 import com.alvin.cheapyshopping.fragments.SelectProductFragment;
 import com.alvin.cheapyshopping.fragments.StoreListFragment;
+import com.alvin.cheapyshopping.utils.CurrentAccountScoreAdder;
 
 import java.util.List;
 
@@ -152,6 +153,8 @@ public class AddStoreProductActivity extends AppCompatActivity {
         @Override
         public void onNewPriceAdded(AddProductPriceFragment fragment, long rowId) {
             Toast.makeText(AddStoreProductActivity.this,"Product added", Toast.LENGTH_LONG).show();
+            CurrentAccountScoreAdder.getsInstance(getApplicationContext())
+                    .addScore(getResources().getInteger(R.integer.add_price));
             AddStoreProductActivity.this.finish();
         }
     }
@@ -171,7 +174,9 @@ public class AddStoreProductActivity extends AppCompatActivity {
 
         @Override
         public void onNewProductAdded(AddProductFragment fragment, String productId) {
-            Toast.makeText(AddStoreProductActivity.this,"Selected product", Toast.LENGTH_LONG).show();
+            Toast.makeText(AddStoreProductActivity.this,"New product added", Toast.LENGTH_LONG).show();
+            CurrentAccountScoreAdder.getsInstance(getApplicationContext())
+                    .addScore(getResources().getInteger(R.integer.add_new_product));
             AddStoreProductActivity.this.mSelectedProductId = productId;
             AddStoreProductActivity.this.getSupportFragmentManager().popBackStack();
             AddStoreProductActivity.this.getSupportFragmentManager().beginTransaction()

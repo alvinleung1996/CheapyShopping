@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.util.ArrayMap;
+import android.util.Log;
 
 import com.alvin.cheapyshopping.db.AppDatabase;
 import com.alvin.cheapyshopping.db.daos.AccountDao;
@@ -101,6 +102,16 @@ public class AccountRepository {
 
     public Account findAccountByAccountIdNow(String accountId) {
         return this.getAccountDao().findAccountByAccountIdNow(accountId);
+    }
+
+    public void addScoreToCurrentAccountNow(int score){
+        Account account = getCurrentAccountNow();
+
+        if (account!=null){
+            int newScore =  account.getAccountScore() + score;
+            account.setAccountScore(newScore);
+            this.updateAccount(account);
+        }
     }
 
     /*

@@ -186,7 +186,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="20dp"
                             android:gravity="end"
-                            android:text="@{account.accountScore != null ? account.accountScore : `Not available`}"
+                            android:text="@{account != null ? Integer.toString(account.accountScore)  : `Not available`}"
                             android:textStyle="bold"
                             app:layout_constraintEnd_toEndOf="parent"/>
 

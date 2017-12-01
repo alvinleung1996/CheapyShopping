@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.alvin.cheapyshopping.databinding.AddShoppingListActivityBinding;
+import com.alvin.cheapyshopping.utils.CurrentAccountScoreAdder;
 import com.alvin.cheapyshopping.viewmodels.AddShoppingListActivityViewModel;
 
 public class AddShoppingListActivity extends AppCompatActivity {
@@ -82,6 +83,10 @@ public class AddShoppingListActivity extends AppCompatActivity {
             Intent intent = new Intent();
             intent.putExtra(EXTRA_SHOPPING_LIST_ID, shoppingListId);
             this.setResult(RESULT_OK, intent);
+
+            // Add score !!!!
+            CurrentAccountScoreAdder.getsInstance(getApplicationContext())
+                    .addScore(getResources().getInteger(R.integer.add_shopping_list));
         }
         this.finish();
     }

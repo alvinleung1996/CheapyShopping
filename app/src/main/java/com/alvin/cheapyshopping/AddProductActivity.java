@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.alvin.cheapyshopping.databinding.AddProductActivityBinding;
 import com.alvin.cheapyshopping.fragments.AddProductFragment;
+import com.alvin.cheapyshopping.utils.CurrentAccountScoreAdder;
 
 public class AddProductActivity extends AppCompatActivity {
 
@@ -83,6 +84,9 @@ public class AddProductActivity extends AppCompatActivity {
             Intent data = new Intent();
             data.putExtra(EXTRA_ADDED_PRODUCT_ID, productId);
             this.setResult(RESULT_OK, data);
+            // Add score to account
+            CurrentAccountScoreAdder.getsInstance(getApplicationContext())
+                    .addScore(getResources().getInteger(R.integer.add_new_product));
         } else {
             this.setResult(RESULT_CANCELED);
         }

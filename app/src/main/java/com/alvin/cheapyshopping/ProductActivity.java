@@ -1,6 +1,5 @@
 package com.alvin.cheapyshopping;
 
-import android.arch.core.util.Function;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -13,9 +12,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.util.SparseArray;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -23,13 +20,13 @@ import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
 import com.alvin.cheapyshopping.databinding.ProductActivityBinding;
-import com.alvin.cheapyshopping.db.entities.Product;
 import com.alvin.cheapyshopping.db.entities.ShoppingList;
 import com.alvin.cheapyshopping.fragments.ProductInfoFragment;
 import com.alvin.cheapyshopping.fragments.ProductStorePricesFragment;
 import com.alvin.cheapyshopping.fragments.dialogs.ChooseShoppingListProductRelationQuantityDialog;
 import com.alvin.cheapyshopping.fragments.dialogs.ChooseShoppingListsDialog;
 import com.alvin.cheapyshopping.fragments.dialogs.ConfirmDialog;
+import com.alvin.cheapyshopping.utils.CurrentAccountScoreAdder;
 import com.alvin.cheapyshopping.viewmodels.ProductActivityViewModel;
 
 import java.util.ArrayList;
@@ -347,6 +344,11 @@ public class ProductActivity extends AppCompatActivity {
             @Override
             public void onQuantityChosen(int quantity) {
                 mViewModel.addProductToShoppingLists(mProductId, shoppingListIds, quantity);
+
+                // Add score to account
+                CurrentAccountScoreAdder.getsInstance(getApplicationContext())
+                        .addScore(quantity * shoppingListIds.size() *
+                                getResources().getInteger(R.integer.add_product_to_shopping_list));
 
                 Toast.makeText(ProductActivity.this ,
                         "Added to  " + shoppingListIds.size() + " shopping list(s)",

@@ -10,6 +10,7 @@ import android.os.AsyncTask;
 
 import com.alvin.cheapyshopping.db.entities.Price;
 import com.alvin.cheapyshopping.db.entities.Store;
+import com.alvin.cheapyshopping.repositories.AccountRepository;
 import com.alvin.cheapyshopping.repositories.PriceRepository;
 import com.alvin.cheapyshopping.repositories.StoreRepository;
 
@@ -177,5 +178,7 @@ public class AddProductPriceFragmentViewModel extends AndroidViewModel {
         }
         return this.mStore;
     }
+
+
 
 }

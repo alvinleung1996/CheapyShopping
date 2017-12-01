@@ -9,6 +9,7 @@ import android.os.Bundle;
 
 import com.alvin.cheapyshopping.databinding.AddProductPriceActivityBinding;
 import com.alvin.cheapyshopping.fragments.AddProductPriceFragment;
+import com.alvin.cheapyshopping.utils.CurrentAccountScoreAdder;
 
 public class AddProductPriceActivity extends AppCompatActivity {
 
@@ -89,6 +90,8 @@ public class AddProductPriceActivity extends AppCompatActivity {
 
         @Override
         public void onNewPriceAdded(AddProductPriceFragment fragment, long rowId) {
+            CurrentAccountScoreAdder.getsInstance(getApplicationContext())
+                    .addScore(getResources().getInteger(R.integer.add_price));
             AddProductPriceActivity.this.finish();
         }
     }

@@ -44,7 +44,7 @@ public class Account {
     private String mAccountEmail;
 
     @ColumnInfo(name = "account_score")
-    private String mAccountScore;
+    private int mAccountScore = 0;
 
     @ColumnInfo(name = "account_password")
     private String mAccountPassword;
@@ -93,11 +93,11 @@ public class Account {
         this.mAccountMobile = accountMobile;
     }
 
-    public String getAccountScore() {
+    public int getAccountScore() {
         return mAccountScore;
     }
 
-    public void setAccountScore(String accountScore) {
+    public void setAccountScore(int accountScore) {
         mAccountScore = accountScore;
     }
 

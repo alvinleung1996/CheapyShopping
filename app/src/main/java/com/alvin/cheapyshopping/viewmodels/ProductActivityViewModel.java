@@ -11,6 +11,7 @@ import android.support.v4.util.ArrayMap;
 
 import com.alvin.cheapyshopping.db.entities.ShoppingList;
 import com.alvin.cheapyshopping.db.entities.ShoppingListProductRelation;
+import com.alvin.cheapyshopping.repositories.AccountRepository;
 import com.alvin.cheapyshopping.repositories.ShoppingListProductRelationRepository;
 import com.alvin.cheapyshopping.repositories.ShoppingListRepository;
 
