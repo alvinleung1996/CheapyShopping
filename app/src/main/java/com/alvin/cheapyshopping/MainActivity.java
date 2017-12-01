@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -243,6 +244,7 @@ public class MainActivity extends BaseActivity {
     }
 
 
+    @SuppressWarnings("unused")
     public static class FloatingActionButtonBehavior extends FloatingActionButton.Behavior {
 
         public FloatingActionButtonBehavior() {
@@ -255,18 +257,21 @@ public class MainActivity extends BaseActivity {
 
         @Override
         public boolean layoutDependsOn(CoordinatorLayout parent, FloatingActionButton child, View dependency) {
-            return dependency.getId() == R.id.bottom_sheet || super.layoutDependsOn(parent, child, dependency);
+            return dependency instanceof AppBarLayout
+                    || super.layoutDependsOn(parent, child, dependency);
         }
 
         @Override
         public boolean onDependentViewChanged(CoordinatorLayout parent, FloatingActionButton child, View dependency) {
-            boolean handled = super.onDependentViewChanged(parent, child, dependency);
-            if (dependency.getId() == R.id.bottom_sheet) {
-                float translateY = dependency.getY() - parent.getHeight();
+            boolean changed = super.onDependentViewChanged(parent, child, dependency);
+            if (dependency instanceof AppBarLayout) {
+                float progress = -dependency.getY() / dependency.getHeight();
+                CoordinatorLayout.LayoutParams childLayoutParams = (CoordinatorLayout.LayoutParams) child.getLayoutParams();
+                float translateY = progress * (child.getHeight() + childLayoutParams.bottomMargin);
                 child.setTranslationY(translateY);
-                handled = true;
+                changed = true;
             }
-            return handled;
+            return changed;
         }
     }
 

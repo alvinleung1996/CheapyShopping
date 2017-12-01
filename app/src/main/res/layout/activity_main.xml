@@ -41,27 +41,29 @@
 
             </android.support.design.widget.AppBarLayout>
 
-            <fragment
-                android:id="@+id/bottom_sheet"
-                android:layout_width="match_parent"
-                android:layout_height="64dp"
-                class="com.alvin.cheapyshopping.fragments.BottomSheetFragment"
-                app:behavior_peekHeight="64dp"
-                app:behavior_hideable="true"
-                app:layout_behavior="@string/bottom_sheet_behavior"
-                tools:layout="@layout/fragment_shopping_list_bottom_sheet"/>
-
             <android.support.design.widget.FloatingActionButton
                 android:id="@+id/fab_plus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_add_white_24dp"
                 android:elevation="6dp"
-                android:layout_marginBottom="30dp"
-                android:layout_marginEnd="20dp"
                 app:pressedTranslationZ="12dp"
                 android:layout_gravity="bottom|end"
+                app:layout_dodgeInsetEdges="bottom"
+                android:layout_marginBottom="16dp"
+                android:layout_marginEnd="16dp"
                 app:layout_behavior="com.alvin.cheapyshopping.MainActivity$FloatingActionButtonBehavior"/>
+
+            <fragment
+                android:id="@+id/bottom_sheet"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                class="com.alvin.cheapyshopping.fragments.BottomSheetFragment"
+                app:layout_insetEdge="bottom"
+                app:behavior_peekHeight="64dp"
+                app:behavior_hideable="true"
+                app:layout_behavior="com.alvin.cheapyshopping.fragments.BottomSheetFragment$Behavior"
+                tools:layout="@layout/fragment_shopping_list_bottom_sheet"/>
 
         </android.support.design.widget.CoordinatorLayout>
 
