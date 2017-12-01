@@ -1,21 +1,21 @@
 package com.alvin.cheapyshopping.viewmodels;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.Application;
-import android.arch.core.util.Function;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.Transformations;
 import android.content.Context;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.util.ArraySet;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.alvin.cheapyshopping.BaseActivity;
 import com.alvin.cheapyshopping.db.entities.ShoppingListProductRelation;
 import com.alvin.cheapyshopping.db.entities.pseudo.ShoppingListProduct;
 import com.alvin.cheapyshopping.repositories.AccountRepository;
@@ -24,14 +24,16 @@ import com.alvin.cheapyshopping.repositories.ShoppingListProductRelationReposito
 import com.alvin.cheapyshopping.repositories.ShoppingListProductRepository;
 import com.alvin.cheapyshopping.repositories.ShoppingListRepository;
 import com.alvin.cheapyshopping.db.entities.Account;
-import com.alvin.cheapyshopping.db.entities.Product;
 import com.alvin.cheapyshopping.db.entities.ShoppingList;
 import com.alvin.cheapyshopping.db.entities.Store;
-import com.alvin.cheapyshopping.utils.ShoppingListLocationUpdater;
+import com.alvin.cheapyshopping.utils.LivePromise;
+import com.alvin.cheapyshopping.utils.LocationManager;
+import com.alvin.cheapyshopping.utils.MutableLivePromise;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by Alvin on 20/11/2017.
@@ -111,13 +113,8 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
         if (this.mCurrentAccountShoppingLists == null) {
             this.mCurrentAccountShoppingLists = Transformations.switchMap(
                 this.getAccountRepository().getCurrentAccount(),
-                new Function<Account, LiveData<List<ShoppingList>>>() {
-                    @Override
-                    public LiveData<List<ShoppingList>> apply(Account input) {
-                        return input == null ? null : ShoppingListFragmentViewModel.this.getShoppingListRepository()
-                                .findAccountShoppingLists(input.getAccountId());
-                    }
-                }
+                input -> input == null ? null : ShoppingListFragmentViewModel.this.getShoppingListRepository()
+                        .findAccountShoppingLists(input.getAccountId())
             );
         }
         return this.mCurrentAccountShoppingLists;
@@ -134,19 +131,16 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
         if (this.mCurrentAccountActiveShoppingListCache == null) {
             this.mCurrentAccountActiveShoppingListCache = Transformations.switchMap(
                 this.findCurrentAccount(),
-                new Function<Account, LiveData<ShoppingList>>() {
-                    @Override
-                    public LiveData<ShoppingList> apply(Account account) {
-                        if (account == null) {
-                            return null;
-                        }
-                        String activeId = account.getActiveShoppingListId();
-                        if (activeId == null) {
-                            return null;
-                        }
-                        return ShoppingListFragmentViewModel.this.getShoppingListRepository()
-                                .findShoppingList(activeId);
+                account -> {
+                    if (account == null) {
+                        return null;
                     }
+                    String activeId = account.getActiveShoppingListId();
+                    if (activeId == null) {
+                        return null;
+                    }
+                    return ShoppingListFragmentViewModel.this.getShoppingListRepository()
+                            .findShoppingList(activeId);
                 }
             );
         }
@@ -164,13 +158,8 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
         if (this.mCurrentAccountGroupedActiveShoppingListProductsCache == null) {
             this.mCurrentAccountGroupedActiveShoppingListProductsCache = Transformations.switchMap(
                 this.findCurrentAccountActiveShoppingList(),
-                new Function<ShoppingList, LiveData<Map<Store, List<ShoppingListProduct>>>>() {
-                    @Override
-                    public LiveData<Map<Store, List<ShoppingListProduct>>> apply(ShoppingList list) {
-                        return list == null ? null : ShoppingListFragmentViewModel.this.getShoppingListProductRepository()
-                                .findGroupedShoppingListProducts(list.getShoppingListId());
-                    }
-                }
+                list -> list == null ? null : ShoppingListFragmentViewModel.this.getShoppingListProductRepository()
+                        .findGroupedShoppingListProducts(list.getShoppingListId())
             );
         }
         return this.mCurrentAccountGroupedActiveShoppingListProductsCache;
@@ -214,13 +203,7 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
             this.addSource(
                 ShoppingListFragmentViewModel.this
                         .findCurrentAccountGroupedActiveShoppingListProducts(),
-                new Observer<Map<Store, List<ShoppingListProduct>>>() {
-                    @Override
-                    public void onChanged(@Nullable Map<Store, List<ShoppingListProduct>> groups) {
-                        CurrentAccountShoppingListItemsComputer.this
-                                .onCurrentAccountGroupedShoppingListProductsChanged(groups);
-                    }
-                }
+                this::onCurrentAccountGroupedShoppingListProductsChanged
             );
         }
 
@@ -287,13 +270,88 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
 
     /*
     ************************************************************************************************
-    * set active shopping list
+    * update best price relation
+    * 1. Find location
+    * 2. Update shopping list center location
+    * 3. Compute best price relation
     ************************************************************************************************
      */
 
-    public void refreshBestPriceRelations(AppCompatActivity activity, String shoppingListId) {
-        ShoppingListLocationUpdater.getsInstance(this.getApplication()).updateShoppingListCenterCoordinate(activity, shoppingListId);
-        this.getBestPriceRelationRepository().refreshBestPriceRelation(shoppingListId);
+    private ShoppingListBestPriceRelationsUpdater mUpdater;
+    public LivePromise<Integer, Void> refreshBestPriceRelations(BaseActivity activity, String shoppingListId) {
+        if (this.mUpdater == null) {
+            this.mUpdater = new ShoppingListBestPriceRelationsUpdater();
+        }
+        return this.mUpdater.update(activity, shoppingListId);
+    }
+
+    private class ShoppingListBestPriceRelationsUpdater {
+
+        private Set<String> mShoppingListIds;
+        private MutableLivePromise<Integer, Void> mPromise;
+
+        private LivePromise<Integer, Void> update(BaseActivity activity, String shoppingListId) {
+            if (this.mShoppingListIds == null) {
+                this.mShoppingListIds = new ArraySet<>();
+            }
+
+            this.mShoppingListIds.add(shoppingListId);
+
+            if (this.mPromise == null) {
+                this.mPromise = new MutableLivePromise<>();
+
+                LivePromise<Location, Void> promise = LocationManager.getInstance(ShoppingListFragmentViewModel.this.getApplication()).updateLocation(activity);
+                promise.observeResolve(activity, this::onLocationUpdated);
+                promise.observeReject(activity, v -> this.onLocationUpdateFailed());
+            }
+
+            return this.mPromise;
+        }
+
+        private void onLocationUpdateFailed() {
+            this.mPromise.setRejectValue(null);
+            this.mPromise = null;
+        }
+
+        @SuppressLint("StaticFieldLeak")
+        private void onLocationUpdated(Location location) {
+            String text = "Longtitude: " + location.getLongitude() + ", Latitude: " + location.getLatitude();
+            Toast.makeText(ShoppingListFragmentViewModel.this.getApplication(), text, Toast.LENGTH_SHORT).show();
+
+            ShoppingListFragmentViewModel.this.mUpdater = null;
+
+            new AsyncTask<Void, Void, Integer>() {
+
+                @Override
+                protected Integer doInBackground(Void... voids) {
+                    List<ShoppingList> listToUpdate = new ArrayList<>();
+
+                    for (String id : ShoppingListBestPriceRelationsUpdater.this.mShoppingListIds) {
+
+                        ShoppingList shoppingList = ShoppingListFragmentViewModel.this.getShoppingListRepository()
+                                .findShoppingListNow(id);
+
+                        shoppingList.setCenterLongitude(location.getLongitude());
+                        shoppingList.setCenterLatitude(location.getLatitude());
+
+                        listToUpdate.add(shoppingList);
+                    }
+
+                    return ShoppingListFragmentViewModel.this.getShoppingListRepository().updateShoppingList(
+                            listToUpdate.toArray(new ShoppingList[listToUpdate.size()]));
+                }
+
+                @Override
+                protected void onPostExecute(Integer integer) {
+                    BestPriceRelationRepository repository = ShoppingListFragmentViewModel.this.getBestPriceRelationRepository();
+                    for (String id : ShoppingListBestPriceRelationsUpdater.this.mShoppingListIds) {
+                        repository.refreshBestPriceRelation(id);
+                    }
+                }
+
+            }.execute();
+        }
+
     }
 
 

@@ -157,10 +157,10 @@ public class BestPriceRelationRepository {
         private Future<?> mExecutingJob;
 
         private void refresh(String shoppingListId) {
-            if (this.mExecutingJob != null) {
-                this.mExecutingJob.cancel(true);
-                this.mExecutingJob = null;
-            }
+//            if (this.mExecutingJob != null) {
+//                this.mExecutingJob.cancel(true);
+//                this.mExecutingJob = null;
+//            }
             if (this.mExecutor == null) {
                 this.mExecutor = Executors.newCachedThreadPool();
             }

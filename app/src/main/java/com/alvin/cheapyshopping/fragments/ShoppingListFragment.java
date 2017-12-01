@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import com.alvin.cheapyshopping.AddShoppingListActivity;
 import com.alvin.cheapyshopping.AddShoppingListProductRelationActivity;
+import com.alvin.cheapyshopping.BaseActivity;
 import com.alvin.cheapyshopping.MainActivity;
 import com.alvin.cheapyshopping.ProductActivity;
 import com.alvin.cheapyshopping.R;
@@ -147,12 +148,8 @@ public class ShoppingListFragment extends Fragment implements
 
         private void onBind(Store store) {
             this.mBinding.setStore(store);
-            this.mBinding.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    ShoppingListFragment.this.onStoreItemClick(view, StoreItemViewHolder.this.mBinding.getStore());
-                }
-            });
+            this.mBinding.setOnClickListener(view ->
+                    ShoppingListFragment.this.onStoreItemClick(view, StoreItemViewHolder.this.mBinding.getStore()));
 
 
             // TODO: not working if not computed
@@ -188,18 +185,10 @@ public class ShoppingListFragment extends Fragment implements
 
         private void onBind(ShoppingListProduct product) {
             this.mBinding.setShoppingListProduct(product);
-            this.mBinding.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    ShoppingListFragment.this.onProductItemClick(view, ProductItemViewHolder.this.mBinding.getShoppingListProduct());
-                }
-            });
-            this.mBinding.setOnLongClickListener(new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View view) {
-                    return ShoppingListFragment.this.onProductItemLongClick(view, ProductItemViewHolder.this.mBinding.getShoppingListProduct());
-                }
-            });
+            this.mBinding.setOnClickListener(view ->
+                    ShoppingListFragment.this.onProductItemClick(view, ProductItemViewHolder.this.mBinding.getShoppingListProduct()));
+            this.mBinding.setOnLongClickListener(view ->
+                    ShoppingListFragment.this.onProductItemLongClick(view, ProductItemViewHolder.this.mBinding.getShoppingListProduct()));
 
 
             // Setup photo
@@ -246,10 +235,6 @@ public class ShoppingListFragment extends Fragment implements
 
     private GoogleMap mMap;
 
-    private GeoDataClient mGeoDataClient;
-    private PlaceDetectionClient mPlaceDetectionClient;
-    private FusedLocationProviderClient mFusedLocationProviderClient;
-
     private Account mCurrentAccount;
     private List<ShoppingList> mCurrentAccountShoppingLists;
     private ShoppingList mCurrentAccountActiveShoppingList;
@@ -285,72 +270,48 @@ public class ShoppingListFragment extends Fragment implements
         this.mBinding.listShoppingListItems.setAdapter(this.mShoppingListItemListAdapter);
 
         // Current Account
-        this.mViewModel.findCurrentAccount().observe(this, new Observer<Account>() {
-            @Override
-            public void onChanged(@Nullable Account account) {
-                ShoppingListFragment.this.mCurrentAccount = account;
-            }
-        });
+        this.mViewModel.findCurrentAccount().observe(this, account ->
+                this.mCurrentAccount = account);
 
         // Current Account All Shopping Lists
-        this.mViewModel.findCurrentAccountShoppingLists().observe(this, new Observer<List<ShoppingList>>() {
-            @Override
-            public void onChanged(@Nullable List<ShoppingList> shoppingLists) {
-                ShoppingListFragment.this.mCurrentAccountShoppingLists = shoppingLists;
-                if (ShoppingListFragment.this.getActivity() != null) {
-                    ShoppingListFragment.this.getActivity().invalidateOptionsMenu();
-                }
+        this.mViewModel.findCurrentAccountShoppingLists().observe(this, shoppingLists -> {
+            this.mCurrentAccountShoppingLists = shoppingLists;
+            if (this.getActivity() != null) {
+                this.getActivity().invalidateOptionsMenu();
             }
         });
 
         // Current Account Active Shopping List
-        this.mViewModel.findCurrentAccountActiveShoppingList().observe(this, new Observer<ShoppingList>() {
-            @Override
-            public void onChanged(@Nullable ShoppingList shoppingList) {
-                final ShoppingListFragment fragment = ShoppingListFragment.this;
+        this.mViewModel.findCurrentAccountActiveShoppingList().observe(this, shoppingList -> {
 
-                fragment.mCurrentAccountActiveShoppingList = shoppingList;
-                ShoppingListFragment.this.mBinding.setShoppingList(shoppingList);
+            this.mCurrentAccountActiveShoppingList = shoppingList;
+            this.mBinding.setShoppingList(shoppingList);
 
-                if (fragment.mShoppingListIdMenuItemMap != null) {
-                    for (MenuItem item : fragment.mShoppingListIdMenuItemMap.values()) {
-                        item.setChecked(false);
-                    }
-                    if (shoppingList != null
-                        && fragment.mShoppingListIdMenuItemMap.containsKey(shoppingList.getShoppingListId())) {
-
-                        fragment.mShoppingListIdMenuItemMap
-                                .get(shoppingList.getShoppingListId())
-                                .setChecked(true);
-                    }
+            if (this.mShoppingListIdMenuItemMap != null) {
+                for (MenuItem item : this.mShoppingListIdMenuItemMap.values()) {
+                    item.setChecked(false);
                 }
+                if (shoppingList != null
+                    && this.mShoppingListIdMenuItemMap.containsKey(shoppingList.getShoppingListId())) {
 
-                ShoppingListFragment.this.updateMapMarkers();
+                    this.mShoppingListIdMenuItemMap
+                            .get(shoppingList.getShoppingListId())
+                            .setChecked(true);
+                }
             }
+
+            ShoppingListFragment.this.updateMapMarkers();
         });
 
         // Current Account Grouped Active Shopping List Products
-        this.mViewModel.findCurrentAccountGroupedActiveShoppingListProducts().observe(this, new Observer<Map<Store, List<ShoppingListProduct>>>() {
-            @Override
-            public void onChanged(@Nullable Map<Store, List<ShoppingListProduct>> storeListMap) {
-                ShoppingListFragment.this.mCurrentAccountGroupedActiveShoppingListProducts = storeListMap;
-                ShoppingListFragment.this.updateMapMarkers();
-            }
+        this.mViewModel.findCurrentAccountGroupedActiveShoppingListProducts().observe(this, storeListMap -> {
+            this.mCurrentAccountGroupedActiveShoppingListProducts = storeListMap;
+            this.updateMapMarkers();
         });
 
         // Shopping List Items
-        this.mViewModel.findCurrentAccountShoppingListItems().observe(this, new Observer<List<ShoppingListItem>>() {
-            @Override
-            public void onChanged(@Nullable List<ShoppingListItem> items) {
-                ShoppingListFragment.this.mShoppingListItemListAdapter
-                        .setShoppingListItems(items);
-            }
-        });
-
-
-        this.mGeoDataClient = Places.getGeoDataClient(this.getContext(),     null);
-        this.mPlaceDetectionClient = Places.getPlaceDetectionClient(this.getContext(), null);
-        this.mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this.getContext());
+        this.mViewModel.findCurrentAccountShoppingListItems().observe(this, items ->
+                this.mShoppingListItemListAdapter.setShoppingListItems(items));
     }
 
 
@@ -405,9 +366,11 @@ public class ShoppingListFragment extends Fragment implements
             case R.id.item_add_shopping_list:
                 this.onAddShoppingListOptionSelected(item);
                 return true;
+
             case R.id.item_refresh_best_price:
                 this.onRefreshBestPriceOptionSelected(item);
                 return true;
+
             case R.id.item_sample_map_activity:
                 Intent intent = new Intent(this.getContext(), SampleMapsActivity.class);
                 this.startActivity(intent);
@@ -432,7 +395,7 @@ public class ShoppingListFragment extends Fragment implements
     private void onRefreshBestPriceOptionSelected(MenuItem item) {
         if (this.mCurrentAccountActiveShoppingList != null) {
             this.mViewModel.refreshBestPriceRelations(
-                    (AppCompatActivity) this.getActivity(),
+                    (BaseActivity) this.getActivity(),
                     this.mCurrentAccountActiveShoppingList.getShoppingListId());
         }
     }
@@ -524,7 +487,7 @@ public class ShoppingListFragment extends Fragment implements
 
     @Override
     public boolean onConfigureBottomSheet(BottomSheetFragment bottomSheetFragment) {
-        int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 128, this.getResources().getDisplayMetrics());
+        int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 64, this.getResources().getDisplayMetrics());
 
         CoordinatorLayout.LayoutParams layoutParams = bottomSheetFragment.getLayoutParams();
         layoutParams.height = height;
@@ -535,6 +498,7 @@ public class ShoppingListFragment extends Fragment implements
         bottomSheetFragment.show();
 
         // Need to delay otherwise wired animation
+        //noinspection ConstantConditions
         bottomSheetFragment.getView().post(() -> {
             bottomSheetFragment.setHideable(false);
         });

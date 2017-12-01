@@ -10,6 +10,7 @@ import android.content.IntentSender;
 import android.location.Location;
 import android.util.Log;
 
+import com.alvin.cheapyshopping.BaseActivity;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -80,7 +81,7 @@ public class LocationManager {
      * @param activity
      * @return
      */
-    public LivePromise<Location, Void> updateLocation(Activity activity) {
+    public LivePromise<Location, Void> updateLocation(BaseActivity activity) {
         if (this.mLiveLocation == null) {
             this.mLiveLocation = new LiveLocation();
         }
@@ -102,10 +103,11 @@ public class LocationManager {
     private class LiveLocation extends MutableLiveData<Location> {
 
         private static final int STATE_IDLE = 0;
-        private static final int STATE_CHECKING_SETTINGS = 1;
-        private static final int STATE_ASKING_SETTINGS = 2;
-        private static final int STATE_GETTING_LOCATION = 3;
-        private static final int STATE_LOCATION_READY = 4;
+        private static final int STATE_REQUESTING_PERMISSION = 1;
+        private static final int STATE_CHECKING_SETTINGS = 2;
+        private static final int STATE_ASKING_SETTINGS = 3;
+        private static final int STATE_GETTING_LOCATION = 4;
+        private static final int STATE_LOCATION_READY = 5;
 
         private int mState;
 
@@ -119,33 +121,46 @@ public class LocationManager {
             this.mState = STATE_IDLE;
         }
 
-        private LivePromise<Location, Void> update(Activity activity) {
+        private LivePromise<Location, Void> update(BaseActivity activity) {
 
             if (this.mState == STATE_IDLE) {
-                this.mState = STATE_CHECKING_SETTINGS;
-
+                this.mState = STATE_REQUESTING_PERMISSION;
                 this.mPromise = new MutableLivePromise<>();
 
-                this.mLocationRequest = new LocationRequest();
-                this.mLocationRequest.setInterval(0);
-                this.mLocationRequest.setFastestInterval(0);
-                this.mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-                LocationSettingsRequest settingsRequest = new LocationSettingsRequest.Builder()
-                        .addLocationRequest(this.mLocationRequest).build();
-
-                SettingsClient settingsClient = LocationServices.getSettingsClient(LocationManager.this.mContext);
-
-                Task<LocationSettingsResponse> task = settingsClient.checkLocationSettings(settingsRequest);
-                task.addOnFailureListener(e -> this.onLocationSettingNotOk((ApiException) e, activity));
-                task.addOnSuccessListener(r -> this.onLocationSettingOK());
-
+                LivePromise<Void, Void> promise = PermissionHelper.getsInstance(LocationManager.this.mContext)
+                        .requestLocationPermission(activity);
+                promise.observeReject(activity, v -> this.onLocationPermissionNotOk());
+                promise.observeResolve(activity, v -> this.onLoationPermissionOk(activity));
             }
 
             return this.mPromise;
         }
 
-        private void onLocationSettingNotOk(ApiException exception, Activity activity) {
+        private void onLocationPermissionNotOk() {
+            this.mState = STATE_IDLE;
+            this.mPromise.setRejectValue(null);
+            this.mPromise = null;
+        }
+
+        private void onLoationPermissionOk(BaseActivity activity) {
+            this.mState = STATE_CHECKING_SETTINGS;
+
+            this.mLocationRequest = new LocationRequest();
+            this.mLocationRequest.setInterval(0);
+            this.mLocationRequest.setFastestInterval(0);
+            this.mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+            LocationSettingsRequest settingsRequest = new LocationSettingsRequest.Builder()
+                    .addLocationRequest(this.mLocationRequest).build();
+
+            SettingsClient settingsClient = LocationServices.getSettingsClient(LocationManager.this.mContext);
+
+            Task<LocationSettingsResponse> task = settingsClient.checkLocationSettings(settingsRequest);
+            task.addOnFailureListener(e -> this.onLocationSettingNotOk((ApiException) e, activity));
+            task.addOnSuccessListener(r -> this.onLocationSettingOK());
+        }
+
+        private void onLocationSettingNotOk(ApiException exception, BaseActivity activity) {
             switch (exception.getStatusCode()) {
 
                 case CommonStatusCodes.RESOLUTION_REQUIRED:
@@ -165,16 +180,17 @@ public class LocationManager {
             }
         }
 
-        private void onLocationSettingEnabled() {
-            this.onLocationSettingOK();
-        }
-
         private void onLocationSettingDisabled() {
             this.mPromise.setRejectValue(null);
             this.mPromise = null;
             this.mState = STATE_IDLE;
         }
 
+        private void onLocationSettingEnabled() {
+            this.onLocationSettingOK();
+        }
+
+        @SuppressLint("MissingPermission")
         private void onLocationSettingOK() {
             this.mState = STATE_GETTING_LOCATION;
             this.mLocationProviderClient = new FusedLocationProviderClient(LocationManager.this.mContext);
@@ -186,8 +202,6 @@ public class LocationManager {
             };
             this.mLocationProviderClient.requestLocationUpdates(this.mLocationRequest, this.mLocationCallback, null);
         }
-
-
 
         private void onLocationUpdate(LocationResult locationResult) {
             Location location = locationResult.getLastLocation();
