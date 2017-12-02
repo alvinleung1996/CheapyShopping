@@ -40,12 +40,6 @@ public class MainActivity extends BaseActivity {
     private static final int REQUEST_ADD_STORE = 2;
 
 
-    private static final String FRAGMENT_SHOPPING_LIST = "com.alvin.cheapyshopping.MainActivity.FRAGMENT_SHOPPING_LIST";
-    private static final String FRAGMENT_STORE_LIST = "com.alvin.cheapyshopping.MainActivity.FRAGMENT_STORE_LIST";
-    private static final String FRAGMENT_PRODUCT_LIST = "com.alvin.cheapyshopping.MainActivity.FRAGMENT_PRODUCT_LIST";
-    private static final String FRAGMENT_ACCOUNT = "com.alvin.cheapyshopping.MainActivity.FRAGMENT_ACCOUNT";
-
-
 
     public interface FloatingActionButtonInteractionListener {
 
@@ -85,7 +79,7 @@ public class MainActivity extends BaseActivity {
 
         if (savedInstanceState == null) { //Prevent adding fragment twice
             this.getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, ShoppingListFragment.newInstance(), FRAGMENT_SHOPPING_LIST)
+                    .add(R.id.fragment_container, ShoppingListFragment.newInstance(), FRAGMENT_TYPE_MAIN)
                     .commit();
         }
 
@@ -101,7 +95,7 @@ public class MainActivity extends BaseActivity {
         this.mDrawerHeaderBinding.setOnClickListener(view -> {
             MainActivity.this.getSupportFragmentManager().popBackStack();
             MainActivity.this.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, AccountFragment.newInstance(), FRAGMENT_ACCOUNT)
+                    .replace(R.id.fragment_container, AccountFragment.newInstance(), FRAGMENT_TYPE_MAIN)
                     .addToBackStack(null)
                     .commit();
             MainActivity.this.mBinding.drawerLayout.closeDrawer(MainActivity.this.mBinding.drawer);
@@ -230,15 +224,15 @@ public class MainActivity extends BaseActivity {
      */
 
     private void configureFab() {
-        if (this.mActiveFragment != null && this.mActiveFragment instanceof FloatingActionButtonInteractionListener) {
-            ((FloatingActionButtonInteractionListener) this.mActiveFragment)
+        if (this.mActiveMainFragment != null && this.mActiveMainFragment instanceof FloatingActionButtonInteractionListener) {
+            ((FloatingActionButtonInteractionListener) this.mActiveMainFragment)
                     .onConfigureFloatingActionButton(this.mBinding.fabPlus);
         }
     }
 
     private void onFabClick(FloatingActionButton button) {
-        if (this.mActiveFragment != null && this.mActiveFragment instanceof FloatingActionButtonInteractionListener) {
-            ((FloatingActionButtonInteractionListener) this.mActiveFragment)
+        if (this.mActiveMainFragment != null && this.mActiveMainFragment instanceof FloatingActionButtonInteractionListener) {
+            ((FloatingActionButtonInteractionListener) this.mActiveMainFragment)
                     .onFloatingActionButtonClick(button);
         }
     }
@@ -284,8 +278,8 @@ public class MainActivity extends BaseActivity {
 
     private void configureBottomSheet() {
         boolean show = false;
-        if (this.mActiveFragment != null && this.mActiveFragment instanceof BottomSheetInteractionListener) {
-            show = ((BottomSheetInteractionListener) this.mActiveFragment)
+        if (this.mActiveMainFragment != null && this.mActiveMainFragment instanceof BottomSheetInteractionListener) {
+            show = ((BottomSheetInteractionListener) this.mActiveMainFragment)
                     .onConfigureBottomSheet(this.mBottomSheetFragment);
         }
         if (!show) {
@@ -302,7 +296,11 @@ public class MainActivity extends BaseActivity {
     ************************************************************************************************
      */
 
-    private Fragment mActiveFragment;
+    private static final String FRAGMENT_TYPE_MAIN = "FRAGMENT_TYPE_MAIN";
+    private static final String FRAGMENT_TYPE_BOTTOM_SHEET = "FRAGMENT_TYPE_BOTTOM_SHEET";
+    private static final String FRAGMENT_TYPE_DIALOG = "FRAGMENT_TYPE_DIALOG";
+
+    private Fragment mActiveMainFragment;
 
     private class FragmentLifecycleCallbacks extends FragmentManager.FragmentLifecycleCallbacks {
 
@@ -318,20 +316,26 @@ public class MainActivity extends BaseActivity {
         public void onFragmentStarted(FragmentManager fm, Fragment f) {
             super.onFragmentStarted(fm, f);
 
-            MainActivity.this.mActiveFragment = f;
+            if (FRAGMENT_TYPE_MAIN.equals(f.getTag())) {
 
-            int itemId = 0;
-            if (f instanceof ShoppingListFragment) {
-                itemId = R.id.nav_home;
-            } else if (f instanceof StoreListFragment) {
-                itemId = R.id.item_store_list;
-            } else if (f instanceof ProductListFragment){
-                itemId = R.id.item_product_list;
-            } else if (f instanceof AccountFragment){
-                itemId = R.id.item_account;
+                MainActivity.this.mActiveMainFragment = f;
+
+                int itemId = 0;
+                if (f instanceof ShoppingListFragment) {
+                    itemId = R.id.nav_home;
+                } else if (f instanceof StoreListFragment) {
+                    itemId = R.id.item_store_list;
+                } else if (f instanceof ProductListFragment){
+                    itemId = R.id.item_product_list;
+                } else if (f instanceof AccountFragment){
+                    itemId = R.id.item_account;
+                }
+                if (itemId != 0) MainActivity.this.mBinding.drawer.setCheckedItem(itemId);
+
+                MainActivity.this.configureFab();
+
+                MainActivity.this.configureBottomSheet();
             }
-            if (itemId != 0) MainActivity.this.mBinding.drawer.setCheckedItem(itemId);
-
 
             // Hide floating action button for some fragments
             if (f instanceof AccountFragment){
@@ -339,19 +343,21 @@ public class MainActivity extends BaseActivity {
             } else {
                 MainActivity.this.mBinding.fabPlus.show();
             }
-
-            MainActivity.this.configureFab();
-            MainActivity.this.configureBottomSheet();
         }
 
         @Override
         public void onFragmentStopped(FragmentManager fm, Fragment f) {
             super.onFragmentStopped(fm, f);
-            if (MainActivity.this.mActiveFragment == f) {
-                MainActivity.this.mActiveFragment = null;
 
-                MainActivity.this.configureFab();
-                MainActivity.this.configureBottomSheet();
+            if (FRAGMENT_TYPE_MAIN.equals(f.getTag())) {
+
+                if (MainActivity.this.mActiveMainFragment == f) {
+                    MainActivity.this.mActiveMainFragment = null;
+
+                    MainActivity.this.configureFab();
+
+                    MainActivity.this.configureBottomSheet();
+                }
             }
         }
 
@@ -390,7 +396,7 @@ public class MainActivity extends BaseActivity {
         if (!item.isChecked()) {
             this.getSupportFragmentManager().popBackStack();
             this.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, StoreListFragment.newInstance(), FRAGMENT_STORE_LIST)
+                    .replace(R.id.fragment_container, StoreListFragment.newInstance(), FRAGMENT_TYPE_MAIN)
                     .addToBackStack(null)
                     .commit();
         }
@@ -425,7 +431,7 @@ public class MainActivity extends BaseActivity {
         if (!item.isChecked()) {
             this.getSupportFragmentManager().popBackStack();
             this.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, ProductListFragment.newInstance(), FRAGMENT_PRODUCT_LIST)
+                    .replace(R.id.fragment_container, ProductListFragment.newInstance(), FRAGMENT_TYPE_MAIN)
                     .addToBackStack(null)
                     .commit();
         }
@@ -443,7 +449,7 @@ public class MainActivity extends BaseActivity {
         if (!item.isChecked()){
             this.getSupportFragmentManager().popBackStack();
             this.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, AccountFragment.newInstance(), FRAGMENT_ACCOUNT)
+                    .replace(R.id.fragment_container, AccountFragment.newInstance(), FRAGMENT_TYPE_MAIN)
                     .addToBackStack(null)
                     .commit();
         }
