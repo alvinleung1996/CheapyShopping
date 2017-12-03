@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data class="ModifyShoppingListProductRelationDialogBinding">
+        <variable
+            name="product"
+            type="com.alvin.cheapyshopping.db.entities.Product"/>
+        <variable
+            name="quantity"
+            type="Integer"/>
+        <variable
+            name="onQuantityChangedListener"
+            type="android.widget.NumberPicker.OnValueChangeListener"/>
+        <variable
+            name="onCancelButtonClickListener"
+            type="android.view.View.OnClickListener"/>
+        <variable
+            name="onOkButtonClickListener"
+            type="android.view.View.OnClickListener"/>
+        <variable
+            name="onRemoveButtonClickListener"
+            type="android.view.View.OnClickListener"/>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#ffffff"
+        android:orientation="vertical">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/product_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="@{product.name, default=`Product name`}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <Button
+                android:id="@+id/cancel_button"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:padding="8dp"
+                android:background="?attr/selectableItemBackground"
+                android:drawableStart="@drawable/ic_cancel_black_24dp"
+                android:onClick="@{onCancelButtonClickListener}"
+                android:text="Cancel"
+                android:tint="?android:attr/textColorPrimary"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/ok_button"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <Button
+                android:id="@+id/ok_button"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:padding="8dp"
+                android:background="?attr/selectableItemBackground"
+                android:drawableStart="@drawable/ic_ok_black_24dp"
+                android:onClick="@{onOkButtonClickListener}"
+                android:text="Save"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.v4.widget.NestedScrollView
+            android:id="@+id/scroll_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:text="Quantity"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Menu"/>
+
+                <NumberPicker
+                    android:id="@+id/quantity_picker"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_gravity="center"
+                    app:minValue="@{1}"
+                    app:maxValue="@{Integer.MAX_VALUE}"
+                    app:value="@{quantity??1}"
+                    app:wrapSelectorWheel="@{false}"
+                    app:onValueChangedListener="@{onQuantityChangedListener}"/>
+
+                <Button
+                    android:id="@+id/remove_button"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:drawableStart="@drawable/ic_delete_black_24dp"
+                    android:drawablePadding="8dp"
+                    android:background="?attr/selectableItemBackground"
+                    android:padding="8dp"
+                    android:text="Remove from shopping list"
+                    android:gravity="start|center_vertical"
+                    android:onClick="@{onRemoveButtonClickListener}"/>
+
+            </LinearLayout>
+
+        </android.support.v4.widget.NestedScrollView>
+
+    </LinearLayout>
+
+</layout>

@@ -53,6 +53,19 @@ public interface ShoppingListProductRelationDao {
             + " AND R.foreign_product_id = :productId")
     ShoppingListProductRelation getShoppingListProductRelationNow(String shoppingListId, String productId);
 
+
+    /*
+    ************************************************************************************************
+    * Delete
+    ************************************************************************************************
+     */
+
+
+    @Query("DELETE FROM ShoppingListProductRelation WHERE foreign_shopping_list_id = :shoppingListId"
+            + " AND foreign_product_id = :productId")
+    int deleteShoppingListProductRelation(String shoppingListId, String productId);
+
+
     /*
     ************************************************************************************************
     * Other

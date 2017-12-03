@@ -124,4 +124,9 @@ public class ShoppingListProductRelationRepository {
                 .deleteShoppingListProductRelation(relations);
     }
 
+    public int deleteShoppingListProductRelation(String shoppingListId, String productId) {
+        return this.getShoppingListProductRelationDao()
+                .deleteShoppingListProductRelation(shoppingListId, productId);
+    }
+
 }

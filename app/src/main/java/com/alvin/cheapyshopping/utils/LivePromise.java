@@ -8,7 +8,7 @@ import android.arch.lifecycle.Observer;
  * Created by Alvin on 1/12/2017.
  */
 
-public abstract class LivePromise<X, Y> {
+public class LivePromise<X, Y> {
 
     private final MutableLiveData<X> mResolveData;
 

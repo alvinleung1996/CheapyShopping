@@ -45,6 +45,15 @@ public class ShoppingListProductRelation {
     private int mQuantity;
 
 
+    public ShoppingListProductRelation() {}
+
+    public ShoppingListProductRelation(ShoppingListProductRelation relation) {
+        this.mForeignShoppingListId = relation.mForeignShoppingListId;
+        this.mForeignProductId = relation.mForeignProductId;
+        this.mQuantity = relation.mQuantity;
+    }
+
+
     public String getForeignShoppingListId() {
         return this.mForeignShoppingListId;
     }
