@@ -41,7 +41,6 @@ import com.alvin.cheapyshopping.db.entities.Account;
 import com.alvin.cheapyshopping.db.entities.ShoppingList;
 import com.alvin.cheapyshopping.db.entities.Store;
 import com.alvin.cheapyshopping.db.entities.pseudo.ShoppingListProduct;
-import com.alvin.cheapyshopping.fragments.dialogs.ChooseShoppingListProductRelationQuantityDialog;
 import com.alvin.cheapyshopping.fragments.dialogs.ModifyShoppingListProductRelationDialogFragment;
 import com.alvin.cheapyshopping.utils.ImageRotater;
 import com.alvin.cheapyshopping.viewmodels.ShoppingListFragmentViewModel;
@@ -256,7 +255,7 @@ public class ShoppingListFragment extends Fragment implements
         this.mViewModel = ViewModelProviders.of(this).get(ShoppingListFragmentViewModel.class);
 
         ((SupportMapFragment) this.getChildFragmentManager().findFragmentById(R.id.fragment_map))
-                .getMapAsync(new MapReadyCallback());
+                .getMapAsync(this::onMapReady);
 
         this.mBinding.listShoppingListItems.setLayoutManager(new LinearLayoutManager(this.getContext()));
         this.mBinding.listShoppingListItems.setNestedScrollingEnabled(false);
@@ -397,21 +396,17 @@ public class ShoppingListFragment extends Fragment implements
     ************************************************************************************************
      */
 
-    private class MapReadyCallback implements OnMapReadyCallback {
-
-        @Override
-        public void onMapReady(GoogleMap googleMap) {
-            ShoppingListFragment.this.mMap = googleMap;
-            if (googleMap != null) {
-                try {
-                    googleMap.setMyLocationEnabled(true);
-                    googleMap.getUiSettings().setMyLocationButtonEnabled(true);
-                } catch (SecurityException e) {
-                    Toast.makeText(ShoppingListFragment.this.getContext(), "Security Exception when setting google map", Toast.LENGTH_SHORT).show();
-                }
+    private void onMapReady(GoogleMap googleMap) {
+        ShoppingListFragment.this.mMap = googleMap;
+        if (googleMap != null) {
+            try {
+                googleMap.setMyLocationEnabled(true);
+                googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+            } catch (SecurityException e) {
+                Toast.makeText(ShoppingListFragment.this.getContext(), "Security Exception when setting google map", Toast.LENGTH_SHORT).show();
             }
         }
-
+        this.updateMapMarkers();
     }
 
     private void updateMapMarkers() {
