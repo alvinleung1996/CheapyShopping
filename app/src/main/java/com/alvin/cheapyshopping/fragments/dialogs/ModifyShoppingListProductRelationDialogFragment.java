@@ -7,6 +7,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialogFragment;
+import android.support.design.widget.CoordinatorLayout;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -98,7 +101,18 @@ public class ModifyShoppingListProductRelationDialogFragment extends BottomSheet
         }
         this.mViewModel.setShoppingListProductRelationId(shoppingListId, productId);
 
-        this.mBehavior = BottomSheetBehavior.from(this.getDialog().findViewById(android.support.design.R.id.design_bottom_sheet));
+        View bottomSheet = this.getDialog().findViewById(android.support.design.R.id.design_bottom_sheet);
+
+        // Wait for view to layout
+        bottomSheet.post(() -> {
+            CoordinatorLayout.LayoutParams layoutParams = (CoordinatorLayout.LayoutParams) bottomSheet.getLayoutParams();
+            int parentWidth = ((ViewGroup) bottomSheet.getParent()).getWidth();
+            int maxWidth = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 360, this.getResources().getDisplayMetrics());
+            layoutParams.width = parentWidth > maxWidth ? maxWidth : ViewGroup.LayoutParams.MATCH_PARENT;
+            bottomSheet.setLayoutParams(layoutParams);
+        });
+
+        this.mBehavior = BottomSheetBehavior.from(bottomSheet);
         this.mBehavior.setSkipCollapsed(true);
 
         this.mViewModel.getProduct().observe(this, this.mBinding::setProduct);

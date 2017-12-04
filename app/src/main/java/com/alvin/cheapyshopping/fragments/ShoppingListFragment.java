@@ -476,8 +476,10 @@ public class ShoppingListFragment extends Fragment implements
         bottomSheetFragment.show();
 
         // Need to delay otherwise wired animation
+        // Also wait for layout
         //noinspection ConstantConditions
         bottomSheetFragment.getView().post(() -> {
+            bottomSheetFragment.setMaxWidth((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 360, this.getResources().getDisplayMetrics()));
             bottomSheetFragment.setHideable(false);
         });
 
@@ -512,22 +514,6 @@ public class ShoppingListFragment extends Fragment implements
     }
 
     private boolean onProductItemLongClick(View view, final ShoppingListProduct product) {
-        // TODO refactor into separate activity
-//        ChooseShoppingListProductRelationQuantityDialog dialog
-//                = ChooseShoppingListProductRelationQuantityDialog.newInstance();
-//        dialog.setInteractionListener(new ChooseShoppingListProductRelationQuantityDialog.InteractionListener() {
-//            @Override
-//            public void onQuantityChosen(int quantity) {
-//                ShoppingListFragment.this.mViewModel
-//                        .updateShoppingListProductRelationQuantity(
-//                                product.getForeignShoppingListId(),
-//                                product.getProductId(),
-//                                quantity
-//                        );
-//            }
-//        });
-//        dialog.show(this.getFragmentManager(), null);
-
         ModifyShoppingListProductRelationDialogFragment dialogFragment
                 = ModifyShoppingListProductRelationDialogFragment
                 .newInstance(product.getForeignShoppingListId(), product.getProductId());

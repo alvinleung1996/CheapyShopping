@@ -58,6 +58,7 @@
                 android:id="@+id/bottom_sheet"
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
+                android:layout_gravity="center_horizontal"
                 class="com.alvin.cheapyshopping.fragments.BottomSheetFragment"
                 app:layout_insetEdge="bottom"
                 app:behavior_peekHeight="64dp"

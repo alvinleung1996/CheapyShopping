@@ -9,6 +9,7 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
 import android.util.AttributeSet;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -118,5 +119,12 @@ public class BottomSheetFragment extends Fragment {
         this.getChildFragmentManager().beginTransaction()
                 .replace(this.mBinding.fragmentContainer.getId(), fragment, tag)
                 .commit();
+    }
+
+    public void setMaxWidth(int maxWidth) {
+        CoordinatorLayout.LayoutParams layoutParams = this.getLayoutParams();
+        int parentWidth = ((ViewGroup) this.getView().getParent()).getWidth();
+        layoutParams.width = parentWidth > maxWidth ? maxWidth : ViewGroup.LayoutParams.MATCH_PARENT;
+        this.setLayoutParams(layoutParams);
     }
 }
