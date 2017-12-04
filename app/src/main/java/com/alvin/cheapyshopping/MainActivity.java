@@ -241,6 +241,9 @@ public class MainActivity extends BaseActivity {
     @SuppressWarnings("unused")
     public static class FloatingActionButtonBehavior extends FloatingActionButton.Behavior {
 
+        private float appBarLayoutHidingProgress = 0;
+        private float dodgeBottomSheetTranslationY = 0;
+
         public FloatingActionButtonBehavior() {
             super();
         }
@@ -251,21 +254,54 @@ public class MainActivity extends BaseActivity {
 
         @Override
         public boolean layoutDependsOn(CoordinatorLayout parent, FloatingActionButton child, View dependency) {
-            return dependency instanceof AppBarLayout
+            return dependency.getId() == R.id.bottom_sheet
+                    || dependency instanceof AppBarLayout
                     || super.layoutDependsOn(parent, child, dependency);
         }
 
         @Override
         public boolean onDependentViewChanged(CoordinatorLayout parent, FloatingActionButton child, View dependency) {
             boolean changed = super.onDependentViewChanged(parent, child, dependency);
+
+            boolean layoutChild = false;
+
             if (dependency instanceof AppBarLayout) {
-                float progress = -dependency.getY() / dependency.getHeight();
+
+                this.appBarLayoutHidingProgress = -dependency.getY() / dependency.getHeight();
+                layoutChild = true;
+
+            } else if (dependency.getId() == R.id.bottom_sheet) {
+
                 CoordinatorLayout.LayoutParams childLayoutParams = (CoordinatorLayout.LayoutParams) child.getLayoutParams();
-                float translateY = progress * (child.getHeight() + childLayoutParams.bottomMargin);
-                child.setTranslationY(translateY);
+                float childMarginLeft = child.getX() - childLayoutParams.leftMargin;
+                float childMarginRight = child.getX() + child.getWidth() + childLayoutParams.rightMargin;
+
+                float dependencyMarginLeft = dependency.getX();
+                float dependencyMarginRight = dependency.getX() + dependency.getWidth();
+
+                if (childMarginLeft < dependencyMarginRight && childMarginRight > dependencyMarginLeft) {
+                    float translateY = dependency.getY() - parent.getHeight();
+                    this.dodgeBottomSheetTranslationY = Math.min(translateY, 0);
+                } else {
+                    this.dodgeBottomSheetTranslationY = 0;
+                }
+
+                layoutChild = true;
+            }
+
+            if (layoutChild) {
+                this.layoutChild(parent, child);
                 changed = true;
             }
+
             return changed;
+        }
+
+        private void layoutChild(CoordinatorLayout parent, FloatingActionButton child) {
+            CoordinatorLayout.LayoutParams childLayoutParams = (CoordinatorLayout.LayoutParams) child.getLayoutParams();
+            float movePathY = -this.dodgeBottomSheetTranslationY + child.getHeight() + childLayoutParams.bottomMargin;
+            float translationY = this.dodgeBottomSheetTranslationY + movePathY * this.appBarLayoutHidingProgress;
+            child.setTranslationY(translationY);
         }
     }
 

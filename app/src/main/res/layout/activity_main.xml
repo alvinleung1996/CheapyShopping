@@ -49,7 +49,6 @@
                 android:elevation="6dp"
                 app:pressedTranslationZ="12dp"
                 android:layout_gravity="bottom|end"
-                app:layout_dodgeInsetEdges="bottom"
                 android:layout_marginBottom="16dp"
                 android:layout_marginEnd="16dp"
                 app:layout_behavior="com.alvin.cheapyshopping.MainActivity$FloatingActionButtonBehavior"/>
@@ -60,7 +59,6 @@
                 android:layout_height="64dp"
                 android:layout_gravity="center_horizontal"
                 class="com.alvin.cheapyshopping.fragments.BottomSheetFragment"
-                app:layout_insetEdge="bottom"
                 app:behavior_peekHeight="64dp"
                 app:behavior_hideable="true"
                 app:layout_behavior="com.alvin.cheapyshopping.fragments.BottomSheetFragment$Behavior"
