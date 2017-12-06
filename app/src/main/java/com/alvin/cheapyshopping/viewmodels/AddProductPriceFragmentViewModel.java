@@ -141,7 +141,7 @@ public class AddProductPriceFragmentViewModel extends AndroidViewModel {
                 storeRepository.updateStore(store);
             }
 
-            // Then create a price record, price record should be immutable
+            // Then createReference a price record, price record should be immutable
             // so that no need to check if there is already an identical record.
             // The new record will contains the current time
             Price price = new Price();

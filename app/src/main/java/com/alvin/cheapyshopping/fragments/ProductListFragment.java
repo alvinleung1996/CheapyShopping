@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import com.alvin.cheapyshopping.AddProductActivity;
 import com.alvin.cheapyshopping.MainActivity;
 import com.alvin.cheapyshopping.ProductActivity;
+import com.alvin.cheapyshopping.R;
 import com.alvin.cheapyshopping.databinding.DetailProductItemBinding;
 import com.alvin.cheapyshopping.databinding.ProductListFragmentBinding;
 import com.alvin.cheapyshopping.db.entities.Product;
@@ -26,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class ProductListFragment extends Fragment implements MainActivity.FloatingActionButtonInteractionListener {
+public class ProductListFragment extends MainActivity.MainFragment {
 
     public class ProductListAdapter extends RecyclerView.Adapter<ProductItemHolder> {
 
@@ -132,6 +133,9 @@ public class ProductListFragment extends Fragment implements MainActivity.Floati
                 ProductListFragment.this.mProductListAdapter.setProducts(stores);
             }
         });
+
+        setFloatingActionButtonInfo(new MainActivity.FloatingActionButtonInfo(
+                R.drawable.ic_add_white_24dp, this::onFloatingActionButtonClick));
     }
 
     /*
@@ -140,12 +144,6 @@ public class ProductListFragment extends Fragment implements MainActivity.Floati
     ************************************************************************************************
      */
 
-    @Override
-    public void onConfigureFloatingActionButton(FloatingActionButton button) {
-
-    }
-
-    @Override
     public void onFloatingActionButtonClick(FloatingActionButton button) {
         Intent intent = new Intent(this.getContext(), AddProductActivity.class);
         this.startActivity(intent);

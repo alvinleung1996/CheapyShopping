@@ -8,7 +8,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,11 +23,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import com.alvin.cheapyshopping.AddShoppingListActivity;
 import com.alvin.cheapyshopping.AddShoppingListProductRelationActivity;
-import com.alvin.cheapyshopping.BaseActivity;
 import com.alvin.cheapyshopping.MainActivity;
 import com.alvin.cheapyshopping.ProductActivity;
 import com.alvin.cheapyshopping.R;
@@ -43,24 +43,33 @@ import com.alvin.cheapyshopping.db.entities.Store;
 import com.alvin.cheapyshopping.db.entities.pseudo.ShoppingListProduct;
 import com.alvin.cheapyshopping.fragments.dialogs.ModifyShoppingListProductRelationDialogFragment;
 import com.alvin.cheapyshopping.utils.ImageRotater;
+import com.alvin.cheapyshopping.utils.PermissionHelper;
+import com.alvin.cheapyshopping.viewmodels.ShoppingListBottomSheetContentFragmentViewModel;
 import com.alvin.cheapyshopping.viewmodels.ShoppingListFragmentViewModel;
 import com.alvin.cheapyshopping.viewmodels.ShoppingListFragmentViewModel.ShoppingListItem;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolygonOptions;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static android.app.Activity.RESULT_OK;
 
-public class ShoppingListFragment extends Fragment implements
-        MainActivity.FloatingActionButtonInteractionListener,
-        MainActivity.BottomSheetInteractionListener {
+
+public class ShoppingListFragment extends MainActivity.MainFragment {
 
     private static final int REQUEST_ADD_SHOPPING_LIST = 1;
 
@@ -222,7 +231,6 @@ public class ShoppingListFragment extends Fragment implements
 
     }
 
-
     private ShoppingListFragmentViewModel mViewModel;
     private ShoppingListFragmentBinding mBinding;
     private ShoppingListAdapter mShoppingListItemListAdapter;
@@ -239,6 +247,8 @@ public class ShoppingListFragment extends Fragment implements
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         this.setHasOptionsMenu(true);
+
+        mViewModel = ViewModelProviders.of(this).get(ShoppingListFragmentViewModel.class);
     }
 
     @Override
@@ -251,8 +261,6 @@ public class ShoppingListFragment extends Fragment implements
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-        this.mViewModel = ViewModelProviders.of(this).get(ShoppingListFragmentViewModel.class);
 
         ((SupportMapFragment) this.getChildFragmentManager().findFragmentById(R.id.fragment_map))
                 .getMapAsync(this::onMapReady);
@@ -308,6 +316,16 @@ public class ShoppingListFragment extends Fragment implements
                 this.mShoppingListItemListAdapter.setShoppingListItems(items));
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
+        setFloatingActionButtonInfo(new MainActivity.FloatingActionButtonInfo(
+                R.drawable.ic_add_white_24dp,
+                this::onFloatingActionButtonClick
+        ));
+        setBottomSheetContentFragment(new MainActivity.BottomSheetContentFragmentInfo(
+                BottomSheetContentFragment::newInstance, FRAGMENT_BOTTOM_SHEET));
+    }
 
     /*
     ************************************************************************************************
@@ -399,12 +417,15 @@ public class ShoppingListFragment extends Fragment implements
     private void onMapReady(GoogleMap googleMap) {
         ShoppingListFragment.this.mMap = googleMap;
         if (googleMap != null) {
-            try {
-                googleMap.setMyLocationEnabled(true);
-                googleMap.getUiSettings().setMyLocationButtonEnabled(true);
-            } catch (SecurityException e) {
-                Toast.makeText(ShoppingListFragment.this.getContext(), "Security Exception when setting google map", Toast.LENGTH_SHORT).show();
-            }
+            PermissionHelper.getsInstance(this.getContext()).requestLocationPermission(this).observeResolve(this, v -> {
+                try {
+                    googleMap.setMyLocationEnabled(true);
+                    googleMap.getUiSettings().setMyLocationButtonEnabled(true);
+                } catch (SecurityException e) {
+                    e.printStackTrace();
+                    Toast.makeText(ShoppingListFragment.this.getContext(), "Security Exception when setting google map", Toast.LENGTH_SHORT).show();
+                }
+            });
         }
         this.updateMapMarkers();
     }
@@ -439,12 +460,6 @@ public class ShoppingListFragment extends Fragment implements
     ************************************************************************************************
      */
 
-    @Override
-    public void onConfigureFloatingActionButton(FloatingActionButton button) {
-
-    }
-
-    @Override
     public void onFloatingActionButtonClick(FloatingActionButton button) {
         if (this.mCurrentAccountActiveShoppingList != null) {
             Intent intent = new Intent(this.getContext(), AddShoppingListProductRelationActivity.class);
@@ -461,35 +476,7 @@ public class ShoppingListFragment extends Fragment implements
     ************************************************************************************************
      */
 
-    private static final String FRAGMENT_BOTTOM_SHEET = "com.alvin.cheapyshopping.fragments";
-
-    @Override
-    public boolean onConfigureBottomSheet(BottomSheetFragment bottomSheetFragment) {
-        int height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 64, this.getResources().getDisplayMetrics());
-
-        CoordinatorLayout.LayoutParams layoutParams = bottomSheetFragment.getLayoutParams();
-        layoutParams.height = height;
-        bottomSheetFragment.setLayoutParams(layoutParams);
-
-        bottomSheetFragment.setPeekHeight(height);
-
-        bottomSheetFragment.show();
-
-        // Need to delay otherwise wired animation
-        // Also wait for layout
-        //noinspection ConstantConditions
-        bottomSheetFragment.getView().post(() -> {
-            bottomSheetFragment.setMaxWidth((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 360, this.getResources().getDisplayMetrics()));
-            bottomSheetFragment.setHideable(false);
-        });
-
-
-        if (bottomSheetFragment.getContentFragment(FRAGMENT_BOTTOM_SHEET) == null) {
-            BottomSheetContentFragment contentFragment = BottomSheetContentFragment.newInstance();
-            bottomSheetFragment.setContentFragment(contentFragment, FRAGMENT_BOTTOM_SHEET);
-        }
-        return true;
-    }
+    private static final String FRAGMENT_BOTTOM_SHEET = "com.alvin.cheapyshopping.fragments.ShoppingListFragment.FRAGMENT_BOTTOM_SHEET";
 
 
     /*
@@ -528,16 +515,16 @@ public class ShoppingListFragment extends Fragment implements
     ************************************************************************************************
      */
 
-    public static class BottomSheetContentFragment extends Fragment {
+    public static class BottomSheetContentFragment extends BottomSheetFragment.ContentFragment {
+
+        private static final int REQUEST_CHOOSE_PLACE = 1;
 
         private static BottomSheetContentFragment newInstance() {
             return new BottomSheetContentFragment();
         }
 
         private ShoppingListBottomSheetContentFragmentBinding mBinding;
-        private ShoppingListFragmentViewModel mViewModel;
-
-        private ShoppingList mCurrentAccountActiveShoppingList;
+        private ShoppingListBottomSheetContentFragmentViewModel mViewModel;
 
         public BottomSheetContentFragment() {
 
@@ -546,33 +533,172 @@ public class ShoppingListFragment extends Fragment implements
         @Nullable
         @Override
         public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-            this.mBinding = ShoppingListBottomSheetContentFragmentBinding.inflate(inflater, container, false);
-            return this.mBinding.getRoot();
+            mBinding = ShoppingListBottomSheetContentFragmentBinding.inflate(inflater, container, false);
+            return mBinding.getRoot();
         }
 
         @Override
         public void onActivityCreated(@Nullable Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
-            // Share the same view model class with the shopping list fragment
-            // However they are separate instances
-            this.mViewModel = ViewModelProviders.of(this).get(ShoppingListFragmentViewModel.class);
 
-            this.mViewModel.findCurrentAccountActiveShoppingList().observe(this, shoppingList ->
-                    this.mCurrentAccountActiveShoppingList = shoppingList);
+            mViewModel = ViewModelProviders.of(this)
+                    .get(ShoppingListBottomSheetContentFragmentViewModel.class);
 
-            this.mViewModel.findCurrentAccountActiveShoppingListTotal().observe(this, total ->
-                    this.mBinding.setTotal(total));
 
-            this.mBinding.setOnComputeButtonClickListener(v -> this.onComputeButtonClick((ImageButton) v));
+            mViewModel.findCurrentAccountActiveShoppingListTotal().observe(this, mBinding::setTotal);
+
+            mViewModel.getCurrentAccountActiveShoppingListCenterLongitude().observe(this, v -> {
+                mBinding.setLongitude(v);
+                updateMap();
+            });
+
+            mViewModel.getCurrentAccountActiveShoppingListCenterLatitude().observe(this, v -> {
+                mBinding.setLatitude(v);
+                updateMap();
+            });
+
+            mViewModel.getCurrentAccountActiveShoppingListCenterLongitudeRange().observe(this, v -> {
+                mBinding.setLongitudeRange(v);
+                updateMap();
+            });
+
+            mViewModel.getCurrentAccountActiveShoppingListCenterLatitudeRange().observe(this, v -> {
+                mBinding.setLatitudeRange(v);
+                updateMap();
+            });
+
+
+            mBinding.setOnComputeButtonClickListener(v -> onComputeButtonClick((ImageButton) v));
+
+            mBinding.setOnChooseCenterButtonClickListener(v -> onChooseCenterButtonClick((ImageButton) v));
+
+            mBinding.setOnLongitudeRangeSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    onLongitudeRangeSeekBarValueChanged(seekBar, progress, fromUser);
+                }
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {}
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {}
+            });
+            mBinding.setOnLatitudeRangeSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    onLatitudeRangeSeekBarValueChanged(seekBar, progress, fromUser);
+                }
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {}
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {}
+            });
+
+            int peekHeight = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 48, getResources().getDisplayMetrics());
+            setPeekHeight(peekHeight);
+            setMaxWidth((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 360, this.getResources().getDisplayMetrics()));
+            setHideable(false);
+            setState(BottomSheetBehavior.STATE_COLLAPSED);
+
+            SupportMapFragment mapFragment = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map));
+            mapFragment.getView().setClickable(false);
+            mapFragment.getMapAsync(this::onMapReady);
         }
 
-        private void onComputeButtonClick(ImageButton button) {
-            if (this.mCurrentAccountActiveShoppingList != null) {
-                this.mViewModel.refreshBestPriceRelations(
-                        (BaseActivity) this.getActivity(),
-                        this.mCurrentAccountActiveShoppingList.getShoppingListId());
+        @Override
+        public void onActivityResult(int requestCode, int resultCode, Intent data) {
+            super.onActivityResult(requestCode, resultCode, data);
+            switch (requestCode) {
+                case REQUEST_CHOOSE_PLACE:
+                    onChoosePlaceResult(requestCode, resultCode, data);
+                    break;
             }
         }
+
+
+
+        private void onComputeButtonClick(@SuppressWarnings("unused") ImageButton button) {
+            mViewModel.updateBestPriceRelations();
+        }
+
+
+
+        private GoogleMap mMap;
+
+        private void onMapReady(GoogleMap map) {
+            mMap = map;
+            map.getUiSettings().setMapToolbarEnabled(false);
+            updateMap();
+        }
+
+        private void updateMap() {
+            GoogleMap map = mMap;
+            Double centerLongitude = mViewModel.getCurrentAccountActiveShoppingListCenterLongitude().getValue();
+            Double centerLatitude = mViewModel.getCurrentAccountActiveShoppingListCenterLatitude().getValue();
+            Double centerLongitudeRange = mViewModel.getCurrentAccountActiveShoppingListCenterLongitudeRange().getValue();
+            Double centerLatitudeRange = mViewModel.getCurrentAccountActiveShoppingListCenterLatitudeRange().getValue();
+
+            if (map == null ||centerLongitude == null || centerLatitude == null
+                    || centerLongitudeRange == null || centerLatitudeRange == null) {
+                return;
+            }
+
+            map.clear();
+
+            PolygonOptions polygonOptions = new PolygonOptions()
+                    .add(new LatLng(centerLatitude-centerLatitudeRange, centerLongitude-centerLongitudeRange))
+                    .add(new LatLng(centerLatitude-centerLatitudeRange, centerLongitude+centerLongitudeRange))
+                    .add(new LatLng(centerLatitude+centerLatitudeRange, centerLongitude+centerLongitudeRange))
+                    .add(new LatLng(centerLatitude+centerLatitudeRange, centerLongitude-centerLongitudeRange))
+                    .geodesic(true);
+
+            map.addPolygon(polygonOptions);
+
+            CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngBounds(new LatLngBounds(
+                    new LatLng(centerLatitude-centerLatitudeRange, centerLongitude-centerLongitudeRange),
+                    new LatLng(centerLatitude+centerLatitudeRange, centerLongitude+centerLongitudeRange)
+            ), 0);
+
+            map.moveCamera(cameraUpdate);
+        }
+
+
+
+
+        private void onChooseCenterButtonClick(@SuppressWarnings("unused") ImageButton button) {
+            try {
+                Intent intent = new PlacePicker.IntentBuilder().build(getActivity());
+                startActivityForResult(intent, REQUEST_CHOOSE_PLACE);
+            } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
+                e.printStackTrace();
+            }
+        }
+
+        private void onChoosePlaceResult(int requestCode, int resultCode, Intent data) {
+            if (resultCode != RESULT_OK) {
+                return;
+            }
+            Place place = PlacePicker.getPlace(getContext(), data);
+            if (place == null) {
+                return;
+            }
+            mViewModel.setCurrentAccountActiveShoppingListCenterLongitude(place.getLatLng().longitude);
+            mViewModel.setCurrentAccountActiveShoppingListCenterLatitude(place.getLatLng().latitude);
+        }
+
+
+
+        private void onLongitudeRangeSeekBarValueChanged(SeekBar seekBar, int value, boolean fromUser) {
+            if (fromUser) {
+                mViewModel.setCurrentAccountActiveShoppingListCenterLongitudeRange(value / 1000000.0);
+            }
+        }
+
+        private void onLatitudeRangeSeekBarValueChanged(SeekBar seekBar, int value, boolean fromUser) {
+            if (fromUser) {
+                mViewModel.setCurrentAccountActiveShoppingListCenterLatitudeRange(value / 1000000.0);
+            }
+        }
+
     }
 
 }

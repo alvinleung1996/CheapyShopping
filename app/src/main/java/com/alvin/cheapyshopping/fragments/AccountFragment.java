@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.alvin.cheapyshopping.MainActivity;
 import com.alvin.cheapyshopping.R;
 import com.alvin.cheapyshopping.databinding.AccountFragmentBinding;
 import com.alvin.cheapyshopping.db.entities.Account;
@@ -30,7 +31,7 @@ import java.util.List;
  * Created by cheng on 11/26/2017.
  */
 
-public class AccountFragment extends Fragment {
+public class AccountFragment extends MainActivity.MainFragment {
 
 
     private static final int REQUEST_IMAGE_FROM_CAMERA = 1;

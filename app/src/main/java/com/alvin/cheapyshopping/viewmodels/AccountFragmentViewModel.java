@@ -57,7 +57,7 @@ public class AccountFragmentViewModel extends AndroidViewModel {
     private LiveData<Account> mCurrentAccount;
     public LiveData<Account> findCurrentAccount() {
         if (this.mCurrentAccount == null) {
-            this.mCurrentAccount = this.getAccountRepository().getCurrentAccount();
+            this.mCurrentAccount = this.getAccountRepository().findCurrentAccount();
         }
         return this.mCurrentAccount;
     }

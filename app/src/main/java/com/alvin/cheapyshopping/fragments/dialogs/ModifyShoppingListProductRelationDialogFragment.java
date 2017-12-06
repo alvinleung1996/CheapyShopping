@@ -74,7 +74,7 @@ public class ModifyShoppingListProductRelationDialogFragment extends BottomSheet
             // But a container is required so that the layout parameter can be inflated
             // The inflated view will be inflated to R.id.design_bottom_sheet,
             // which is a FrameLayout.
-            // Here in case the container is null, just create a mock R.id.design_bottom_sheet container,
+            // Here in case the container is null, just createReference a mock R.id.design_bottom_sheet container,
             // i.e. a FrameLayout instance.
             container = new FrameLayout(inflater.getContext());
         }

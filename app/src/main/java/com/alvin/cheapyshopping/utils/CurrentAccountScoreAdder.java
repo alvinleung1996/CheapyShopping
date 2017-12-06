@@ -25,7 +25,7 @@ public class CurrentAccountScoreAdder {
     private Context mContext;
 
     private CurrentAccountScoreAdder(Context context){
-        mContext = context;
+        mContext = context.getApplicationContext();
     }
 
     /*

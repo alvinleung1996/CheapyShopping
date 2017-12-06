@@ -45,7 +45,6 @@
                 android:id="@+id/fab_plus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@drawable/ic_add_white_24dp"
                 android:elevation="6dp"
                 app:pressedTranslationZ="12dp"
                 android:layout_gravity="bottom|end"
@@ -56,13 +55,11 @@
             <fragment
                 android:id="@+id/bottom_sheet"
                 android:layout_width="match_parent"
-                android:layout_height="64dp"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center_horizontal"
-                class="com.alvin.cheapyshopping.fragments.BottomSheetFragment"
-                app:behavior_peekHeight="64dp"
-                app:behavior_hideable="true"
+                android:name="com.alvin.cheapyshopping.fragments.BottomSheetFragment"
                 app:layout_behavior="com.alvin.cheapyshopping.fragments.BottomSheetFragment$Behavior"
-                tools:layout="@layout/fragment_shopping_list_bottom_sheet"/>
+                tools:layout="@layout/fragment_shopping_list_bottom_sheet_content"/>
 
         </android.support.design.widget.CoordinatorLayout>
 

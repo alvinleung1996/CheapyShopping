@@ -2,12 +2,13 @@ package com.alvin.cheapyshopping;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
@@ -24,36 +25,102 @@ import android.widget.Toast;
 import com.alvin.cheapyshopping.databinding.DrawerHeaderBinding;
 import com.alvin.cheapyshopping.databinding.MainActivityBinding;
 import com.alvin.cheapyshopping.db.entities.Account;
-import com.alvin.cheapyshopping.db.entities.Store;
 import com.alvin.cheapyshopping.fragments.AccountFragment;
+import com.alvin.cheapyshopping.fragments.BaseFragment;
 import com.alvin.cheapyshopping.fragments.BottomSheetFragment;
 import com.alvin.cheapyshopping.fragments.ProductListFragment;
 import com.alvin.cheapyshopping.fragments.ShoppingListFragment;
 import com.alvin.cheapyshopping.fragments.StoreListFragment;
 import com.alvin.cheapyshopping.utils.ImageRotater;
+import com.alvin.cheapyshopping.utils.OnClickListener;
 import com.alvin.cheapyshopping.viewmodels.MainActivityViewModel;
 
 import java.io.File;
+
+
 public class MainActivity extends BaseActivity {
 
-    private static final int REQUEST_ADD_SHOPPING_LIST_PRODUCT = 1;
-    private static final int REQUEST_ADD_STORE = 2;
+    public static abstract class MainFragment extends BaseFragment {
 
+        private FloatingActionButtonInfo mFloatingActionButtonInfo;
+        private BottomSheetContentFragmentInfo mBottomSheetContentFragmentInfo;
 
+        public FloatingActionButtonInfo getFloatingActionButtonInfo() {
+            return mFloatingActionButtonInfo;
+        }
 
-    public interface FloatingActionButtonInteractionListener {
+        public void setFloatingActionButtonInfo(FloatingActionButtonInfo info) {
+            if (mFloatingActionButtonInfo != info) {
+                mFloatingActionButtonInfo = info;
 
-        void onConfigureFloatingActionButton(FloatingActionButton button);
+                MainActivity activity = (MainActivity) getActivity();
+                if (activity != null) {
+                    activity.setFloatingActionButtonInfo(info);
+                }
+            }
+        }
 
-        void onFloatingActionButtonClick(FloatingActionButton button);
+        public BottomSheetContentFragmentInfo getBottomSheetContentFragmentInfo() {
+            return mBottomSheetContentFragmentInfo;
+        }
+
+        public void setBottomSheetContentFragment(BottomSheetContentFragmentInfo info) {
+            if (mBottomSheetContentFragmentInfo != info) {
+                mBottomSheetContentFragmentInfo = info;
+
+                MainActivity activity = (MainActivity) getActivity();
+                if (activity != null) {
+                    activity.setBottomSheetContentFragmentInfo(info);
+                }
+            }
+        }
+    }
+
+    public interface FragmentCreator<T extends Fragment> {
+
+        T createFragment();
 
     }
 
-    public interface BottomSheetInteractionListener {
+    public static class BottomSheetContentFragmentInfo {
 
-        boolean onConfigureBottomSheet(BottomSheetFragment bottomSheetFragment);
+        private final FragmentCreator<BottomSheetFragment.ContentFragment> mFragmentCreator;
+        private final String mTag;
 
+        public BottomSheetContentFragmentInfo(FragmentCreator<BottomSheetFragment.ContentFragment> fragmentCreator, String tag) {
+            mFragmentCreator = fragmentCreator;
+            mTag = tag;
+        }
+
+        public FragmentCreator<BottomSheetFragment.ContentFragment> getFragmentCreator() {
+            return mFragmentCreator;
+        }
+
+        public String getTag() {
+            return mTag;
+        }
     }
+
+    public static class FloatingActionButtonInfo {
+
+        private final @DrawableRes int mDrawableId;
+        private final OnClickListener<FloatingActionButton> mOnClickListener;
+
+        public FloatingActionButtonInfo(@DrawableRes int drawableId, OnClickListener<FloatingActionButton> onClickListener) {
+            mDrawableId = drawableId;
+            mOnClickListener = onClickListener;
+        }
+
+        @DrawableRes
+        public int getDrawableId() {
+            return mDrawableId;
+        }
+
+        public OnClickListener<FloatingActionButton> getOnClickListener() {
+            return mOnClickListener;
+        }
+    }
+
 
 
     private MainActivityBinding mBinding;
@@ -63,7 +130,7 @@ public class MainActivity extends BaseActivity {
     private ActionBarDrawerToggle mDrawerToggle;
     private Account mAccount;
 
-    private BottomSheetFragment mBottomSheetFragment;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,14 +140,10 @@ public class MainActivity extends BaseActivity {
         this.mDrawerHeaderBinding = DataBindingUtil.inflate(getLayoutInflater(), R.layout.drawer_header, mBinding.drawer, false);
         this.mViewModel = ViewModelProviders.of(this).get(MainActivityViewModel.class);
 
-        this.mBottomSheetFragment = (BottomSheetFragment) this.getSupportFragmentManager().findFragmentById(R.id.bottom_sheet);
-
         this.getSupportFragmentManager().registerFragmentLifecycleCallbacks(new FragmentLifecycleCallbacks(), false);
 
-        if (savedInstanceState == null) { //Prevent adding fragment twice
-            this.getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, ShoppingListFragment.newInstance(), FRAGMENT_TYPE_MAIN)
-                    .commit();
+        if (savedInstanceState == null) {
+            switchMainFragment(ShoppingListFragment::newInstance, ShoppingListFragment.class.getName(), true);
         }
 
 
@@ -104,14 +167,9 @@ public class MainActivity extends BaseActivity {
         // Setup drawer account information
         setupDrawerHeader();
 
-
-        // Floating action buttons
-        this.mBinding.fabPlus.setOnClickListener(view -> MainActivity.this.onFabClick((FloatingActionButton) view));
-
         // Drawer Toggle
         this.mDrawerToggle = new ActionBarDrawerToggle(this, this.mBinding.drawerLayout, R.string.message_drawer_open, R.string.message_drawer_close);
         this.mBinding.drawerLayout.addDrawerListener(this.mDrawerToggle);
-
     }
 
     @Override
@@ -147,7 +205,6 @@ public class MainActivity extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         this.getMenuInflater().inflate(R.menu.main_activity_toolbar_menu, menu);
-
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -156,7 +213,6 @@ public class MainActivity extends BaseActivity {
         if (this.mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
-
         switch (item.getItemId()) {
             default:
                 return super.onOptionsItemSelected(item);
@@ -203,7 +259,7 @@ public class MainActivity extends BaseActivity {
     private boolean onDrawerMenuItemSelected(MenuItem item) {
         Toast.makeText(this, item.getTitle()+" Clicked", Toast.LENGTH_SHORT).show();
         switch (item.getItemId()) {
-            case R.id.nav_home:
+            case R.id.item_home:
                 return this.onShoppingListDrawerMenuItemSelected(item);
             case R.id.item_store_list:
                 return this.onStoreListDrawerMenuItemSelected(item);
@@ -211,9 +267,9 @@ public class MainActivity extends BaseActivity {
                 return this.onProductListDrawerMenuItemSelected(item);
             case R.id.item_account:
                 return this.onAccountDrawerMenuItemSelected(item);
+            default:
+                return false;
         }
-
-        return false;
     }
 
 
@@ -222,21 +278,6 @@ public class MainActivity extends BaseActivity {
     * Floating Action Button Interactions
     ************************************************************************************************
      */
-
-    private void configureFab() {
-        if (this.mActiveMainFragment != null && this.mActiveMainFragment instanceof FloatingActionButtonInteractionListener) {
-            ((FloatingActionButtonInteractionListener) this.mActiveMainFragment)
-                    .onConfigureFloatingActionButton(this.mBinding.fabPlus);
-        }
-    }
-
-    private void onFabClick(FloatingActionButton button) {
-        if (this.mActiveMainFragment != null && this.mActiveMainFragment instanceof FloatingActionButtonInteractionListener) {
-            ((FloatingActionButtonInteractionListener) this.mActiveMainFragment)
-                    .onFloatingActionButtonClick(button);
-        }
-    }
-
 
     @SuppressWarnings("unused")
     public static class FloatingActionButtonBehavior extends FloatingActionButton.Behavior {
@@ -299,12 +340,36 @@ public class MainActivity extends BaseActivity {
 
         private void layoutChild(CoordinatorLayout parent, FloatingActionButton child) {
             CoordinatorLayout.LayoutParams childLayoutParams = (CoordinatorLayout.LayoutParams) child.getLayoutParams();
-            float movePathY = -this.dodgeBottomSheetTranslationY + child.getHeight() + childLayoutParams.bottomMargin;
-            float translationY = this.dodgeBottomSheetTranslationY + movePathY * this.appBarLayoutHidingProgress;
+            float translationY = this.dodgeBottomSheetTranslationY + (child.getHeight() + childLayoutParams.bottomMargin) * appBarLayoutHidingProgress;
             child.setTranslationY(translationY);
         }
     }
 
+    private FloatingActionButtonInfo mFloatingActionButtonInfo;
+
+    private void setFloatingActionButtonInfo(FloatingActionButtonInfo info) {
+        if (mFloatingActionButtonInfo != info) {
+            mFloatingActionButtonInfo = info;
+
+            Drawable imageDrawable;
+            final OnClickListener<FloatingActionButton> onClickListener;
+            boolean show;
+            if (info != null) {
+                imageDrawable = getDrawable(info.getDrawableId());
+                onClickListener = info.getOnClickListener();
+                show = true;
+            } else {
+                imageDrawable = null;
+                onClickListener = null;
+                show = false;
+            }
+            mBinding.fabPlus.setImageDrawable(imageDrawable);
+            mBinding.fabPlus.setOnClickListener(onClickListener == null ? null :
+                    v -> onClickListener.onClick(((FloatingActionButton) v)));
+//        ((FloatingActionButtonBehavior) ((CoordinatorLayout.LayoutParams) mBinding.fabPlus.getLayoutParams()).getBehavior())
+        }
+
+    }
 
     /*
     ************************************************************************************************
@@ -312,19 +377,22 @@ public class MainActivity extends BaseActivity {
     ************************************************************************************************
      */
 
-    private void configureBottomSheet() {
-        boolean show = false;
-        if (this.mActiveMainFragment != null && this.mActiveMainFragment instanceof BottomSheetInteractionListener) {
-            show = ((BottomSheetInteractionListener) this.mActiveMainFragment)
-                    .onConfigureBottomSheet(this.mBottomSheetFragment);
-        }
-        if (!show) {
-            this.mBottomSheetFragment.setHideable(true);
-            this.mBottomSheetFragment.hide();
+    private BottomSheetContentFragmentInfo mBottomSheetContentFragmentInfo;
+
+    private void setBottomSheetContentFragmentInfo(BottomSheetContentFragmentInfo info) {
+        if (mBottomSheetContentFragmentInfo != info) {
+            this.mBottomSheetContentFragmentInfo = info;
+
+            BottomSheetFragment fragment = (BottomSheetFragment) getSupportFragmentManager().findFragmentById(R.id.bottom_sheet);
+            if (fragment != null) {
+                fragment.setBottomSheetContentFragmentInfo(mBottomSheetContentFragmentInfo);
+            }
         }
     }
 
-
+    public BottomSheetContentFragmentInfo getBottomSheetContentFragmentInfo() {
+        return mBottomSheetContentFragmentInfo;
+    }
 
     /*
     ************************************************************************************************
@@ -333,77 +401,58 @@ public class MainActivity extends BaseActivity {
      */
 
     private static final String FRAGMENT_TYPE_MAIN = "FRAGMENT_TYPE_MAIN";
-    private static final String FRAGMENT_TYPE_BOTTOM_SHEET = "FRAGMENT_TYPE_BOTTOM_SHEET";
-    private static final String FRAGMENT_TYPE_DIALOG = "FRAGMENT_TYPE_DIALOG";
-
-    private Fragment mActiveMainFragment;
 
     private class FragmentLifecycleCallbacks extends FragmentManager.FragmentLifecycleCallbacks {
-
-        @Override
-        public void onFragmentAttached(FragmentManager fm, Fragment f, Context context) {
-            super.onFragmentAttached(fm, f, context);
-            if (f instanceof StoreListFragment) {
-                ((StoreListFragment) f).setInteractableListener(new StoreListFragmentInteractionListener());
-            }
-        }
 
         @Override
         public void onFragmentStarted(FragmentManager fm, Fragment f) {
             super.onFragmentStarted(fm, f);
 
-            if (FRAGMENT_TYPE_MAIN.equals(f.getTag())) {
+            if (f instanceof MainFragment) {
+                MainFragment mainFragment = (MainFragment) f;
 
-                MainActivity.this.mActiveMainFragment = f;
-
-                int itemId = 0;
-                if (f instanceof ShoppingListFragment) {
-                    itemId = R.id.nav_home;
-                } else if (f instanceof StoreListFragment) {
-                    itemId = R.id.item_store_list;
-                } else if (f instanceof ProductListFragment){
-                    itemId = R.id.item_product_list;
-                } else if (f instanceof AccountFragment){
-                    itemId = R.id.item_account;
+                int drawerMenuItemId = 0;
+                if (mainFragment instanceof ShoppingListFragment) {
+                    drawerMenuItemId = R.id.item_home;
+                } else if (mainFragment instanceof ProductListFragment) {
+                    drawerMenuItemId = R.id.item_product_list;
+                } else if (mainFragment instanceof StoreListFragment) {
+                    drawerMenuItemId = R.id.item_store_list;
+                } else if (mainFragment instanceof AccountFragment) {
+                    drawerMenuItemId = R.id.item_account;
                 }
-                if (itemId != 0) MainActivity.this.mBinding.drawer.setCheckedItem(itemId);
+                mBinding.drawer.setCheckedItem(drawerMenuItemId);
 
-                MainActivity.this.configureFab();
-
-                MainActivity.this.configureBottomSheet();
-            }
-
-            // Hide floating action button for some fragments
-            if (f instanceof AccountFragment){
-                MainActivity.this.mBinding.fabPlus.hide();
-            } else {
-                MainActivity.this.mBinding.fabPlus.show();
+                setFloatingActionButtonInfo(mainFragment.getFloatingActionButtonInfo());
+                setBottomSheetContentFragmentInfo(mainFragment.getBottomSheetContentFragmentInfo());
             }
         }
+    }
 
-        @Override
-        public void onFragmentStopped(FragmentManager fm, Fragment f) {
-            super.onFragmentStopped(fm, f);
 
-            if (FRAGMENT_TYPE_MAIN.equals(f.getTag())) {
 
-                if (MainActivity.this.mActiveMainFragment == f) {
-                    MainActivity.this.mActiveMainFragment = null;
+    private static final String TAG_FRAGMENT_ROOT = "TAG_FRAGMENT_ROOT";
 
-                    MainActivity.this.configureFab();
+    private void switchMainFragment(FragmentCreator fragmentCreator, String tag, boolean root) {
+        FragmentManager manager = getSupportFragmentManager();
+        if (root) {
+            manager.popBackStack(TAG_FRAGMENT_ROOT, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+            if (manager.findFragmentByTag(tag) == null) {
+                manager.beginTransaction()
+                        .replace(mBinding.fragmentContainer.getId(), fragmentCreator.createFragment(), tag)
+                        .commit();
+            }
 
-                    MainActivity.this.configureBottomSheet();
-                }
+        } else {
+            if (manager.findFragmentByTag(tag) == null) {
+                manager.popBackStack(TAG_FRAGMENT_ROOT, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+                manager.beginTransaction()
+                        .replace(mBinding.fragmentContainer.getId(), fragmentCreator.createFragment(), tag)
+                        .addToBackStack(TAG_FRAGMENT_ROOT)
+                        .commit();
             }
         }
-
-        @Override
-        public void onFragmentDetached(FragmentManager fm, Fragment f) {
-            super.onFragmentDetached(fm, f);
-            if (f instanceof StoreListFragment) {
-                ((StoreListFragment) f).setInteractableListener(null);
-            }
-        }
+        mBinding.drawerLayout.closeDrawer(mBinding.drawer);
     }
 
 
@@ -415,10 +464,7 @@ public class MainActivity extends BaseActivity {
      */
 
     private boolean onShoppingListDrawerMenuItemSelected(MenuItem item) {
-        if (!item.isChecked()) {
-            this.getSupportFragmentManager().popBackStack();
-        }
-        this.mBinding.drawerLayout.closeDrawer(this.mBinding.drawer);
+        switchMainFragment(ShoppingListFragment::newInstance, ShoppingListFragment.class.getName(), true);
         return true;
     }
 
@@ -429,32 +475,8 @@ public class MainActivity extends BaseActivity {
      */
 
     private boolean onStoreListDrawerMenuItemSelected(MenuItem item) {
-        if (!item.isChecked()) {
-            this.getSupportFragmentManager().popBackStack();
-            this.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, StoreListFragment.newInstance(), FRAGMENT_TYPE_MAIN)
-                    .addToBackStack(null)
-                    .commit();
-        }
-        this.mBinding.drawerLayout.closeDrawer(this.mBinding.drawer);
+        switchMainFragment(StoreListFragment::newInstance, StoreListFragment.class.getName(), false);
         return true;
-    }
-
-    private class StoreListFragmentInteractionListener implements StoreListFragment.InteractionListener {
-
-        @Override
-        public void onStoreSelected(StoreListFragment fragment, Store store) {
-            Toast.makeText(MainActivity.this, "Store Selected: " + store.getName(), Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(MainActivity.this, StoreActivity.class);
-            intent.putExtra(StoreActivity.EXTRA_STORE_ID, store.getStoreId());
-            MainActivity.this.startActivity(intent);
-        }
-
-        @Override
-        public void onRequestNewStore(StoreListFragment fragment) {
-            Intent intent = new Intent(MainActivity.this, AddStoreActivity.class);
-            MainActivity.this.startActivityForResult(intent, REQUEST_ADD_STORE);
-        }
     }
 
     /*
@@ -464,14 +486,7 @@ public class MainActivity extends BaseActivity {
      */
 
     private boolean onProductListDrawerMenuItemSelected(MenuItem item) {
-        if (!item.isChecked()) {
-            this.getSupportFragmentManager().popBackStack();
-            this.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, ProductListFragment.newInstance(), FRAGMENT_TYPE_MAIN)
-                    .addToBackStack(null)
-                    .commit();
-        }
-        this.mBinding.drawerLayout.closeDrawer(this.mBinding.drawer);
+        switchMainFragment(ProductListFragment::newInstance, ProductListFragment.class.getName(), false);
         return true;
     }
 
@@ -482,14 +497,7 @@ public class MainActivity extends BaseActivity {
      */
 
     private boolean onAccountDrawerMenuItemSelected(MenuItem item){
-        if (!item.isChecked()){
-            this.getSupportFragmentManager().popBackStack();
-            this.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, AccountFragment.newInstance(), FRAGMENT_TYPE_MAIN)
-                    .addToBackStack(null)
-                    .commit();
-        }
-        this.mBinding.drawerLayout.closeDrawer(this.mBinding.drawer);
+        switchMainFragment(AccountFragment::newInstance, AccountFragment.class.getName(), false);
         return true;
     }
 

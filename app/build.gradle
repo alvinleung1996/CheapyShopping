@@ -18,7 +18,7 @@ android {
     }
     productFlavors {
     }
-    buildToolsVersion '27.0.1'
+    buildToolsVersion '27.0.2'
     dataBinding {
         enabled = true
     }
@@ -46,4 +46,5 @@ dependencies {
     annotationProcessor "android.arch.persistence.room:compiler:1.0.0"
     compile 'de.hdodenhof:circleimageview:2.2.0'
     compile files('library/gson-2.8.2.jar')
+    compile 'com.google.guava:guava:23.5-android'
 }

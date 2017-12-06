@@ -6,7 +6,6 @@ import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
 import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Created by Alvin on 20/11/2017.
@@ -30,11 +29,35 @@ public class ShoppingList {
     @NonNull
     private String mForeignAccountId;
 
+    @ColumnInfo(name = "center_place_id")
+    private String mCenterPlaceId;
+
     @ColumnInfo(name = "center_longitude")
     private Double mCenterLongitude;
 
     @ColumnInfo(name = "center_latitude")
     private Double mCenterLatitude;
+
+    @ColumnInfo(name = "center_longitude_range")
+    private Double mCenterLongitudeRange;
+
+    @ColumnInfo(name = "center_latitude_range")
+    private Double mCenterLatitudeRange;
+
+
+    public ShoppingList() {}
+
+    public ShoppingList(ShoppingList shoppingList) {
+        mShoppingListId = shoppingList.mShoppingListId;
+        mName = shoppingList.mName;
+        mCreationTime = shoppingList.mCreationTime;
+        mForeignAccountId = shoppingList.mForeignAccountId;
+        mCenterPlaceId = shoppingList.mCenterPlaceId;
+        mCenterLongitude = shoppingList.mCenterLongitude;
+        mCenterLatitude = shoppingList.mCenterLatitude;
+        mCenterLongitudeRange = shoppingList.mCenterLongitudeRange;
+        mCenterLatitudeRange = shoppingList.mCenterLatitudeRange;
+    }
 
 
     public String getShoppingListId() {
@@ -69,6 +92,14 @@ public class ShoppingList {
         this.mForeignAccountId = foreignAccountId;
     }
 
+    public String getCenterPlaceId() {
+        return this.mCenterPlaceId;
+    }
+
+    public void setCenterPlaceId(String centerPlaceId) {
+        this.mCenterPlaceId = centerPlaceId;
+    }
+
     public Double getCenterLongitude() {
         return this.mCenterLongitude;
     }
@@ -85,4 +116,19 @@ public class ShoppingList {
         this.mCenterLatitude = centerLatitude;
     }
 
+    public Double getCenterLongitudeRange() {
+        return mCenterLongitudeRange;
+    }
+
+    public void setCenterLongitudeRange(Double centerLongitudeRange) {
+        mCenterLongitudeRange = centerLongitudeRange;
+    }
+
+    public Double getCenterLatitudeRange() {
+        return mCenterLatitudeRange;
+    }
+
+    public void setCenterLatitudeRange(Double centerLatitudeRange) {
+        mCenterLatitudeRange = centerLatitudeRange;
+    }
 }

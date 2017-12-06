@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<!-- This is the rating bar drawable that is used to
+<!-- This is the rating drawableable that is used to
  show a unfilled star. -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 

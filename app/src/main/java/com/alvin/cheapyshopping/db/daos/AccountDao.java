@@ -30,7 +30,7 @@ public interface AccountDao {
 
     // TODO other method?
     @Query("SELECT * FROM Account LIMIT 1")
-    LiveData<Account> getCurrentAccount();
+    LiveData<Account> findCurrentAccount();
 
     @Query("SELECT * FROM Account WHERE account_id = :accountId")
     LiveData<Account> findAccountByAccountId(String accountId);
@@ -49,7 +49,7 @@ public interface AccountDao {
     // Use by shopping list fragment view model
     @Query("SELECT * FROM Account LIMIT 1")
     // TODO other method?
-    Account getCurrentAccountNow();
+    Account findCurrentAccountNow();
 
     @Query("SELECT * FROM Account WHERE account_id = :accountId")
     Account findAccountByAccountIdNow(String accountId);

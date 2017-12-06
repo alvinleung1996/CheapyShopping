@@ -26,15 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class StoreListFragment extends Fragment implements MainActivity.FloatingActionButtonInteractionListener {
-
-    public interface InteractionListener {
-
-        void onStoreSelected(StoreListFragment fragment, Store store);
-
-        void onRequestNewStore(StoreListFragment fragment);
-
-    }
+public class StoreListFragment extends MainActivity.MainFragment {
 
     public class StoreListAdapter extends RecyclerView.Adapter<StoreItemHolder> {
 
@@ -118,8 +110,6 @@ public class StoreListFragment extends Fragment implements MainActivity.Floating
 
     private StoreListAdapter mStoreListAdapter;
 
-    private InteractionListener mInteractionListener;
-
 
     public StoreListFragment() {
         // Required empty public constructor
@@ -151,28 +141,11 @@ public class StoreListFragment extends Fragment implements MainActivity.Floating
         });
     }
 
-
-    public void setInteractableListener(InteractionListener listener) {
-        this.mInteractionListener = listener;
-    }
-
     /*
     ************************************************************************************************
     * MainActivity.FloatingActionButtonInteractionListener
     ************************************************************************************************
      */
-
-    @Override
-    public void onConfigureFloatingActionButton(FloatingActionButton button) {
-
-    }
-
-    @Override
-    public void onFloatingActionButtonClick(FloatingActionButton button) {
-        if (this.mInteractionListener != null) {
-            this.mInteractionListener.onRequestNewStore(this);
-        }
-    }
 
     /*
     ************************************************************************************************
@@ -181,9 +154,7 @@ public class StoreListFragment extends Fragment implements MainActivity.Floating
      */
 
     public void onStoreItemClick(View view, Store store) {
-        if (mInteractionListener != null) {
-            mInteractionListener.onStoreSelected(this, store);
-        }
+
     }
 
 }

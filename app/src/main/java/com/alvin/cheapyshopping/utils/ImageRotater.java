@@ -38,7 +38,7 @@ public class ImageRotater {
     private Bitmap mBitmap;
 
     private ImageRotater(Context context){
-        this.mContext = context;
+        this.mContext = context.getApplicationContext();
     }
 
     public Bitmap rotateImage(final File image){

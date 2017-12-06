@@ -68,7 +68,7 @@
                 android:layout_marginEnd="16dp"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:text="@{`$`+shoppingListProduct.bestStorePrices[0].getComputedPrice(shoppingListProduct.quantity), default=`$BP`}"/>
+                android:text="@{`$`+(shoppingListProduct.bestPriceValue??`N/A`), default=`$BP`}"/>
 
         </android.support.constraint.ConstraintLayout>
 

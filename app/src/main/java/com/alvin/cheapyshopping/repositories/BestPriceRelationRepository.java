@@ -177,28 +177,39 @@ public class BestPriceRelationRepository {
 
             @Override
             public void run() {
-                List<Store> nearbyStores = BestPriceRelationRepository.this.getStoreRepository()
-                        .findNearbyStoresNow();
+                ShoppingList shoppingList = ShoppingListRepository.getInstance(mContext)
+                        .findShoppingListNow(shoppingListId);
 
+                // Find Stores in range
+                List<Store> nearbyStores = BestPriceRelationRepository.this.getStoreRepository()
+                        .findAroundStoresNow(shoppingList.getCenterLongitude(), shoppingList.getCenterLatitude(),
+                                shoppingList.getCenterLongitudeRange(), shoppingList.getCenterLatitudeRange());
+
+                // Store list to store id list
                 List<String> nearByStoreIds = new ArrayList<>(nearbyStores.size());
                 for (Store store : nearbyStores) {
                     nearByStoreIds.add(store.getStoreId());
                 }
 
+                // Find all products in the shopping list
                 List<ShoppingListProductRelation> relations = BestPriceRelationRepository.this
                         .getShoppingListProductRelationRepository()
                         .findShoppingListProductRelationsNow(shoppingListId);
 
                 List<BestPriceRelation> bestPrices = new ArrayList<>();
 
+                // For each product in the shopping list
                 for (ShoppingListProductRelation relation : relations) {
 
+                    // Compute each product's best prices
                     List<Price> prices = BestPriceRelationRepository.this.getPriceRepository()
                             .computeProductBestPriceNow(relation.getForeignProductId(), nearByStoreIds, relation.getQuantity());
 
+                    // Delete each product's old best prices
                     BestPriceRelationRepository.this.deleteShoppingListProductBestPrice(
                             relation.getForeignShoppingListId(), relation.getForeignProductId());
 
+                    // Create relation for each best price
                     for (Price price : prices) {
                         BestPriceRelation bestPrice = new BestPriceRelation();
                         bestPrice.setForeignShoppingListId(relation.getForeignShoppingListId());
@@ -208,6 +219,7 @@ public class BestPriceRelationRepository {
                     }
                 }
 
+                // Store the best prices
                 BestPriceRelationRepository.this
                         .insertBestPrice(bestPrices.toArray(new BestPriceRelation[bestPrices.size()]));
             }

@@ -4,12 +4,10 @@ import android.annotation.SuppressLint;
 import android.arch.lifecycle.LiveData;
 import android.content.Context;
 import android.util.ArrayMap;
-import android.util.Log;
 
 import com.alvin.cheapyshopping.db.AppDatabase;
 import com.alvin.cheapyshopping.db.daos.AccountDao;
 import com.alvin.cheapyshopping.db.entities.Account;
-import com.alvin.cheapyshopping.db.entities.Rank;
 
 import java.util.List;
 import java.util.Map;
@@ -68,9 +66,9 @@ public class AccountRepository {
     }
 
     private LiveData<Account> mCurrentAccount;
-    public LiveData<Account> getCurrentAccount() {
+    public LiveData<Account> findCurrentAccount() {
         if (this.mCurrentAccount == null) {
-            this.mCurrentAccount = this.getAccountDao().getCurrentAccount();
+            this.mCurrentAccount = this.getAccountDao().findCurrentAccount();
         }
         return this.mCurrentAccount;
     }
@@ -98,8 +96,8 @@ public class AccountRepository {
         return this.getAccountDao().getAllAccountsNow();
     }
 
-    public Account getCurrentAccountNow() {
-        return this.getAccountDao().getCurrentAccountNow();
+    public Account findCurrentAccountNow() {
+        return this.getAccountDao().findCurrentAccountNow();
     }
 
     public Account findAccountByAccountIdNow(String accountId) {
@@ -107,7 +105,7 @@ public class AccountRepository {
     }
 
     public void addScoreToCurrentAccountNow(int score){
-        Account account = getCurrentAccountNow();
+        Account account = findCurrentAccountNow();
 
         if (account!=null){
             int newScore =  account.getAccountScore() + score;

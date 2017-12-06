@@ -1,6 +1,7 @@
 package com.alvin.cheapyshopping.repositories;
 
 import android.annotation.SuppressLint;
+import android.app.Application;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.content.Context;
@@ -80,8 +81,8 @@ public class StoreRepository {
     }
 
 
-    public LiveData<List<Store>> findStoresAroundGeoPoint(double longitude, double latitude, double distance) {
-        return this.getStoreDao().findStoresAroundGeoCoordinate();
+    public LiveData<List<Store>> findAroundStores(double longitude, double latitude, double longitudeRange, double latitudeRange) {
+        return getStoreDao().findAroundStores(longitude, latitude, longitudeRange, latitudeRange);
     }
 
 //    private class NearbyStoresComputer extends MediatorLiveData<List<Store>> {
@@ -126,6 +127,10 @@ public class StoreRepository {
     public List<Store> findNearbyStoresNow() {
         // TODO use GPS to filter all nearby stores
         return this.getAllStoresNow();
+    }
+
+    public List<Store> findAroundStoresNow(double longitude, double latitude, double longitudeRange, double latitudeRange) {
+        return getStoreDao().findAroundStoresNow(longitude, latitude, longitudeRange, latitudeRange);
     }
 
 

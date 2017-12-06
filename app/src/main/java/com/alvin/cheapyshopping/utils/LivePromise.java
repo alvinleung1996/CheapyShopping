@@ -24,8 +24,16 @@ public class LivePromise<X, Y> {
         this.mResolveData.observe(owner, observer);
     }
 
+    public void observeForeverResolve(Observer<X> observer) {
+        mResolveData.observeForever(observer);
+    }
+
     public void observeReject(LifecycleOwner owner, Observer<Y> observer) {
         this.mRejectData.observe(owner, observer);
+    }
+
+    public void observeForeverReject(Observer<Y> observer) {
+        mRejectData.observeForever(observer);
     }
 
     public X getResolveValue() {

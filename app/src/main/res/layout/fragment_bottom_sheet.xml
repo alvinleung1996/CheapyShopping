@@ -5,23 +5,48 @@
 
     <data class="BottomSheetFragmentBinding"/>
 
-    <LinearLayout
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
+        android:layout_height="wrap_content"
         android:background="@android:color/background_light"
         android:elevation="16dp">
 
         <View
-            android:layout_width="match_parent"
+            android:id="@+id/top_border"
+            android:layout_width="0dp"
             android:layout_height="1dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:background="?android:attr/listDivider"/>
+
+        <View
+            android:id="@+id/start_border"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@+id/top_border"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:background="?android:attr/listDivider"/>
+
+        <View
+            android:id="@+id/end_border"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@+id/top_border"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             android:background="?android:attr/listDivider"/>
 
         <FrameLayout
             android:id="@+id/fragment_container"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/top_border"
+            app:layout_constraintStart_toEndOf="@+id/start_border"
+            app:layout_constraintEnd_toStartOf="@+id/end_border"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
-    </LinearLayout>
+    </android.support.constraint.ConstraintLayout>
 
 </layout>

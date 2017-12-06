@@ -5,35 +5,22 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Transformations;
 import android.content.Context;
-import android.location.Location;
 import android.os.AsyncTask;
 import android.support.annotation.Nullable;
-import android.support.v4.util.ArraySet;
-import android.util.Log;
-import android.widget.Toast;
 
-import com.alvin.cheapyshopping.BaseActivity;
-import com.alvin.cheapyshopping.db.entities.ShoppingListProductRelation;
-import com.alvin.cheapyshopping.db.entities.pseudo.ShoppingListProduct;
-import com.alvin.cheapyshopping.repositories.AccountRepository;
-import com.alvin.cheapyshopping.repositories.BestPriceRelationRepository;
-import com.alvin.cheapyshopping.repositories.ShoppingListProductRelationRepository;
-import com.alvin.cheapyshopping.repositories.ShoppingListProductRepository;
-import com.alvin.cheapyshopping.repositories.ShoppingListRepository;
 import com.alvin.cheapyshopping.db.entities.Account;
 import com.alvin.cheapyshopping.db.entities.ShoppingList;
 import com.alvin.cheapyshopping.db.entities.Store;
-import com.alvin.cheapyshopping.utils.LivePromise;
-import com.alvin.cheapyshopping.utils.LocationManager;
-import com.alvin.cheapyshopping.utils.MutableLivePromise;
+import com.alvin.cheapyshopping.db.entities.pseudo.ShoppingListProduct;
+import com.alvin.cheapyshopping.repositories.AccountRepository;
+import com.alvin.cheapyshopping.repositories.ShoppingListProductRepository;
+import com.alvin.cheapyshopping.repositories.ShoppingListRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Created by Alvin on 20/11/2017.
@@ -78,14 +65,6 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
         return this.mShoppingListProductRepository;
     }
 
-    private BestPriceRelationRepository mBestPriceRelationRepository;
-    private BestPriceRelationRepository getBestPriceRelationRepository() {
-        if (this.mBestPriceRelationRepository == null) {
-            this.mBestPriceRelationRepository = BestPriceRelationRepository.getInstance(this.getApplication());
-        }
-        return this.mBestPriceRelationRepository;
-    }
-
 
     /*
     ************************************************************************************************
@@ -96,7 +75,7 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
     private LiveData<Account> mCurrentAccount;
     public LiveData<Account> findCurrentAccount() {
         if (this.mCurrentAccount == null) {
-            this.mCurrentAccount = this.getAccountRepository().getCurrentAccount();
+            this.mCurrentAccount = this.getAccountRepository().findCurrentAccount();
         }
         return this.mCurrentAccount;
     }
@@ -112,7 +91,7 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
     public LiveData<List<ShoppingList>> findCurrentAccountShoppingLists() {
         if (this.mCurrentAccountShoppingLists == null) {
             this.mCurrentAccountShoppingLists = Transformations.switchMap(
-                this.getAccountRepository().getCurrentAccount(),
+                this.getAccountRepository().findCurrentAccount(),
                 input -> input == null ? null : ShoppingListFragmentViewModel.this.getShoppingListRepository()
                         .findAccountShoppingLists(input.getAccountId())
             );
@@ -145,49 +124,6 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
             );
         }
         return this.mCurrentAccountActiveShoppingListCache;
-    }
-
-    /*
-    ************************************************************************************************
-    * get Shopping List Products: depend on current account active shopping list
-    * Used by bottom sheet
-    ************************************************************************************************
-     */
-
-    private LiveData<List<ShoppingListProduct>> mCurrentAccountActiveShoppingListProductsCache;
-    public LiveData<List<ShoppingListProduct>> findCurrentAccountActiveShoppingListProducts() {
-        if (this.mCurrentAccountActiveShoppingListProductsCache == null) {
-            this.mCurrentAccountActiveShoppingListProductsCache = Transformations.switchMap(
-                this.findCurrentAccountActiveShoppingList(),
-                list -> list == null ? null : this.getShoppingListProductRepository()
-                        .findShoppingListProducts(list.getShoppingListId())
-            );
-        }
-        return this.mCurrentAccountActiveShoppingListProductsCache;
-    }
-
-
-    private LiveData<Double> mCurrentAccountActiveShoppingListTotal;
-    public LiveData<Double> findCurrentAccountActiveShoppingListTotal() {
-        if (this.mCurrentAccountActiveShoppingListTotal == null) {
-            this.mCurrentAccountActiveShoppingListTotal = Transformations.map(
-                    this.findCurrentAccountActiveShoppingListProducts(),
-                    products -> {
-                        if (products == null) {
-                            return null;
-                        }
-                        double total = 0.0;
-                        for (ShoppingListProduct product : products) {
-                            if (!product.getBestStorePrices().isEmpty()) {
-                                total += product.getBestStorePrices().get(0)
-                                        .getComputedPrice(product.getQuantity());
-                            }
-                        }
-                        return total;
-                    }
-            );
-        }
-        return this.mCurrentAccountActiveShoppingListTotal;
     }
 
     /*
@@ -309,156 +245,11 @@ public class ShoppingListFragmentViewModel extends AndroidViewModel {
         @Override
         protected Integer doInBackground(Void... voids) {
             AccountRepository repository = AccountRepository.getInstance(this.mContext);
-            Account account = repository.getCurrentAccountNow();
+            Account account = repository.findCurrentAccountNow();
             account.setActiveShoppingListId(this.mShoppingListId);
             return repository.updateAccount(account);
         }
 
-    }
-
-
-    /*
-    ************************************************************************************************
-    * update best price relation
-    * 1. Find location
-    * 2. Update shopping list center location
-    * 3. Compute best price relation
-    ************************************************************************************************
-     */
-
-    private ShoppingListBestPriceRelationsUpdater mUpdater;
-    public LivePromise<Integer, Void> refreshBestPriceRelations(BaseActivity activity, String shoppingListId) {
-        if (this.mUpdater == null) {
-            this.mUpdater = new ShoppingListBestPriceRelationsUpdater();
-        }
-        return this.mUpdater.update(activity, shoppingListId);
-    }
-
-    private class ShoppingListBestPriceRelationsUpdater {
-
-        private Set<String> mShoppingListIds;
-        private MutableLivePromise<Integer, Void> mPromise;
-
-        private LivePromise<Integer, Void> update(BaseActivity activity, String shoppingListId) {
-            if (this.mShoppingListIds == null) {
-                this.mShoppingListIds = new ArraySet<>();
-            }
-
-            this.mShoppingListIds.add(shoppingListId);
-
-            if (this.mPromise == null) {
-                this.mPromise = new MutableLivePromise<>();
-
-                LivePromise<Location, Void> promise = LocationManager.getInstance(ShoppingListFragmentViewModel.this.getApplication()).updateLocation(activity);
-                promise.observeResolve(activity, this::onLocationUpdated);
-                promise.observeReject(activity, v -> this.onLocationUpdateFailed());
-            }
-
-            return this.mPromise;
-        }
-
-        private void onLocationUpdateFailed() {
-            this.mPromise.setRejectValue(null);
-            this.mPromise = null;
-        }
-
-        @SuppressLint("StaticFieldLeak")
-        private void onLocationUpdated(Location location) {
-            String text = "Longtitude: " + location.getLongitude() + ", Latitude: " + location.getLatitude();
-            Toast.makeText(ShoppingListFragmentViewModel.this.getApplication(), text, Toast.LENGTH_SHORT).show();
-
-            ShoppingListFragmentViewModel.this.mUpdater = null;
-
-            new AsyncTask<Void, Void, Integer>() {
-
-                @Override
-                protected Integer doInBackground(Void... voids) {
-                    List<ShoppingList> listToUpdate = new ArrayList<>();
-
-                    for (String id : ShoppingListBestPriceRelationsUpdater.this.mShoppingListIds) {
-
-                        ShoppingList shoppingList = ShoppingListFragmentViewModel.this.getShoppingListRepository()
-                                .findShoppingListNow(id);
-
-                        shoppingList.setCenterLongitude(location.getLongitude());
-                        shoppingList.setCenterLatitude(location.getLatitude());
-
-                        listToUpdate.add(shoppingList);
-                    }
-
-                    return ShoppingListFragmentViewModel.this.getShoppingListRepository().updateShoppingList(
-                            listToUpdate.toArray(new ShoppingList[listToUpdate.size()]));
-                }
-
-                @Override
-                protected void onPostExecute(Integer integer) {
-                    BestPriceRelationRepository repository = ShoppingListFragmentViewModel.this.getBestPriceRelationRepository();
-                    for (String id : ShoppingListBestPriceRelationsUpdater.this.mShoppingListIds) {
-                        repository.refreshBestPriceRelation(id);
-                    }
-                }
-
-            }.execute();
-        }
-
-    }
-
-
-    /*
-    ************************************************************************************************
-    * update shopping list product relation quantity
-    ************************************************************************************************
-     */
-
-    public LiveData<Integer> updateShoppingListProductRelationQuantity(String shoppingListId, String productId, int quantity) {
-        MutableLiveData<Integer> result = new MutableLiveData<>();
-        new ShoppingListProductRelationQuantityUpdater(this.getApplication(), shoppingListId, productId, quantity, result).execute();
-        return result;
-    }
-
-    private static class ShoppingListProductRelationQuantityUpdater extends AsyncTask<Void, Void, Void> {
-
-        @SuppressLint("StaticFieldLeak")
-        private final Context mContext;
-        private final String mShoppingListId;
-        private final String mProductId;
-        private final int mQuantity;
-        private final MutableLiveData<Integer> result;
-
-        private ShoppingListProductRelationQuantityUpdater(
-                Context context, String shoppingListId, String productId, int quantity,
-                MutableLiveData<Integer> result) {
-            this.mContext = context.getApplicationContext();
-            this.mShoppingListId = shoppingListId;
-            this.mProductId = productId;
-            this.mQuantity = quantity;
-            this.result = result;
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            ShoppingListProductRelationRepository repository
-                    = ShoppingListProductRelationRepository.getInstance(this.mContext);
-
-
-            ShoppingListProductRelation relation
-                    = repository.getShoppingListProductRelationNow(this.mShoppingListId, this.mProductId);
-
-            if (relation == null) {
-                Log.e("Shopping List", "Cannot find relation! splId: " + this.mShoppingListId + ", pId: " + this.mProductId);
-                return null;
-            }
-
-            BestPriceRelationRepository.getInstance(this.mContext)
-                    .deleteShoppingListProductBestPrice(this.mShoppingListId, this.mProductId);
-
-            relation.setQuantity(this.mQuantity);
-
-            int ret = repository.updateShoppingListProductRelation(relation);
-            this.result.postValue(ret);
-
-            return null;
-        }
     }
 
 }

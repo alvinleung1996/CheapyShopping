@@ -32,9 +32,10 @@ public interface StoreDao {
     LiveData<Store> findStoreByStoreId(String id);
 
 
-    /* TODO update to add math operation on longitude and latitude */
-    @Query("SELECT * FROM Store")
-    LiveData<List<Store>> findStoresAroundGeoCoordinate();
+    @Query("SELECT * FROM Store"
+            + " WHERE longitude <= (:longitude + :longitudeRange) AND longitude >= (:longitude - :longitudeRange)"
+            + " AND latitude <= (:latitude + :latitudeRange) AND latitude >= (:latitude - :latitudeRange)")
+    LiveData<List<Store>> findAroundStores(double longitude, double latitude, double longitudeRange, double latitudeRange);
 
 
     /*
@@ -46,13 +47,15 @@ public interface StoreDao {
     @Query("SELECT * FROM Store")
     List<Store> getAllStoresNow();
 
+
     @Query("SELECT * FROM Store WHERE store_id = :id")
     Store findStoreByStoreIdNow(String id);
 
 
-    /* TODO update to add math operation on longitude and latitude */
-    @Query("SELECT * FROM Store")
-    List<Store> findStoresAroundGeoCoordinateNow();
+    @Query("SELECT * FROM Store"
+            + " WHERE longitude <= (:longitude + :longitudeRange) AND longitude >= (:longitude - :longitudeRange)"
+            + " AND latitude <= (:latitude + :latitudeRange) AND latitude >= (:latitude - :latitudeRange)")
+    List<Store> findAroundStoresNow(double longitude, double latitude, double longitudeRange, double latitudeRange);
 
 
     /*

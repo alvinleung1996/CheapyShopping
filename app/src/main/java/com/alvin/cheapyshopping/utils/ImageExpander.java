@@ -33,7 +33,7 @@ public class ImageExpander {
     private final View mContainer;
 
     public ImageExpander(Context context, Animator animator, View container , View thumbView, final ImageView expandedImageView, final int shortAnimationDuration){
-        this.mContext = context;
+        this.mContext = context.getApplicationContext();
         this.mCurrentAnimator = animator;
         this.mThumbView = thumbView;
         this.mExpandedImageView = expandedImageView;

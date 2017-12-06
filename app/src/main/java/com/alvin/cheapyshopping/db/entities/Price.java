@@ -150,7 +150,7 @@ public class Price {
     }
 
 
-    public double getComputedPrice(int quantity) {
+    public double getPriceValue(int quantity) {
         switch (this.mType) {
             case TYPE_SINGLE:
                 return this.mTotal * quantity;
@@ -161,7 +161,7 @@ public class Price {
             case TYPE_BUY_X_GET_Y_FREE:
                 return this.mTotal * (quantity / (this.mQuantity + this.mFreeQuantity));
             default:
-                return -1;
+                throw new RuntimeException("Unknown price type");
         }
     }
 }
