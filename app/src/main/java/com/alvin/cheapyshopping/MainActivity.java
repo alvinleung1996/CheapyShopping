@@ -229,6 +229,16 @@ public class MainActivity extends BaseActivity {
                 setAccountImage(account.isImageExist());
             }
         });
+
+        this.mViewModel.getCurrentAccountRanks().observe(this, ranks -> {
+            if (ranks != null){
+                int rank = ranks.size() - 1;
+                int resId = getResources().getIdentifier(
+                        "badge_rank_" + rank,
+                        "drawable", getPackageName());
+                mDrawerHeaderBinding.drawerAccountBadge.setImageResource(resId);
+            }
+        });
     }
 
     // Setup the profile image. Check if not custom image, set as default

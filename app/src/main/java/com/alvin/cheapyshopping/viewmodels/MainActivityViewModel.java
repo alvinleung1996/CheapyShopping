@@ -10,12 +10,15 @@ import android.util.ArrayMap;
 
 import com.alvin.cheapyshopping.R;
 import com.alvin.cheapyshopping.db.entities.Account;
+import com.alvin.cheapyshopping.db.entities.Rank;
 import com.alvin.cheapyshopping.fragments.AccountFragment;
 import com.alvin.cheapyshopping.fragments.ProductListFragment;
 import com.alvin.cheapyshopping.fragments.ShoppingListFragment;
 import com.alvin.cheapyshopping.fragments.StoreListFragment;
 import com.alvin.cheapyshopping.repositories.AccountRepository;
+import com.alvin.cheapyshopping.repositories.RankRepository;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,6 +44,14 @@ public class MainActivityViewModel extends AndroidViewModel {
             mCurrentAccount = AccountRepository.getInstance(getApplication()).findCurrentAccount();
         }
         return mCurrentAccount;
+    }
+
+    private LiveData<List<Rank>> mCurrentAccountRanks;
+    public LiveData<List<Rank>> getCurrentAccountRanks(){
+        if(this.mCurrentAccountRanks == null){
+            this.mCurrentAccountRanks = RankRepository.getInstance(getApplication()).getCurrentAccountRanks();
+        }
+        return mCurrentAccountRanks;
     }
 
 }

@@ -5,6 +5,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -99,7 +100,7 @@ public class AccountFragment extends MainActivity.MainFragment {
                     mBinding.textAccountRank.setText(ranks.get(0).getRank());
                     // Setup rank progress bar
                     if(mAccount != null){
-                        updateRankProgressBar(ranks.get(0).getMinScore(), ranks.get(0).getMaxScore(), mAccount.getAccountScore());
+                        updateRankProgressBar(ranks.get(0).getMinScore(), ranks.get(0).getMaxScore(), mAccount.getAccountScore(), (ranks.size() - 1));
                     }
                 }
             }
@@ -190,10 +191,18 @@ public class AccountFragment extends MainActivity.MainFragment {
     ************************************************************************************************
      */
 
-    private void updateRankProgressBar(int minRankScore, int maxRankScore, int accountScore){
+    private void updateRankProgressBar(int minRankScore, int maxRankScore, int accountScore, int rank){
         int progress;
         progress = 100 * (accountScore - minRankScore) / (maxRankScore - minRankScore);
         mBinding.progressBarRank.setProgress(progress);
+        mBinding.textProgressMinScore.setText(Integer.toString(minRankScore));
+        mBinding.textProgressMaxCore.setText(Integer.toString(maxRankScore));
+
+        int resId = getResources().getIdentifier(
+                "badge_rank_" + rank,
+                "drawable", getActivity().getPackageName());
+        mBinding.imageAccountBadge.setImageResource(resId);
+
     }
 
 
