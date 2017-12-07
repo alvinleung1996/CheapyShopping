@@ -10,4 +10,9 @@ public interface OnClickListener<V extends View> {
 
     void onClick(V view);
 
+    default View.OnClickListener toViewOnClickListener() {
+        //noinspection unchecked
+        return v -> onClick((V) v);
+    }
+
 }

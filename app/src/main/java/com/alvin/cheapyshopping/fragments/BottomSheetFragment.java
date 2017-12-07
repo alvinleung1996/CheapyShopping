@@ -11,7 +11,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -22,7 +21,7 @@ import com.alvin.cheapyshopping.databinding.BottomSheetFragmentBinding;
 
 import java.util.List;
 
-public class BottomSheetFragment extends Fragment {
+public class BottomSheetFragment extends BaseFragment {
 
     public static class ContentFragment extends BaseFragment {
 
@@ -170,30 +169,56 @@ public class BottomSheetFragment extends Fragment {
         super.onStart();
         MainActivity activity = (MainActivity) getActivity();
         if (activity != null) {
-            setBottomSheetContentFragmentInfo(activity.getBottomSheetContentFragmentInfo());
+            setBottomSheetContentFragmentOptions(activity.getBottomSheetContentFragmentOptions());
         }
     }
 
 
 
-    private MainActivity.BottomSheetContentFragmentInfo mBottomSheetContentFragmentInfo;
+    public static class BottomSheetContentFragmentOptions {
 
-    public void setBottomSheetContentFragmentInfo(MainActivity.BottomSheetContentFragmentInfo info) {
-        if (mBottomSheetContentFragmentInfo != info) {
-            mBottomSheetContentFragmentInfo = info;
+        private final MainActivity.FragmentCreator<ContentFragment> mFragmentCreator;
+        private final String mTag;
 
-            if (info != null) {
-                Fragment fragment = getChildFragmentManager().findFragmentByTag(info.getTag());
+        public BottomSheetContentFragmentOptions(MainActivity.FragmentCreator<ContentFragment> fragmentCreator, String tag) {
+            mFragmentCreator = fragmentCreator;
+            mTag = tag;
+        }
+
+        public MainActivity.FragmentCreator<ContentFragment> getFragmentCreator() {
+            return mFragmentCreator;
+        }
+
+        public String getTag() {
+            return mTag;
+        }
+    }
+
+    private BottomSheetContentFragmentOptions mBottomSheetContentFragmentOptions;
+    private boolean mBottomSheetContentFragmentOptionsApplied;
+
+    public void setBottomSheetContentFragmentOptions(BottomSheetContentFragmentOptions options) {
+        // When both mInfo and info are null, we cannot tell whether they have changed,
+        // Maybe this fragment has just initialized and mInfo is null.
+        // If we just perform mInfo != info test, the side effect will be missed
+        // for the first time of the setting right after the initialization
+        if (mBottomSheetContentFragmentOptions != options || !mBottomSheetContentFragmentOptionsApplied) {
+            mBottomSheetContentFragmentOptions = options;
+            mBottomSheetContentFragmentOptionsApplied = true;
+
+            if (options != null) {
+                Fragment fragment = getChildFragmentManager().findFragmentByTag(options.getTag());
                 if (fragment == null) {
                     getChildFragmentManager().beginTransaction()
                             .replace(
                                     mBinding.fragmentContainer.getId(),
-                                    info.getFragmentCreator().createFragment(),
-                                    info.getTag()
+                                    options.getFragmentCreator().createFragment(),
+                                    options.getTag()
                             ).commit();
                 }
 
             } else {
+                getChildFragmentManager().executePendingTransactions();
                 List<Fragment> attachedFragments = getChildFragmentManager().getFragments();
                 if (attachedFragments.size() > 0) {
                     FragmentTransaction transaction = getChildFragmentManager().beginTransaction();
@@ -209,7 +234,6 @@ public class BottomSheetFragment extends Fragment {
             }
         }
     }
-
 
 
     private class FragmentLifecycleCallbacks extends FragmentManager.FragmentLifecycleCallbacks {
@@ -236,31 +260,25 @@ public class BottomSheetFragment extends Fragment {
      */
 
     private void setPeekHeight(int peekHeight) {
-        if (mBehavior.getPeekHeight() != peekHeight) {
-            mBehavior.setPeekHeight(peekHeight);
-        }
+        mBehavior.setPeekHeight(peekHeight);
     }
 
     private void setHideable(boolean hideable) {
-        if (mBehavior.isHideable() != hideable) {
-            // Fix for weird animation
-            getView().post(() -> mBehavior.setHideable(hideable));
-//            mBehavior.setHideable(hideable);
-        }
+        // Fix for weird animation
+        getView().post(() -> mBehavior.setHideable(hideable));
     }
 
     private void setState(@BottomSheetBehavior.State int state) {
-        if (mBehavior.getState() != state) {
-//            getView().post(() -> mBehavior.setState(state));
-            mBehavior.setState(state);
-        }
+        mBehavior.setState(state);
     }
 
     private int mMaxWidth;
+    private boolean mMaxWidthApplied;
     private View.OnLayoutChangeListener mPendingLayoutChangeListener;
     private void setMaxWidth(int maxWidth) {
-        if (mMaxWidth != maxWidth) {
+        if (mMaxWidth != maxWidth || !mMaxWidthApplied) {
             mMaxWidth = maxWidth;
+            mMaxWidthApplied = true;
 
             //noinspection ConstantConditions
             @NonNull View view = getView();

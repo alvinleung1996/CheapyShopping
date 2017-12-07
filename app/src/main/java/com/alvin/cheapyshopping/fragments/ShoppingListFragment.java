@@ -10,7 +10,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -54,7 +53,6 @@ import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
@@ -319,11 +317,11 @@ public class ShoppingListFragment extends MainActivity.MainFragment {
     @Override
     public void onStart() {
         super.onStart();
-        setFloatingActionButtonInfo(new MainActivity.FloatingActionButtonInfo(
+        setFloatingActionButtonOptions(new MainActivity.FloatingActionButtonOptions(
                 R.drawable.ic_add_white_24dp,
                 this::onFloatingActionButtonClick
         ));
-        setBottomSheetContentFragment(new MainActivity.BottomSheetContentFragmentInfo(
+        setBottomSheetContentFragment(new BottomSheetFragment.BottomSheetContentFragmentOptions(
                 BottomSheetContentFragment::newInstance, FRAGMENT_BOTTOM_SHEET));
     }
 

@@ -7,7 +7,6 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -134,7 +133,7 @@ public class ProductListFragment extends MainActivity.MainFragment {
             }
         });
 
-        setFloatingActionButtonInfo(new MainActivity.FloatingActionButtonInfo(
+        setFloatingActionButtonOptions(new MainActivity.FloatingActionButtonOptions(
                 R.drawable.ic_add_white_24dp, this::onFloatingActionButtonClick));
     }
 

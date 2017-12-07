@@ -36,41 +36,42 @@ import com.alvin.cheapyshopping.utils.OnClickListener;
 import com.alvin.cheapyshopping.viewmodels.MainActivityViewModel;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 
 
 public class MainActivity extends BaseActivity {
 
     public static abstract class MainFragment extends BaseFragment {
 
-        private FloatingActionButtonInfo mFloatingActionButtonInfo;
-        private BottomSheetContentFragmentInfo mBottomSheetContentFragmentInfo;
+        private FloatingActionButtonOptions mFloatingActionButtonOptions;
+        private BottomSheetFragment.BottomSheetContentFragmentOptions mBottomSheetContentFragmentOptions;
 
-        public FloatingActionButtonInfo getFloatingActionButtonInfo() {
-            return mFloatingActionButtonInfo;
+        public FloatingActionButtonOptions getFloatingActionButtonOptions() {
+            return mFloatingActionButtonOptions;
         }
 
-        public void setFloatingActionButtonInfo(FloatingActionButtonInfo info) {
-            if (mFloatingActionButtonInfo != info) {
-                mFloatingActionButtonInfo = info;
+        public void setFloatingActionButtonOptions(FloatingActionButtonOptions info) {
+            if (mFloatingActionButtonOptions != info) {
+                mFloatingActionButtonOptions = info;
 
                 MainActivity activity = (MainActivity) getActivity();
                 if (activity != null) {
-                    activity.setFloatingActionButtonInfo(info);
+                    activity.setFloatingActionButtonOptions(info);
                 }
             }
         }
 
-        public BottomSheetContentFragmentInfo getBottomSheetContentFragmentInfo() {
-            return mBottomSheetContentFragmentInfo;
+        public BottomSheetFragment.BottomSheetContentFragmentOptions getBottomSheetContentFragmentOptions() {
+            return mBottomSheetContentFragmentOptions;
         }
 
-        public void setBottomSheetContentFragment(BottomSheetContentFragmentInfo info) {
-            if (mBottomSheetContentFragmentInfo != info) {
-                mBottomSheetContentFragmentInfo = info;
+        public void setBottomSheetContentFragment(BottomSheetFragment.BottomSheetContentFragmentOptions info) {
+            if (mBottomSheetContentFragmentOptions != info) {
+                mBottomSheetContentFragmentOptions = info;
 
                 MainActivity activity = (MainActivity) getActivity();
                 if (activity != null) {
-                    activity.setBottomSheetContentFragmentInfo(info);
+                    activity.setBottomSheetContentFragmentOptions(info);
                 }
             }
         }
@@ -82,31 +83,12 @@ public class MainActivity extends BaseActivity {
 
     }
 
-    public static class BottomSheetContentFragmentInfo {
-
-        private final FragmentCreator<BottomSheetFragment.ContentFragment> mFragmentCreator;
-        private final String mTag;
-
-        public BottomSheetContentFragmentInfo(FragmentCreator<BottomSheetFragment.ContentFragment> fragmentCreator, String tag) {
-            mFragmentCreator = fragmentCreator;
-            mTag = tag;
-        }
-
-        public FragmentCreator<BottomSheetFragment.ContentFragment> getFragmentCreator() {
-            return mFragmentCreator;
-        }
-
-        public String getTag() {
-            return mTag;
-        }
-    }
-
-    public static class FloatingActionButtonInfo {
+    public static class FloatingActionButtonOptions {
 
         private final @DrawableRes int mDrawableId;
         private final OnClickListener<FloatingActionButton> mOnClickListener;
 
-        public FloatingActionButtonInfo(@DrawableRes int drawableId, OnClickListener<FloatingActionButton> onClickListener) {
+        public FloatingActionButtonOptions(@DrawableRes int drawableId, OnClickListener<FloatingActionButton> onClickListener) {
             mDrawableId = drawableId;
             mOnClickListener = onClickListener;
         }
@@ -292,8 +274,11 @@ public class MainActivity extends BaseActivity {
     @SuppressWarnings("unused")
     public static class FloatingActionButtonBehavior extends FloatingActionButton.Behavior {
 
-        private float appBarLayoutHidingProgress = 0;
-        private float dodgeBottomSheetTranslationY = 0;
+        private WeakReference<CoordinatorLayout> mParentRef;
+        private WeakReference<FloatingActionButton> mFabRef;
+        private float mAppBarLayoutHidingProgress = 0;
+        private float mDodgeBottomSheetTranslationY = 0;
+        private boolean mHide;
 
         public FloatingActionButtonBehavior() {
             super();
@@ -314,11 +299,14 @@ public class MainActivity extends BaseActivity {
         public boolean onDependentViewChanged(CoordinatorLayout parent, FloatingActionButton child, View dependency) {
             boolean changed = super.onDependentViewChanged(parent, child, dependency);
 
+            mParentRef = new WeakReference<>(parent);
+            mFabRef = new WeakReference<>(child);
+
             boolean layoutChild = false;
 
             if (dependency instanceof AppBarLayout) {
 
-                this.appBarLayoutHidingProgress = -dependency.getY() / dependency.getHeight();
+                this.mAppBarLayoutHidingProgress = -dependency.getY() / dependency.getHeight();
                 layoutChild = true;
 
             } else if (dependency.getId() == R.id.bottom_sheet) {
@@ -332,51 +320,71 @@ public class MainActivity extends BaseActivity {
 
                 if (childMarginLeft < dependencyMarginRight && childMarginRight > dependencyMarginLeft) {
                     float translateY = dependency.getY() - parent.getHeight();
-                    this.dodgeBottomSheetTranslationY = Math.min(translateY, 0);
+                    this.mDodgeBottomSheetTranslationY = Math.min(translateY, 0);
                 } else {
-                    this.dodgeBottomSheetTranslationY = 0;
+                    this.mDodgeBottomSheetTranslationY = 0;
                 }
 
                 layoutChild = true;
             }
 
             if (layoutChild) {
-                this.layoutChild(parent, child);
+                this.layoutChild();
                 changed = true;
             }
 
             return changed;
         }
 
-        private void layoutChild(CoordinatorLayout parent, FloatingActionButton child) {
+        private void layoutChild() {
+            CoordinatorLayout parent = mParentRef == null ? null : mParentRef.get();
+            FloatingActionButton child = mFabRef == null ? null : mFabRef.get();
+
+            if (parent == null || child == null) {
+                return;
+            }
+
             CoordinatorLayout.LayoutParams childLayoutParams = (CoordinatorLayout.LayoutParams) child.getLayoutParams();
-            float translationY = this.dodgeBottomSheetTranslationY + (child.getHeight() + childLayoutParams.bottomMargin) * appBarLayoutHidingProgress;
+            float progress = mHide ? 1 : mAppBarLayoutHidingProgress;
+            float translationY = this.mDodgeBottomSheetTranslationY
+                    + (child.getHeight() + childLayoutParams.bottomMargin) * progress;
             child.setTranslationY(translationY);
+        }
+
+        public boolean isHide() {
+            return mHide;
+        }
+
+        public void setHide(boolean hide) {
+            mHide = hide;
+            layoutChild();
         }
     }
 
-    private FloatingActionButtonInfo mFloatingActionButtonInfo;
+    private FloatingActionButtonOptions mFloatingActionButtonOptions;
+    private boolean mFloatingActionButtonOptionsApplied;
 
-    private void setFloatingActionButtonInfo(FloatingActionButtonInfo info) {
-        if (mFloatingActionButtonInfo != info) {
-            mFloatingActionButtonInfo = info;
+    private void setFloatingActionButtonOptions(FloatingActionButtonOptions options) {
+        if (mFloatingActionButtonOptions != options || !mFloatingActionButtonOptionsApplied) {
+            mFloatingActionButtonOptions = options;
+            mFloatingActionButtonOptionsApplied = true;
 
             Drawable imageDrawable;
             final OnClickListener<FloatingActionButton> onClickListener;
-            boolean show;
-            if (info != null) {
-                imageDrawable = getDrawable(info.getDrawableId());
-                onClickListener = info.getOnClickListener();
-                show = true;
+            boolean hide;
+            if (options != null) {
+                imageDrawable = getDrawable(options.getDrawableId());
+                onClickListener = options.getOnClickListener();
+                hide = false;
             } else {
                 imageDrawable = null;
                 onClickListener = null;
-                show = false;
+                hide = true;
             }
             mBinding.fabPlus.setImageDrawable(imageDrawable);
-            mBinding.fabPlus.setOnClickListener(onClickListener == null ? null :
-                    v -> onClickListener.onClick(((FloatingActionButton) v)));
-//        ((FloatingActionButtonBehavior) ((CoordinatorLayout.LayoutParams) mBinding.fabPlus.getLayoutParams()).getBehavior())
+            mBinding.fabPlus.setOnClickListener(onClickListener == null ? null : onClickListener.toViewOnClickListener());
+            //noinspection ConstantConditions
+            ((FloatingActionButtonBehavior) ((CoordinatorLayout.LayoutParams) mBinding.fabPlus.getLayoutParams()).getBehavior()).setHide(hide);
         }
 
     }
@@ -387,21 +395,21 @@ public class MainActivity extends BaseActivity {
     ************************************************************************************************
      */
 
-    private BottomSheetContentFragmentInfo mBottomSheetContentFragmentInfo;
+    private BottomSheetFragment.BottomSheetContentFragmentOptions mBottomSheetContentFragmentOptions;
 
-    private void setBottomSheetContentFragmentInfo(BottomSheetContentFragmentInfo info) {
-        if (mBottomSheetContentFragmentInfo != info) {
-            this.mBottomSheetContentFragmentInfo = info;
+    private void setBottomSheetContentFragmentOptions(BottomSheetFragment.BottomSheetContentFragmentOptions info) {
+        if (mBottomSheetContentFragmentOptions != info) {
+            this.mBottomSheetContentFragmentOptions = info;
 
             BottomSheetFragment fragment = (BottomSheetFragment) getSupportFragmentManager().findFragmentById(R.id.bottom_sheet);
             if (fragment != null) {
-                fragment.setBottomSheetContentFragmentInfo(mBottomSheetContentFragmentInfo);
+                fragment.setBottomSheetContentFragmentOptions(mBottomSheetContentFragmentOptions);
             }
         }
     }
 
-    public BottomSheetContentFragmentInfo getBottomSheetContentFragmentInfo() {
-        return mBottomSheetContentFragmentInfo;
+    public BottomSheetFragment.BottomSheetContentFragmentOptions getBottomSheetContentFragmentOptions() {
+        return mBottomSheetContentFragmentOptions;
     }
 
     /*
@@ -433,8 +441,8 @@ public class MainActivity extends BaseActivity {
                 }
                 mBinding.drawer.setCheckedItem(drawerMenuItemId);
 
-                setFloatingActionButtonInfo(mainFragment.getFloatingActionButtonInfo());
-                setBottomSheetContentFragmentInfo(mainFragment.getBottomSheetContentFragmentInfo());
+                setFloatingActionButtonOptions(mainFragment.getFloatingActionButtonOptions());
+                setBottomSheetContentFragmentOptions(mainFragment.getBottomSheetContentFragmentOptions());
             }
         }
     }
