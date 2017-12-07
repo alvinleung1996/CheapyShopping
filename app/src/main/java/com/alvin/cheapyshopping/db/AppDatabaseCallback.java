@@ -122,14 +122,16 @@ public class AppDatabaseCallback extends RoomDatabase.Callback {
                 appDb.getPriceDao()
                         .insertPrice(prices.toArray(new Price[prices.size()]));
 
+                int lastMinScore = 0;
                 List<Rank> ranks = new ArrayList<>();
-                int rankScoreIncrement = 500;
                 for (int i = 0; i <= 10 ;i++){
+                    int rankScoreIncrement = 500 * (i + 1);
                     Rank rank = new Rank();
                     rank.setRankId(UUID.randomUUID().toString());
                     rank.setRank("Rank " + i);
-                    rank.setMinScore(i * rankScoreIncrement);
-                    rank.setMaxScore(rank.getMinScore() + rankScoreIncrement);
+                    rank.setMinScore(lastMinScore);
+                    rank.setMaxScore(rank.getMinScore() + rankScoreIncrement );
+                    lastMinScore = rank.getMinScore() + rankScoreIncrement;
 
                     ranks.add(rank);
                 }

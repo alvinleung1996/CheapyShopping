@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -349,6 +350,9 @@ public class ProductActivity extends AppCompatActivity {
                 CurrentAccountScoreAdder.getsInstance(getApplicationContext())
                         .addScore(quantity * shoppingListIds.size() *
                                 getResources().getInteger(R.integer.add_product_to_shopping_list));
+                Log.d("Debug", "Score: " + (quantity * shoppingListIds.size() * 100));
+                Log.d("Debug", "Quantity: " + quantity );
+                Log.d("Debug", "list size: " + shoppingListIds.size());
 
                 Toast.makeText(ProductActivity.this ,
                         "Added to  " + shoppingListIds.size() + " shopping list(s)",
