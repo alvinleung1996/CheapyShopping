@@ -21,12 +21,14 @@ import android.view.animation.AnimationUtils;
 import android.widget.Toast;
 
 import com.alvin.cheapyshopping.databinding.ProductActivityBinding;
+import com.alvin.cheapyshopping.db.entities.Product;
 import com.alvin.cheapyshopping.db.entities.ShoppingList;
 import com.alvin.cheapyshopping.fragments.ProductInfoFragment;
 import com.alvin.cheapyshopping.fragments.ProductStorePricesFragment;
 import com.alvin.cheapyshopping.fragments.dialogs.ChooseShoppingListProductRelationQuantityDialog;
 import com.alvin.cheapyshopping.fragments.dialogs.ChooseShoppingListsDialog;
 import com.alvin.cheapyshopping.fragments.dialogs.ConfirmDialog;
+import com.alvin.cheapyshopping.fragments.dialogs.EditProductDialog;
 import com.alvin.cheapyshopping.utils.CurrentAccountScoreAdder;
 import com.alvin.cheapyshopping.viewmodels.ProductActivityViewModel;
 
@@ -50,6 +52,7 @@ public class ProductActivity extends AppCompatActivity {
     private FragmentManager mFragmentManager = getSupportFragmentManager();
 
     private String mProductId;
+    private Product mEditedProduct;
 
     // Fab variables
     private boolean isFabOpen = false;
@@ -57,6 +60,7 @@ public class ProductActivity extends AppCompatActivity {
     // Variables for adding product to shopping lists
     private List<ShoppingList> mAvailableShoppingListsFromDB;
     private boolean mSaveProductToShoppingListButtonIsClicked = false;
+    private boolean mEditProductButtonIsClicked = false;
 
 
     @Override
@@ -279,7 +283,8 @@ public class ProductActivity extends AppCompatActivity {
         mBinding.fabSubEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                mEditProductButtonIsClicked = true;
+                editProduct();
             }
         });
         mBinding.fabSubAddToShoppingList.setOnClickListener(new View.OnClickListener() {
@@ -291,6 +296,28 @@ public class ProductActivity extends AppCompatActivity {
         });
     }
 
+
+    /*
+    ************************************************************************************************
+    * Dialogs for editing product info
+    ************************************************************************************************
+     */
+
+    private void editProduct(){
+        this.mViewModel.getProduct(mProductId).observe(this, new Observer<Product>() {
+            @Override
+            public void onChanged(@Nullable Product product) {
+                if (product != null){
+                    if (mEditProductButtonIsClicked) {
+
+                        EditProductDialog editProductDialog = EditProductDialog.newInstance(product);
+                        editProductDialog.show(mFragmentManager, null);
+                    }
+                    mEditProductButtonIsClicked = false;
+                }
+            }
+        });
+    }
 
     /*
     ************************************************************************************************

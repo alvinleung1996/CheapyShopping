@@ -9,9 +9,12 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v4.util.ArrayMap;
 
+import com.alvin.cheapyshopping.ProductActivity;
+import com.alvin.cheapyshopping.db.entities.Product;
 import com.alvin.cheapyshopping.db.entities.ShoppingList;
 import com.alvin.cheapyshopping.db.entities.ShoppingListProductRelation;
 import com.alvin.cheapyshopping.repositories.AccountRepository;
+import com.alvin.cheapyshopping.repositories.ProductRepository;
 import com.alvin.cheapyshopping.repositories.ShoppingListProductRelationRepository;
 import com.alvin.cheapyshopping.repositories.ShoppingListRepository;
 
@@ -43,6 +46,22 @@ public class ProductActivityViewModel extends AndroidViewModel{
         }
         return  mShoppingListRepository;
     }
+
+    /*
+    ************************************************************************************************
+    * get Current product
+    ************************************************************************************************
+     */
+
+    private LiveData<Product> mProduct;
+
+    public LiveData<Product> getProduct(String productId){
+        if (mProduct == null){
+            mProduct = ProductRepository.getInstance(getApplication()).findProductByProductId(productId);
+        }
+        return mProduct;
+    }
+
 
     /*
     ************************************************************************************************
