@@ -80,9 +80,9 @@ public class StoreActivity extends AppCompatActivity {
         this.mStoreId = storeId;
 
 
-        // Toolbar
-        this.setSupportActionBar(this.mBinding.toolbar);
-        this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        // Toolbar
+//        this.setSupportActionBar(this.mBinding.toolbar);
+//        this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         // View Pager
         mFragmentPageAdapter = new FragmentPageAdapter(this.getSupportFragmentManager());
@@ -123,16 +123,16 @@ public class StoreActivity extends AppCompatActivity {
 
 
     }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                this.finish();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
+//    @Override
+//    public boolean onOptionsItemSelected(MenuItem item) {
+//        switch (item.getItemId()) {
+//            case android.R.id.home:
+//                this.finish();
+//                return true;
+//            default:
+//                return super.onOptionsItemSelected(item);
+//        }
+//    }
 
     private class FragmentPageAdapter extends FragmentPagerAdapter {
 
@@ -172,7 +172,9 @@ public class StoreActivity extends AppCompatActivity {
                     mActiveFragment = StoreInfoFragment.newInstance(StoreActivity.this.mStoreId);
                     return mActiveFragment;
                 case 1:
-                    return StoreProductPricesFragment.newInstance(StoreActivity.this.mStoreId);
+                    Fragment fragment = StoreProductPricesFragment.newInstance(StoreActivity.this.mStoreId);
+                    ((StoreProductPricesFragment) fragment).setInteractionListener(new AddStoreProductPricesFragmentInteractionListener());
+                    return fragment;
                 default:
                     return null;
             }
@@ -190,6 +192,26 @@ public class StoreActivity extends AppCompatActivity {
                     return null;
             }
         }
+    }
+
+
+    /*
+    ************************************************************************************************
+    * Fragment Interaction
+    ************************************************************************************************
+     */
+
+    private class AddStoreProductPricesFragmentInteractionListener implements
+            StoreProductPricesFragment.InteractionListener{
+        @Override
+        public void onGoToProductClicked(String productId) {
+            Intent intent = new Intent(StoreActivity.this, ProductActivity.class);
+            intent.putExtra(ProductActivity.EXTRA_PRODUCT_ID, productId);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish();
+        }
+
     }
 
 

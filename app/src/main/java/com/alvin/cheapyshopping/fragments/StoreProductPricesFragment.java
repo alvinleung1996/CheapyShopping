@@ -12,7 +12,9 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -38,6 +40,10 @@ public class StoreProductPricesFragment extends Fragment {
     private static final String ARGUMENT_STORE_ID = "com.alvin.cheapyshopping.fragments.StoreProductPricesFragment.ARGUMENT_STORE_ID";
 
 
+    public interface InteractionListener{
+        void onGoToProductClicked(String productId);
+    }
+
     public static StoreProductPricesFragment newInstance(String storeId) {
         Bundle args = new Bundle();
         args.putString(ARGUMENT_STORE_ID, storeId);
@@ -54,6 +60,8 @@ public class StoreProductPricesFragment extends Fragment {
     private StoreProductPricesFragmentBinding mBinding;
 
     private ProductPriceListAdapter mProductPriceListAdapter;
+
+    private InteractionListener mInteractionListener;
 
 
     public StoreProductPricesFragment() {
@@ -93,6 +101,8 @@ public class StoreProductPricesFragment extends Fragment {
         this.mBinding.listProductPrices.setAdapter(this.mProductPriceListAdapter);
         this.mBinding.listProductPrices.setLayoutManager(new LinearLayoutManager(this.getContext(), LinearLayoutManager.VERTICAL, false));
 
+        registerForContextMenu(this.mBinding.listProductPrices);
+
         this.mViewModel.findStoreProductPrices(this.storeId).observe(this, new Observer<List<ProductPrice>>() {
             @Override
             public void onChanged(@Nullable List<ProductPrice> productPrices) {
@@ -102,6 +112,32 @@ public class StoreProductPricesFragment extends Fragment {
         });
     }
 
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        String productId;
+        try{
+            productId = this.mProductPriceListAdapter.getProductId();
+        }catch (Exception e){
+            Log.d("Context MenuL", e.getLocalizedMessage());
+            return super.onContextItemSelected(item);
+        }
+
+        if (productId != null){
+            this.onGoToProductClicked(productId);
+        }
+
+        return super.onContextItemSelected(item);
+    }
+
+    public void setInteractionListener(InteractionListener interactionListener){
+        this.mInteractionListener = interactionListener;
+    }
+
+    private void onGoToProductClicked(String productId){
+        if(this.mInteractionListener != null){
+            this.mInteractionListener.onGoToProductClicked(productId);
+        }
+    }
 
 
     /*
@@ -113,6 +149,15 @@ public class StoreProductPricesFragment extends Fragment {
     private class ProductPriceListAdapter extends RecyclerView.Adapter<ProductPriceItemHolder> {
 
         private List<ProductPrice> mProductPrices;
+        public String mProductId;
+
+        public String getProductId(){
+            return mProductId;
+        }
+
+        public void setProductId(String productId){
+            this.mProductId = productId;
+        }
 
         private ProductPriceListAdapter() {
             this.mProductPrices = new ArrayList<>();
@@ -129,8 +174,15 @@ public class StoreProductPricesFragment extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(ProductPriceItemHolder holder, int position) {
+        public void onBindViewHolder(ProductPriceItemHolder holder,final int position) {
             holder.onBind(this.mProductPrices.get(position));
+            holder.mBinding.setOnLongClickListener(new View.OnLongClickListener(){
+                @Override
+                public boolean onLongClick(View v) {
+                    setProductId(mProductPrices.get(position).getForeignProductId());
+                    return false;
+                }
+            });
         }
 
         @Override
@@ -145,7 +197,7 @@ public class StoreProductPricesFragment extends Fragment {
 
     }
 
-    private class ProductPriceItemHolder extends RecyclerView.ViewHolder {
+    private class ProductPriceItemHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
 
         private final StoreProductPriceItemBinding mBinding;
 
@@ -155,6 +207,8 @@ public class StoreProductPricesFragment extends Fragment {
                     .getRoot());
             this.mBinding = DataBindingUtil.getBinding(this.itemView);
             this.mBinding.setCreationTimeFormatter(new SimpleDateFormat("dd-MM-yyyy HH:mm:ss"));
+
+            parent.setOnCreateContextMenuListener(this);
         }
 
         private void onBind(ProductPrice productPrice) {
@@ -187,6 +241,12 @@ public class StoreProductPricesFragment extends Fragment {
         private void onRecycled() {
             this.mBinding.setProductPrice(null);
             this.mBinding.setOnClickListener(null);
+            this.mBinding.setOnLongClickListener(null);
+        }
+
+        @Override
+        public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+            menu.add("Go to product");
         }
     }
 
