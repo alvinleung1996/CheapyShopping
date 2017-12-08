@@ -36,6 +36,9 @@ public class Store {
     @ColumnInfo(name = "rating")
     private double mRating = 0;
 
+    @ColumnInfo(name = "description")
+    private String mDescription = "Not specified";
+
 
     public String getStoreId() {
         return this.mStoreId;
@@ -91,5 +94,13 @@ public class Store {
 
     public void setRating(double rating) {
         mRating = rating;
+    }
+
+    public String getDescription() {
+        return mDescription;
+    }
+
+    public void setDescription(String description) {
+        mDescription = description;
     }
 }

@@ -28,7 +28,7 @@ import com.alvin.cheapyshopping.fragments.ProductStorePricesFragment;
 import com.alvin.cheapyshopping.fragments.dialogs.ChooseShoppingListProductRelationQuantityDialog;
 import com.alvin.cheapyshopping.fragments.dialogs.ChooseShoppingListsDialog;
 import com.alvin.cheapyshopping.fragments.dialogs.ConfirmDialog;
-import com.alvin.cheapyshopping.fragments.dialogs.EditProductDialog;
+import com.alvin.cheapyshopping.fragments.dialogs.EditProductInfoDialog;
 import com.alvin.cheapyshopping.utils.CurrentAccountScoreAdder;
 import com.alvin.cheapyshopping.viewmodels.ProductActivityViewModel;
 
@@ -310,7 +310,7 @@ public class ProductActivity extends AppCompatActivity {
                 if (product != null){
                     if (mEditProductButtonIsClicked) {
 
-                        EditProductDialog editProductDialog = EditProductDialog.newInstance(product);
+                        EditProductInfoDialog editProductDialog = EditProductInfoDialog.newInstance(product);
                         editProductDialog.show(mFragmentManager, null);
                     }
                     mEditProductButtonIsClicked = false;

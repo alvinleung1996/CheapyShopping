@@ -1,6 +1,8 @@
 package com.alvin.cheapyshopping;
 
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -19,8 +21,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.alvin.cheapyshopping.databinding.StoreActivityBinding;
+import com.alvin.cheapyshopping.db.entities.Store;
 import com.alvin.cheapyshopping.fragments.StoreInfoFragment;
 import com.alvin.cheapyshopping.fragments.StoreProductPricesFragment;
+import com.alvin.cheapyshopping.fragments.dialogs.EditStoreInfoDialog;
+import com.alvin.cheapyshopping.viewmodels.EditStoreDialogViewModel;
+import com.alvin.cheapyshopping.viewmodels.StoreActivityViewModel;
 
 /**
  * Created by cheng on 11/26/2017.
@@ -39,6 +45,7 @@ public class StoreActivity extends AppCompatActivity {
 
 
     private StoreActivityBinding mBinding;
+    private StoreActivityViewModel mViewModel;
 
     private String mStoreId;
 
@@ -46,11 +53,14 @@ public class StoreActivity extends AppCompatActivity {
 
     FragmentPageAdapter mFragmentPageAdapter;
 
+    private boolean mEditStoreButtonisClicked = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         this.mBinding = DataBindingUtil.setContentView(this, R.layout.activity_store);
+        this.mViewModel = ViewModelProviders.of(this).get(StoreActivityViewModel.class);
 
         Bundle args = getIntent().getExtras();
 
@@ -186,16 +196,26 @@ public class StoreActivity extends AppCompatActivity {
     private void onFloatingActionButtonClick(FloatingActionButton fab) {
         if(mActiveFragment != null){
             if(mActiveFragment instanceof StoreInfoFragment){
-                Intent intent = new Intent(this.getApplicationContext(), EditStoreActivity.class);
-                intent.putExtra(StoreActivity.EXTRA_STORE_ID, mStoreId);
-                this.startActivity(intent);
+                mEditStoreButtonisClicked = true;
+                editStore();
             }else if(mActiveFragment instanceof StoreProductPricesFragment){
                 Intent intent = new Intent(this.getApplicationContext(), AddStoreProductActivity.class);
                 intent.putExtra(AddStoreProductActivity.EXTRA_STORE_ID, mStoreId);
                 this.startActivity(intent);
             }
         }
+    }
 
-
+    private void editStore(){
+        this.mViewModel.getStore(mStoreId).observe(this, new Observer<Store>() {
+            @Override
+            public void onChanged(@Nullable Store store) {
+                if (mEditStoreButtonisClicked && store != null){
+                    EditStoreInfoDialog dialog = EditStoreInfoDialog.newInstance(store);
+                    dialog.show(getSupportFragmentManager(),null);
+                }
+                mEditStoreButtonisClicked = false;
+            }
+        });
     }
 }

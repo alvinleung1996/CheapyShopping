@@ -3,7 +3,6 @@ package com.alvin.cheapyshopping.fragments.dialogs;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.view.View;
@@ -20,10 +19,10 @@ import java.lang.reflect.Type;
  * Created by cheng on 12/8/2017.
  */
 
-public class EditProductDialog extends DialogFragment {
-    public static final String DIALOG_OK = "com.alvin.cheapyshopping.EditProductDialog.DIALOG_OK";
-    public static final String DIALOG_CANCEL = "com.alvin.cheapyshopping.EditProductDialog.DIALOG_CANCEL";
-    public static final String EXTRA_PRODUCT = "com.alvin.cheapyshopping.EditProductDialog.EXTRA_PRODUCT";
+public class EditProductInfoDialog extends DialogFragment {
+    public static final String DIALOG_OK = "com.alvin.cheapyshopping.EditProductInfoDialog.DIALOG_OK";
+    public static final String DIALOG_CANCEL = "com.alvin.cheapyshopping.EditProductInfoDialog.DIALOG_CANCEL";
+    public static final String EXTRA_PRODUCT = "com.alvin.cheapyshopping.EditProductInfoDialog.EXTRA_PRODUCT";
 
 
 //    public interface InteractionListener {
@@ -33,8 +32,8 @@ public class EditProductDialog extends DialogFragment {
 //    }
 
 
-    public static EditProductDialog newInstance(Product product) {
-        EditProductDialog dialogFragment = new EditProductDialog();
+    public static EditProductInfoDialog newInstance(Product product) {
+        EditProductInfoDialog dialogFragment = new EditProductInfoDialog();
 
         // Convert product to Jason
         String productDataJason = new Gson().toJson(product);
@@ -53,7 +52,7 @@ public class EditProductDialog extends DialogFragment {
     private Product mProduct;
     private Product mEditedProduct;
 
-    public EditProductDialog() {}
+    public EditProductInfoDialog() {}
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
