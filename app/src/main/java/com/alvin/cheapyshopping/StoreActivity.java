@@ -16,7 +16,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.SparseArray;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -25,7 +24,6 @@ import com.alvin.cheapyshopping.db.entities.Store;
 import com.alvin.cheapyshopping.fragments.StoreInfoFragment;
 import com.alvin.cheapyshopping.fragments.StoreProductPricesFragment;
 import com.alvin.cheapyshopping.fragments.dialogs.EditStoreInfoDialog;
-import com.alvin.cheapyshopping.viewmodels.EditStoreDialogViewModel;
 import com.alvin.cheapyshopping.viewmodels.StoreActivityViewModel;
 
 /**

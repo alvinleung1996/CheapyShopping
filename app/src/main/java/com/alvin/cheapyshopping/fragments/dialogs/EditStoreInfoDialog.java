@@ -9,7 +9,7 @@ import android.view.View;
 
 import com.alvin.cheapyshopping.databinding.EditStoreInfoDialogBinding;
 import com.alvin.cheapyshopping.db.entities.Store;
-import com.alvin.cheapyshopping.viewmodels.EditStoreDialogViewModel;
+import com.alvin.cheapyshopping.viewmodels.EditStoreInfoDialogViewModel;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -47,7 +47,7 @@ public class EditStoreInfoDialog extends DialogFragment {
 
 
     private EditStoreInfoDialogBinding mBinding;
-    private EditStoreDialogViewModel mViewModel;
+    private EditStoreInfoDialogViewModel mViewModel;
 
     private Store mStore;
     private Store mEditedStore;
@@ -57,7 +57,7 @@ public class EditStoreInfoDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        mViewModel = ViewModelProviders.of(this).get(EditStoreDialogViewModel.class);
+        mViewModel = ViewModelProviders.of(this).get(EditStoreInfoDialogViewModel.class);
 
         // Convert Jason data back to Product
         Type type = new TypeToken<Store>(){}.getType();

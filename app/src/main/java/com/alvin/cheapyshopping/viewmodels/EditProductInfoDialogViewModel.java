@@ -14,9 +14,9 @@ import com.alvin.cheapyshopping.repositories.ProductRepository;
  * Created by cheng on 12/8/2017.
  */
 
-public class EditProductDialogViewModel extends AndroidViewModel {
+public class EditProductInfoDialogViewModel extends AndroidViewModel {
 
-    public EditProductDialogViewModel (Application application){
+    public EditProductInfoDialogViewModel(Application application){
         super(application);
     }
 

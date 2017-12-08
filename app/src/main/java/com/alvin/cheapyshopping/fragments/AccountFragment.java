@@ -22,6 +22,7 @@ import com.alvin.cheapyshopping.R;
 import com.alvin.cheapyshopping.databinding.AccountFragmentBinding;
 import com.alvin.cheapyshopping.db.entities.Account;
 import com.alvin.cheapyshopping.db.entities.Rank;
+import com.alvin.cheapyshopping.fragments.dialogs.EditAccountInfoDialog;
 import com.alvin.cheapyshopping.utils.ImageRotater;
 import com.alvin.cheapyshopping.viewmodels.AccountFragmentViewModel;
 
@@ -55,6 +56,8 @@ public class AccountFragment extends MainActivity.MainFragment {
     private AccountFragmentViewModel mViewModel;
 
     private Account mAccount;
+
+    private boolean mEditButtonIsClicked = false;
 
 
     public AccountFragment(){}
@@ -141,7 +144,8 @@ public class AccountFragment extends MainActivity.MainFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.item_edit:
-                // TODO: Edit Account
+                mEditButtonIsClicked = true;
+                editAccount();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -203,6 +207,25 @@ public class AccountFragment extends MainActivity.MainFragment {
                 "drawable", getActivity().getPackageName());
         mBinding.imageAccountBadge.setImageResource(resId);
 
+    }
+
+    /*
+    ************************************************************************************************
+    * Edit account
+    ************************************************************************************************
+     */
+
+    private void editAccount(){
+        this.mViewModel.findCurrentAccount().observe(this, new Observer<Account>() {
+            @Override
+            public void onChanged(@Nullable Account account) {
+                if(mEditButtonIsClicked && account != null){
+                    EditAccountInfoDialog dialog = EditAccountInfoDialog.newInstance(account);
+                    dialog.show(getFragmentManager(),null);
+                }
+                mEditButtonIsClicked = false;
+            }
+        });
     }
 
 

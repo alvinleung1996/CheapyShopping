@@ -9,7 +9,7 @@ import android.view.View;
 
 import com.alvin.cheapyshopping.databinding.EditProductInfoDialogBinding;
 import com.alvin.cheapyshopping.db.entities.Product;
-import com.alvin.cheapyshopping.viewmodels.EditProductDialogViewModel;
+import com.alvin.cheapyshopping.viewmodels.EditProductInfoDialogViewModel;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -25,11 +25,6 @@ public class EditProductInfoDialog extends DialogFragment {
     public static final String EXTRA_PRODUCT = "com.alvin.cheapyshopping.EditProductInfoDialog.EXTRA_PRODUCT";
 
 
-//    public interface InteractionListener {
-//        void onOKAction(Product editedProduct);
-//
-//        void onCancelAction();
-//    }
 
 
     public static EditProductInfoDialog newInstance(Product product) {
@@ -47,7 +42,7 @@ public class EditProductInfoDialog extends DialogFragment {
 
 
     private EditProductInfoDialogBinding mBinding;
-    private EditProductDialogViewModel mViewModel;
+    private EditProductInfoDialogViewModel mViewModel;
 
     private Product mProduct;
     private Product mEditedProduct;
@@ -57,7 +52,7 @@ public class EditProductInfoDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
-        mViewModel = ViewModelProviders.of(this).get(EditProductDialogViewModel.class);
+        mViewModel = ViewModelProviders.of(this).get(EditProductInfoDialogViewModel.class);
 
         // Convert Jason data back to Product
         Type type = new TypeToken<Product>(){}.getType();

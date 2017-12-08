@@ -13,22 +13,22 @@ import com.alvin.cheapyshopping.repositories.StoreRepository;
  * Created by cheng on 12/8/2017.
  */
 
-public class EditStoreDialogViewModel extends AndroidViewModel {
-    public EditStoreDialogViewModel(Application application){
+public class EditStoreInfoDialogViewModel extends AndroidViewModel {
+    public EditStoreInfoDialogViewModel(Application application){
         super(application);
     }
 
 
     public void updateStore(Store store){
-        new UpdateProductTask(this.getApplication(), store).execute();
+        new UpdateStoreTask(this.getApplication(), store).execute();
     }
 
-    private static class UpdateProductTask extends AsyncTask<Void, Void, Void> {
+    private static class UpdateStoreTask extends AsyncTask<Void, Void, Void> {
         @SuppressLint("StaticFieldLeak")
         private final Context mContext;
         private final Store mStore;
 
-        private UpdateProductTask(Context context, Store store){
+        private UpdateStoreTask(Context context, Store store){
             this.mContext = context;
             this.mStore = store;
         }
