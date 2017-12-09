@@ -47,7 +47,7 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:text="@{`$`+storePrice.total, default=`Price`}"
+                android:text="@{storePrice.toDisplayText, default=`Buy 1 for $10`}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Title"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
