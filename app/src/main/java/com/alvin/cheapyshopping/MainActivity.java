@@ -216,7 +216,7 @@ public class MainActivity extends BaseActivity {
             if (ranks != null){
                 int rank = ranks.size() - 1;
                 int resId = getResources().getIdentifier(
-                        "badge_rank_" + rank,
+                        "badge_small_rank_" + rank,
                         "drawable", getPackageName());
                 mDrawerHeaderBinding.drawerAccountBadge.setImageResource(resId);
             }
