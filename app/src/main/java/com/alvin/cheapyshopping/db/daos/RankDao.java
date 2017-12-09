@@ -44,6 +44,11 @@ public interface RankDao {
     @Query("SELECT * From Rank R WHERE :score > R.min_score ORDER BY R.min_score DESC ")
     List<Rank> getRanksByScoreNow(int score);
 
+    @Query("SELECT R.* FROM Rank R , Account A " +
+            "WHERE A.account_score >= R.min_score " +
+            "AND A.account_id = (SELECT account_id FROM Account LIMIT 1) " +
+            "ORDER BY R.min_score DESC")
+    List<Rank> getCurrentAccountRanksNow();
 
     /*
     ************************************************************************************************

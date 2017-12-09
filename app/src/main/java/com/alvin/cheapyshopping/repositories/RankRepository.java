@@ -63,7 +63,6 @@ public class RankRepository {
     }
 
     private LiveData<List<Rank>> mCurrentAccountRanks;
-
     public LiveData<List<Rank>> getCurrentAccountRanks(){
         if (mCurrentAccountRanks == null){
             mCurrentAccountRanks = this.getRankDao().getCurrentAccountRanks();
@@ -85,6 +84,14 @@ public class RankRepository {
            mRanksNow = this.getRankDao().getRanksByScoreNow(score);
         }
         return mRanksNow;
+    }
+
+    private List<Rank> mCurrentAccountRanksNow;
+    public List<Rank> getCurrentAccountRanksNow(){
+        if (mCurrentAccountRanksNow == null){
+            mCurrentAccountRanksNow = this.getRankDao().getCurrentAccountRanksNow();
+        }
+        return mCurrentAccountRanksNow;
     }
 
 
