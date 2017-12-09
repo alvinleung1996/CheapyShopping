@@ -30,7 +30,6 @@ import com.alvin.cheapyshopping.AddShoppingListProductRelationActivity;
 import com.alvin.cheapyshopping.MainActivity;
 import com.alvin.cheapyshopping.ProductActivity;
 import com.alvin.cheapyshopping.R;
-import com.alvin.cheapyshopping.SampleMapsActivity;
 import com.alvin.cheapyshopping.StoreActivity;
 import com.alvin.cheapyshopping.databinding.ShoppingListBottomSheetContentFragmentBinding;
 import com.alvin.cheapyshopping.databinding.ShoppingListFragmentBinding;
@@ -285,7 +284,6 @@ public class ShoppingListFragment extends MainActivity.MainFragment {
         this.mViewModel.findCurrentAccountActiveShoppingList().observe(this, shoppingList -> {
 
             this.mCurrentAccountActiveShoppingList = shoppingList;
-            this.mBinding.setShoppingList(shoppingList);
 
             if (this.mShoppingListIdMenuItemMap != null) {
                 for (MenuItem item : this.mShoppingListIdMenuItemMap.values()) {
@@ -376,10 +374,6 @@ public class ShoppingListFragment extends MainActivity.MainFragment {
             case R.id.item_add_shopping_list:
                 this.onAddShoppingListOptionSelected(item);
                 return true;
-
-            case R.id.item_sample_map_activity:
-                Intent intent = new Intent(this.getContext(), SampleMapsActivity.class);
-                this.startActivity(intent);
         }
 
         if (this.mMenuItemShoppingListIdMap != null && this.mMenuItemShoppingListIdMap.containsKey(item)) {
@@ -565,6 +559,8 @@ public class ShoppingListFragment extends MainActivity.MainFragment {
                 updateMap();
             });
 
+            mViewModel.getCenterPlaceName().observe(this, mBinding::setCenterPlaceName);
+
 
             mBinding.setOnComputeButtonClickListener(v -> onComputeButtonClick((ImageButton) v));
 
@@ -681,6 +677,7 @@ public class ShoppingListFragment extends MainActivity.MainFragment {
             }
             mViewModel.setCurrentAccountActiveShoppingListCenterLongitude(place.getLatLng().longitude);
             mViewModel.setCurrentAccountActiveShoppingListCenterLatitude(place.getLatLng().latitude);
+            mViewModel.setCenterPlaceName(place.getName().toString());
         }
 
 

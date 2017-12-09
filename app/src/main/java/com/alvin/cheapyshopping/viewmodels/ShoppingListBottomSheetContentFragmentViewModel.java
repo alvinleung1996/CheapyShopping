@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.Transformations;
 import android.os.AsyncTask;
 
@@ -147,6 +148,25 @@ public class ShoppingListBottomSheetContentFragmentViewModel extends AndroidView
     public void setCurrentAccountActiveShoppingListCenterLatitudeRange(double latitude) {
         ((SettableLiveData<Double>) getCurrentAccountActiveShoppingListCenterLatitudeRange())
                 .setValue(latitude);
+    }
+
+
+
+    private MutableLiveData<String> mCenterPlaceName;
+
+    private MutableLiveData<String> obtainCenterPlaceName() {
+        if (mCenterPlaceName == null) {
+            mCenterPlaceName = new MutableLiveData<>();
+        }
+        return mCenterPlaceName;
+    }
+
+    public LiveData<String> getCenterPlaceName() {
+        return obtainCenterPlaceName();
+    }
+
+    public void setCenterPlaceName(String name) {
+        obtainCenterPlaceName().setValue(name);
     }
 
 

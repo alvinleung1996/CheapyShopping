@@ -71,11 +71,6 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key"/>
 
-        <activity
-            android:name=".SampleMapsActivity"
-            android:label="@string/title_activity_sample_maps">
-        </activity>
-
 
         <!--Provide path for saving images-->
         <provider

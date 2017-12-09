@@ -3,11 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context="com.alvin.cheapyshopping.fragments.ShoppingListFragment">
 
-    <data class="ShoppingListFragmentBinding">
-        <variable
-            name="shoppingList"
-            type="com.alvin.cheapyshopping.db.entities.ShoppingList"/>
-    </data>
+    <data class="ShoppingListFragmentBinding"/>
 
     <android.support.v4.widget.NestedScrollView
         android:id="@+id/scroll_container"
@@ -25,12 +21,6 @@
                 android:name="com.alvin.cheapyshopping.fragments.NestedSupportMapFragment"
                 android:layout_width="match_parent"
                 android:layout_height="300dp"/>
-
-            <TextView
-                android:id="@+id/text_shopping_list_center"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@{`Center Longitude: `+Double.toString(shoppingList.centerLongitude)+`, Latitude: `+Double.toString(shoppingList.centerLatitude)}"/>
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/list_shopping_list_items"
