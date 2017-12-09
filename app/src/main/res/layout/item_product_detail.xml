@@ -29,45 +29,49 @@
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="72dp">
+            android:layout_height="wrap_content">
 
             <ImageView
                 android:id="@+id/image_product"
                 android:layout_width="48dp"
                 android:layout_height="48dp"
+                android:layout_marginBottom="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_product_black_24dp" />
+                app:layout_constraintVertical_bias="0.0"
+                app:srcCompat="@drawable/ic_product_black_24dp"/>
 
             <TextView
                 android:id="@+id/text_product_name"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:text="@{product.name}"
-                android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Title"
+                android:text="@{product.name, default=`name`}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/image_product"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"/>
 
             <TextView
-                android:id="@+id/text_product_location"
-                android:layout_width="0dp"
+                android:id="@+id/text_product_description"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="8dp"
-                android:text="@{product.description}"
-                android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Subtitle"
+                android:text="@{product.description, default=`description`}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="@+id/text_product_name"
-                app:layout_constraintTop_toBottomOf="@+id/text_product_name" />
+                app:layout_constraintTop_toBottomOf="@+id/text_product_name"/>
         </android.support.constraint.ConstraintLayout>
 
     </LinearLayout>
