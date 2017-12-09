@@ -14,6 +14,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.SparseArray;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -85,9 +86,11 @@ public class ProductActivity extends AppCompatActivity {
 
         this.mProductId = productId;
 
-//        // Toolbar
-//        this.setSupportActionBar(this.mBinding.toolbar);
-//        this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        // Toolbar
+        this.setSupportActionBar(this.mBinding.toolbar);
+        this.getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        mViewModel.getProduct(productId).observe(this, p -> setTitle(p == null ? "Product" : p.getName()));
 
         // View Pager
         mFragmentPageAdapter = new FragmentPageAdapter(this.getSupportFragmentManager());
@@ -96,12 +99,7 @@ public class ProductActivity extends AppCompatActivity {
         this.mBinding.tabsContainer.setupWithViewPager(this.mBinding.viewPager);
 
         // Floating Action Button
-        this.mBinding.setOnFloatingActionButtonClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ProductActivity.this.onFloatingActionButtonClick((FloatingActionButton) view);
-            }
-        });
+        this.mBinding.setOnFloatingActionButtonClickListener(view -> onFloatingActionButtonClick((FloatingActionButton) view));
         setupProductInfoFragmentSubFabButtonClick();
 
         // Setup Floating Action Button Animations
@@ -137,16 +135,16 @@ public class ProductActivity extends AppCompatActivity {
         });
     }
 
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        switch (item.getItemId()) {
-//            case android.R.id.home:
-//                this.finish();
-//                return true;
-//            default:
-//                return super.onOptionsItemSelected(item);
-//        }
-//    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                this.finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     /*
     ************************************************************************************************
