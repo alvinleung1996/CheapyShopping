@@ -43,8 +43,24 @@ public class MainActivity extends BaseActivity {
 
     public static abstract class MainFragment extends BaseFragment {
 
+        private String mFragmentTitle;
+
+        public String getFragmentTitle() {
+            return mFragmentTitle;
+        }
+
+        public void setFragmentTitle(String fragmentTitle) {
+            if (fragmentTitle == null && mFragmentTitle != null || fragmentTitle != null && !fragmentTitle.equals(mFragmentTitle)) {
+                mFragmentTitle = fragmentTitle;
+
+                MainActivity activity = (MainActivity) getActivity();
+                if (activity != null) {
+                    activity.setFragmentTitle(fragmentTitle);
+                }
+            }
+        }
+
         private FloatingActionButtonOptions mFloatingActionButtonOptions;
-        private BottomSheetFragment.BottomSheetContentFragmentOptions mBottomSheetContentFragmentOptions;
 
         public FloatingActionButtonOptions getFloatingActionButtonOptions() {
             return mFloatingActionButtonOptions;
@@ -60,6 +76,9 @@ public class MainActivity extends BaseActivity {
                 }
             }
         }
+
+
+        private BottomSheetFragment.BottomSheetContentFragmentOptions mBottomSheetContentFragmentOptions;
 
         public BottomSheetFragment.BottomSheetContentFragmentOptions getBottomSheetContentFragmentOptions() {
             return mBottomSheetContentFragmentOptions;
@@ -262,6 +281,20 @@ public class MainActivity extends BaseActivity {
 
     /*
     ************************************************************************************************
+    * Action bar title
+    ************************************************************************************************
+     */
+
+    public void setFragmentTitle(String fragmentTitle) {
+        if (fragmentTitle == null || fragmentTitle.isEmpty()) {
+            fragmentTitle = getString(R.string.app_name);
+        }
+        setTitle(fragmentTitle);
+    }
+
+
+    /*
+    ************************************************************************************************
     * Floating Action Button Interactions
     ************************************************************************************************
      */
@@ -436,6 +469,7 @@ public class MainActivity extends BaseActivity {
                 }
                 mBinding.drawer.setCheckedItem(drawerMenuItemId);
 
+                setFragmentTitle(mainFragment.getFragmentTitle());
                 setFloatingActionButtonOptions(mainFragment.getFloatingActionButtonOptions());
                 setBottomSheetContentFragmentOptions(mainFragment.getBottomSheetContentFragmentOptions());
             }

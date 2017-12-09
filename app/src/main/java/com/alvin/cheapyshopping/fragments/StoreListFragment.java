@@ -126,6 +126,8 @@ public class StoreListFragment extends MainActivity.MainFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        setFragmentTitle("Stores");
+
         this.mViewModel = ViewModelProviders.of(this).get(StoreListFragmentViewModel.class);
 
         this.mBinding.listStores.setLayoutManager(new LinearLayoutManager(this.getContext(), LinearLayoutManager.VERTICAL, false));

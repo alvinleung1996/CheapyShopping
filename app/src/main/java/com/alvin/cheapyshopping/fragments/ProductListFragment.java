@@ -137,6 +137,8 @@ public class ProductListFragment extends MainActivity.MainFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        setFragmentTitle("Products");
+
         this.mViewModel = ViewModelProviders.of(this).get(ProductListFragmentViewModel.class);
 
         this.mBinding.listProducts.setLayoutManager(new LinearLayoutManager(this.getContext(), LinearLayoutManager.VERTICAL, false));

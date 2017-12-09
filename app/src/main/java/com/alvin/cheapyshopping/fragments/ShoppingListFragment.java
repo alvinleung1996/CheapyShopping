@@ -258,6 +258,8 @@ public class ShoppingListFragment extends MainActivity.MainFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        setFragmentTitle("Shopping List");
+
         ((SupportMapFragment) this.getChildFragmentManager().findFragmentById(R.id.fragment_map))
                 .getMapAsync(this::onMapReady);
 

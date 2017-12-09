@@ -79,6 +79,8 @@ public class AccountFragment extends MainActivity.MainFragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        setFragmentTitle("Account");
+
         // Setup ViewModel
         this.mViewModel = ViewModelProviders.of(this).get(AccountFragmentViewModel.class);
 
