@@ -9,6 +9,7 @@ import com.alvin.cheapyshopping.db.entities.Account;
 import com.alvin.cheapyshopping.db.entities.Price;
 import com.alvin.cheapyshopping.db.entities.Product;
 import com.alvin.cheapyshopping.db.entities.Rank;
+import com.alvin.cheapyshopping.db.entities.Setting;
 import com.alvin.cheapyshopping.db.entities.ShoppingList;
 import com.alvin.cheapyshopping.db.entities.ShoppingListProductRelation;
 import com.alvin.cheapyshopping.db.entities.Store;
@@ -24,6 +25,8 @@ import java.util.UUID;
  */
 
 public class AppDatabaseCallback extends RoomDatabase.Callback {
+
+    public static final String SETTING_NEW_PRODUCT_IMAGE = "com.alvin.cheapyshopping.db.AppDatabaseCallback.SETTING_NEW_PRODUCT_IMAGE";
 
     private final Context mContext;
 
@@ -111,17 +114,12 @@ public class AppDatabaseCallback extends RoomDatabase.Callback {
                     prices.add(price);
                 }
 
-//                Price price = new Price();
-//                price.setType(Price.TYPE_SINGLE);
-//                price.setTotal(30);
-//                price.setForeignProductId(1);
-//                price.setForeignStoreId(3);
-//                price.setCreationTime(Calendar.getInstance());
-//                prices.add(price);
 
                 appDb.getPriceDao()
                         .insertPrice(prices.toArray(new Price[prices.size()]));
 
+
+                // Initialize ranking scores
                 int lastMinScore = 0;
                 List<Rank> ranks = new ArrayList<>();
                 for (int i = 0; i <= 10 ;i++){
@@ -140,6 +138,13 @@ public class AppDatabaseCallback extends RoomDatabase.Callback {
                         .insertRank(ranks.toArray(new Rank[ranks.size()]));
 
 
+                // Initialize settings
+                List<Setting> settings = new ArrayList<>();
+                Setting setting = new Setting();
+                setting.setSettingId(AppDatabaseCallback.this.SETTING_NEW_PRODUCT_IMAGE);
+                settings.add(setting);
+
+                appDb.getSettingDao().insertSetting(settings.toArray(new Setting[settings.size()]));
 
             }
 
@@ -152,6 +157,8 @@ public class AppDatabaseCallback extends RoomDatabase.Callback {
                 store.setLatitude(latitude);
                 return store;
             }
+
+
         }).start();
 
     }

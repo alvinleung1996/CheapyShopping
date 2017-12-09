@@ -12,6 +12,7 @@ import com.alvin.cheapyshopping.db.daos.PriceDao;
 import com.alvin.cheapyshopping.db.daos.ProductDao;
 import com.alvin.cheapyshopping.db.daos.ProductPriceDao;
 import com.alvin.cheapyshopping.db.daos.RankDao;
+import com.alvin.cheapyshopping.db.daos.SettingDao;
 import com.alvin.cheapyshopping.db.daos.ShoppingListDao;
 import com.alvin.cheapyshopping.db.daos.ShoppingListProductDao;
 import com.alvin.cheapyshopping.db.daos.ShoppingListProductRelationDao;
@@ -22,9 +23,12 @@ import com.alvin.cheapyshopping.db.entities.BestPriceRelation;
 import com.alvin.cheapyshopping.db.entities.Price;
 import com.alvin.cheapyshopping.db.entities.Product;
 import com.alvin.cheapyshopping.db.entities.Rank;
+import com.alvin.cheapyshopping.db.entities.Setting;
 import com.alvin.cheapyshopping.db.entities.ShoppingList;
 import com.alvin.cheapyshopping.db.entities.ShoppingListProductRelation;
 import com.alvin.cheapyshopping.db.entities.Store;
+
+import java.util.Set;
 
 /**
  * Created by Alvin on 19/11/2017.
@@ -39,7 +43,8 @@ import com.alvin.cheapyshopping.db.entities.Store;
         Price.class,
         BestPriceRelation.class,
         Account.class,
-        Rank.class
+        Rank.class,
+        Setting.class
     },
     version = 1
 )
@@ -91,5 +96,7 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract ProductPriceDao getProductPriceDao();
 
     public abstract RankDao getRankDao();
+
+    public abstract SettingDao getSettingDao();
 
 }

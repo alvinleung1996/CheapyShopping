@@ -7,43 +7,39 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
-import com.alvin.cheapyshopping.db.entities.Rank;
+import com.alvin.cheapyshopping.db.entities.Setting;
 
 import java.util.List;
 
+
 /**
- * Created by cheng on 12/1/2017.
+ * Created by cheng on 12/9/2017.
  */
+
 @Dao
-public interface RankDao {
+public interface SettingDao {
     /*
     ************************************************************************************************
     * Query, Async
     ************************************************************************************************
      */
+    @Query("SELECT * From Setting")
+    LiveData<List<Setting>> getAllSettings();
 
-    @Query("SELECT * From Rank R WHERE :score >= R.min_score ORDER BY R.min_score DESC")
-    LiveData<List<Rank>> getRanksByScore(int score);
-
-
-
-    @Query("SELECT R.* FROM Rank R , Account A " +
-            "WHERE A.account_score >= R.min_score " +
-            "AND A.account_id = (SELECT account_id FROM Account LIMIT 1) " +
-            "ORDER BY R.min_score DESC")
-    LiveData<List<Rank>> getCurrentAccountRanks();
-
+    @Query("SELECT * FROM Setting WHERE Setting.setting_id = :Id")
+    LiveData<Setting> getSettingById(String Id);
 
 
     /*
     ************************************************************************************************
-    * Query, Sync
+    * Query, sync
     ************************************************************************************************
      */
+    @Query("SELECT * From Setting")
+    List<Setting> getAllSettingsNow();
 
-    @Query("SELECT * From Rank R WHERE :score > R.min_score ORDER BY R.min_score DESC ")
-    List<Rank> getRanksByScoreNow(int score);
-
+    @Query("SELECT * FROM Setting WHERE Setting.setting_id = :Id")
+    Setting getSettingByIdNow(String Id);
 
     /*
     ************************************************************************************************
@@ -52,12 +48,11 @@ public interface RankDao {
      */
 
     @Insert
-    long[] insertRank(Rank... ranks);
+    long[] insertSetting(Setting... settings);
 
     @Update
-    int updateRank(Rank... ranks);
+    int updateSetting(Setting... settings);
 
     @Delete
-    int deleteRank(Rank... ranks);
-
+    int deleteSetting(Setting... settings);
 }
