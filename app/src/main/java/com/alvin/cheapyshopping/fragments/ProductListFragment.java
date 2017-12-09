@@ -4,7 +4,9 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
@@ -20,8 +22,10 @@ import com.alvin.cheapyshopping.R;
 import com.alvin.cheapyshopping.databinding.DetailProductItemBinding;
 import com.alvin.cheapyshopping.databinding.ProductListFragmentBinding;
 import com.alvin.cheapyshopping.db.entities.Product;
+import com.alvin.cheapyshopping.utils.ImageRotater;
 import com.alvin.cheapyshopping.viewmodels.ProductListFragmentViewModel;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,14 +77,28 @@ public class ProductListFragment extends MainActivity.MainFragment {
             this.mBinding = DataBindingUtil.getBinding(this.itemView);
         }
 
-        private void onBind(Product store) {
-            this.mBinding.setProduct(store);
+        private void onBind(Product product) {
+            this.mBinding.setProduct(product);
             this.mBinding.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     ProductListFragment.this.onProductItemClick(view, ProductListFragment.ProductItemHolder.this.mBinding.getProduct());
                 }
             });
+
+            // Setup photo
+            if (product.isImageExist()){
+                String imageFileName = "Product" + "_" + product.getProductId();
+                File storageDir = ProductListFragment.this.getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                File imageFile = new File(storageDir, imageFileName + ".jpg");
+                if (imageFile.exists()) {
+                    Bitmap bitmap = ImageRotater.getsInstance(ProductListFragment.this.getContext()).rotateImage(imageFile);
+                    // Update image view with rotated bitmap
+                    mBinding.imageProduct.setImageBitmap(bitmap);
+                }
+            } else {
+                mBinding.imageProduct.setImageResource(R.drawable.ic_product_black_24dp);
+            }
         }
 
         private void onRecycled() {
