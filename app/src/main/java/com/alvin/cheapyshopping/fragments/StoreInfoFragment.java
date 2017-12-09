@@ -103,7 +103,6 @@ public class StoreInfoFragment extends Fragment{
                 StoreInfoFragment.this.mCurrentStore = store;
                 // Setup Store Basic Info
                 mBinding.setStore(mCurrentStore);
-                mBinding.ratingBar.setRating((float)mCurrentStore.getRating());
                 StoreInfoFragment.this.updateMapMarkers();
             }
         });

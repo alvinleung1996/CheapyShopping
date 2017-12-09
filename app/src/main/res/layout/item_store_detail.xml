@@ -49,11 +49,37 @@
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
-                android:text="@{store.name}"
+                android:text="@{store.name, default=`name`}"
                 android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Title"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/image_store"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <RatingBar
+                android:id="@+id/ratingBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style= "@style/CustomRatingBarSmall"
+                android:numStars="5"
+                android:rating="@{(float)store.rating, default=`0`}"
+                android:stepSize="0.01"
+                android:elevation="4dp"
+                android:layout_marginEnd="10dp"
+                android:isIndicator="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/text_store_name"
+                />
+
+            <ImageView
+                android:id="@+id/image_store_location"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:padding="2dp"
+                android:layout_marginTop="7dp"
+                android:tint="@color/grey"
+                android:src="@drawable/ic_location_on_black_24dp"
+                app:layout_constraintStart_toStartOf="@+id/text_store_name"
+                app:layout_constraintTop_toBottomOf="@+id/text_store_name"  />
 
             <TextView
                 android:id="@+id/text_store_location"
@@ -62,11 +88,12 @@
                 android:layout_marginBottom="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginTop="8dp"
-                android:text="@{store.address}"
+                android:text="@{store.address, default=`address`}"
+                android:textSize="12sp"
                 android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Subtitle"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/text_store_name"
+                app:layout_constraintStart_toEndOf="@+id/image_store_location"
                 app:layout_constraintTop_toBottomOf="@+id/text_store_name" />
         </android.support.constraint.ConstraintLayout>
 

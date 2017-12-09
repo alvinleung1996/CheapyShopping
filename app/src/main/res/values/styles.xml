@@ -27,4 +27,10 @@
         <item name="android:maxHeight">26dp</item>
     </style>
 
+    <style name="CustomRatingBarSmall" parent="@android:style/Widget.RatingBar">
+        <item name="android:progressDrawable">@drawable/rating_stars_small</item>
+        <item name="android:minHeight">12dp</item>
+        <item name="android:maxHeight">12dp</item>
+    </style>
+
 </resources>

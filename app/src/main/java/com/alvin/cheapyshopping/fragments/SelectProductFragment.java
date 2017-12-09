@@ -5,7 +5,9 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
@@ -21,8 +23,10 @@ import com.alvin.cheapyshopping.R;
 import com.alvin.cheapyshopping.databinding.SimpleProductItemBinding;
 import com.alvin.cheapyshopping.databinding.SelectProductFragmentBinding;
 import com.alvin.cheapyshopping.db.entities.Product;
+import com.alvin.cheapyshopping.utils.ImageRotater;
 import com.alvin.cheapyshopping.viewmodels.SelectProductFragmentViewModel;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -117,6 +121,20 @@ public class SelectProductFragment extends Fragment {
                     SelectProductFragment.this.onProductItemClick(view, ViewHolder.this.mBinding.getProduct());
                 }
             });
+
+            // Setup photo
+            if (product.isImageExist()){
+                String imageFileName = "Product" + "_" + product.getProductId();
+                File storageDir = SelectProductFragment.this.getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                File imageFile = new File(storageDir, imageFileName + ".jpg");
+                if (imageFile.exists()) {
+                    Bitmap bitmap = ImageRotater.getsInstance(SelectProductFragment.this.getContext()).rotateImage(imageFile);
+                    // Update image view with rotated bitmap
+                    mBinding.imageProductPhoto.setImageBitmap(bitmap);
+                }
+            } else {
+                mBinding.imageProductPhoto.setImageResource(R.drawable.ic_product_black_24dp);
+            }
         }
 
         private void onRecycled() {

@@ -110,7 +110,6 @@ public class ProductInfoFragment extends Fragment {
 
                 // Setup Product Basic Info
                 mBinding.setProduct(mCurrentProduct);
-                mBinding.ratingBar.setRating((float)product.getRating());
 
                 // Setup product image
                 setProductImage(product.isImageExist());

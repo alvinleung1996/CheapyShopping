@@ -89,7 +89,7 @@
                     style= "@style/CustomRatingBar"
                     android:id="@+id/ratingBar"
                     android:numStars="5"
-                    android:rating="0"
+                    android:rating="@{(float)product.rating, default=`0`}"
                     android:stepSize="0.01"
                     android:elevation="4dp"
                     android:layout_marginTop="10dp"

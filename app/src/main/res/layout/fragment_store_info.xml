@@ -39,7 +39,7 @@
                     android:id="@+id/text_store_name"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="@{store.name}"
+                    android:text="@{store.name, default=`name`}"
                     android:textColor="@color/black"
                     android:textSize="20sp"
                     android:textStyle="bold"
@@ -109,7 +109,7 @@
                     style= "@style/CustomRatingBar"
                     android:id="@+id/ratingBar"
                     android:numStars="5"
-                    android:rating="0"
+                    android:rating="@{(float)store.rating, default=`0`}"
                     android:stepSize="0.01"
                     android:elevation="4dp"
                     android:layout_marginTop="10dp"
@@ -132,9 +132,9 @@
                 <TextView
                     android:id="@+id/text_store_location"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="22dp"
                     android:layout_marginEnd="16dp"
-                    android:text="@{store.address}"
+                    android:text="@{store.address, default=`address`}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/image_store_location"
                     app:layout_constraintTop_toTopOf="@id/image_store_location"/>
@@ -166,7 +166,7 @@
                     android:layout_height="wrap_content"
                     android:padding="4dp"
                     android:layout_marginBottom="5dp"
-                    android:text="@{store.description}"
+                    android:text="@{store.description, default=`description`}"
                     app:layout_constraintTop_toBottomOf="@id/text_store_description_prefix"
                     app:layout_constraintStart_toStartOf="@id/text_store_description_prefix"/>
 

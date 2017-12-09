@@ -47,17 +47,32 @@
 
             <TextView
                 android:id="@+id/text_product_name"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="16dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
                 android:text="@{product.name, default=`name`}"
                 android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/ratingBar"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toEndOf="@+id/image_product_photo"
                 app:layout_constraintTop_toTopOf="parent"/>
+
+            <RatingBar
+                android:id="@+id/ratingBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style= "@style/CustomRatingBarSmall"
+                android:numStars="5"
+                android:rating="@{(float)product.rating, default=`0`}"
+                android:stepSize="0.01"
+                android:elevation="4dp"
+                android:layout_marginEnd="10dp"
+                android:isIndicator="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/text_product_name"
+                />
 
             <TextView
                 android:id="@+id/text_product_id"
