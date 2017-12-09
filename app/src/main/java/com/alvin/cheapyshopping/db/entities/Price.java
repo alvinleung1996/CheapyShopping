@@ -157,9 +157,24 @@ public class Price {
             case TYPE_MULTIPLE:
                 return this.mTotal * (quantity / this.mQuantity);
             case TYPE_DISCOUNT_FOR_X:
-                return this.mTotal * this.mDiscount * (quantity / this.mQuantity);
+                return this.mTotal * (1 - this.mDiscount) * (quantity / this.mQuantity);
             case TYPE_BUY_X_GET_Y_FREE:
                 return this.mTotal * (quantity / (this.mQuantity + this.mFreeQuantity));
+            default:
+                throw new RuntimeException("Unknown price type");
+        }
+    }
+
+    public String toDisplayText() {
+        switch (mType) {
+            case TYPE_SINGLE:
+                return String.format("Buy 1 for $%.1f", mTotal);
+            case TYPE_MULTIPLE:
+                return String.format("Buy %d for $%.1f", mQuantity, mTotal);
+            case TYPE_DISCOUNT_FOR_X:
+                return String.format("Buy %d for $%.1f and get %.1f%% off", mQuantity, mTotal, mDiscount*100);
+            case TYPE_BUY_X_GET_Y_FREE:
+                return String.format("Buy %d for $%.1f and get %d free", mQuantity, mTotal, mFreeQuantity);
             default:
                 throw new RuntimeException("Unknown price type");
         }
