@@ -193,8 +193,6 @@ public class ShoppingListFragment extends MainActivity.MainFragment {
 
 
             // Setup photo
-
-
             if (product.isImageExist()){
                 String imageFileName = "Product" + "_" + product.getProductId();
                 File storageDir = ShoppingListFragment.this.getContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);

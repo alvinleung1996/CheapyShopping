@@ -138,12 +138,7 @@ public class MainActivity extends BaseActivity {
         this.mBinding.drawer.setNavigationItemSelectedListener(MainActivity.this::onDrawerMenuItemSelected);
         this.mBinding.drawer.addHeaderView(mDrawerHeaderBinding.getRoot());
         this.mDrawerHeaderBinding.setOnClickListener(view -> {
-            MainActivity.this.getSupportFragmentManager().popBackStack();
-            MainActivity.this.getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, AccountFragment.newInstance(), FRAGMENT_TYPE_MAIN)
-                    .addToBackStack(null)
-                    .commit();
-            MainActivity.this.mBinding.drawerLayout.closeDrawer(MainActivity.this.mBinding.drawer);
+            switchMainFragment(AccountFragment::newInstance, AccountFragment.class.getName(), false);
         });
 
         // Setup drawer account information
@@ -216,7 +211,7 @@ public class MainActivity extends BaseActivity {
             if (ranks != null){
                 int rank = ranks.size() - 1;
                 int resId = getResources().getIdentifier(
-                        "badge_rank_" + rank,
+                        "badge_small_rank_" + rank,
                         "drawable", getPackageName());
                 mDrawerHeaderBinding.drawerAccountBadge.setImageResource(resId);
             }

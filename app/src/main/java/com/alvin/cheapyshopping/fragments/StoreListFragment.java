@@ -154,7 +154,9 @@ public class StoreListFragment extends MainActivity.MainFragment {
      */
 
     public void onStoreItemClick(View view, Store store) {
-
+        Intent intent = new Intent(this.getContext(), StoreActivity.class);
+        intent.putExtra(StoreActivity.EXTRA_STORE_ID, store.getStoreId());
+        this.startActivity(intent);
     }
 
 }
