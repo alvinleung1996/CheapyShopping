@@ -5,222 +5,395 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data class="AddProductPriceFragmentBinding">
+        <import type="com.alvin.cheapyshopping.db.entities.Price"/>
+        <import type="android.widget.RadioButton"/>
+        <variable
+            name="priceType"
+            type="int"/>
+        <variable
+            name="onRadioButtonClickListener"
+            type="com.alvin.cheapyshopping.utils.OnClickListener&lt;RadioButton&gt;"/>
+
+        <variable
+            name="storeName"
+            type="String"/>
         <variable
             name="onPickPlaceButtonClickListener"
             type="android.view.View.OnClickListener"/>
     </data>
 
-    <android.support.constraint.ConstraintLayout
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context="com.alvin.cheapyshopping.fragments.AddProductPriceFragment">
+        android:layout_height="match_parent">
 
-        <RadioButton
-            android:id="@+id/radio_single_price"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintBottom_toBottomOf="@+id/input_single_price"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/input_single_price" />
+            android:orientation="vertical">
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/input_single_price"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/radio_single_price"
-            app:layout_constraintTop_toTopOf="parent"
-            android:hint="total">
-
-            <android.support.design.widget.TextInputEditText
+            <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="numberDecimal" />
-        </android.support.design.widget.TextInputLayout>
+                android:layout_height="wrap_content">
 
+                <RadioButton
+                    android:id="@+id/radio_single_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0"
+                    android:checked="@{priceType == Price.TYPE_SINGLE}"
+                    android:tag="@{Price.TYPE_SINGLE}"
+                    android:onClick="@{v -> onRadioButtonClickListener.onClick((RadioButton) v)}"/>
 
+                <TextView
+                    android:id="@+id/single_price_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Single item"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    app:layout_constraintBottom_toBottomOf="@+id/radio_single_price"
+                    app:layout_constraintStart_toEndOf="@+id/radio_single_price"
+                    app:layout_constraintTop_toTopOf="@+id/radio_single_price"/>
 
-        <RadioButton
-            android:id="@+id/radio_multiple_price"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintBottom_toBottomOf="@+id/input_multiple_price"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/input_multiple_price" />
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/input_single_price"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="8dp"
+                    android:hint="total"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/fix_bug_view"
+                    app:layout_constraintStart_toStartOf="@+id/single_price_label"
+                    app:layout_constraintTop_toBottomOf="@+id/single_price_label">
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/input_multiple_price"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            app:layout_constraintTop_toTopOf="@+id/input_multiple_quantity"
-            app:layout_constraintEnd_toStartOf="@+id/input_multiple_quantity"
-            app:layout_constraintStart_toEndOf="@+id/radio_multiple_price"
-            tools:layout_editor_absoluteY="57dp"
-            android:hint="total">
+                    <android.support.design.widget.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:enabled="@{priceType == Price.TYPE_SINGLE}"
+                        android:focusable="@{priceType == Price.TYPE_SINGLE}"
+                        android:focusableInTouchMode="@{priceType == Price.TYPE_SINGLE}"/>
 
-            <android.support.design.widget.TextInputEditText
+                </android.support.design.widget.TextInputLayout>
+
+                <View
+                    android:id="@+id/fix_bug_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:layout_constraintTop_toTopOf="@+id/input_single_price"
+                    app:layout_constraintBottom_toBottomOf="@+id/input_single_price"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+            </android.support.constraint.ConstraintLayout>
+
+            <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="numberDecimal" />
-        </android.support.design.widget.TextInputLayout>
+                android:layout_height="wrap_content">
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/input_multiple_quantity"
-            android:layout_width="128dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/input_single_price"
-            android:hint="quantity">
+                <RadioButton
+                    android:id="@+id/radio_multiple_price"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0"
+                    android:checked="@{priceType == Price.TYPE_MULTIPLE}"
+                    android:tag="@{Price.TYPE_MULTIPLE}"
+                    android:onClick="@{v -> onRadioButtonClickListener.onClick((RadioButton) v)}"/>
 
-            <android.support.design.widget.TextInputEditText
+                <TextView
+                    android:id="@+id/multiple_price_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Multiple item"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    app:layout_constraintBottom_toBottomOf="@+id/radio_multiple_price"
+                    app:layout_constraintStart_toEndOf="@+id/radio_multiple_price"
+                    app:layout_constraintTop_toTopOf="@+id/radio_multiple_price"/>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/input_multiple_price"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginTop="8dp"
+                    android:hint="total"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/input_multiple_quantity"
+                    app:layout_constraintStart_toStartOf="@+id/multiple_price_label"
+                    app:layout_constraintTop_toBottomOf="@+id/multiple_price_label">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:enabled="@{priceType == Price.TYPE_MULTIPLE}"
+                        android:focusable="@{priceType == Price.TYPE_MULTIPLE}"
+                        android:focusableInTouchMode="@{priceType == Price.TYPE_MULTIPLE}"/>
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/input_multiple_quantity"
+                    android:layout_width="128dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:hint="quantity"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/input_multiple_price"
+                    app:layout_constraintBottom_toBottomOf="@+id/input_multiple_price">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:enabled="@{priceType == Price.TYPE_MULTIPLE}"
+                        android:focusable="@{priceType == Price.TYPE_MULTIPLE}"
+                        android:focusableInTouchMode="@{priceType == Price.TYPE_MULTIPLE}"/>
+
+                </android.support.design.widget.TextInputLayout>
+
+            </android.support.constraint.ConstraintLayout>
+
+            <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number" />
+                android:layout_height="wrap_content">
 
-        </android.support.design.widget.TextInputLayout>
+                <RadioButton
+                    android:id="@+id/radio_free"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0"
+                    android:checked="@{priceType == Price.TYPE_BUY_X_GET_Y_FREE}"
+                    android:tag="@{Price.TYPE_BUY_X_GET_Y_FREE}"
+                    android:onClick="@{v -> onRadioButtonClickListener.onClick((RadioButton) v)}"/>
 
+                <TextView
+                    android:id="@+id/free_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Buy X get Y free"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    app:layout_constraintBottom_toBottomOf="@+id/radio_free"
+                    app:layout_constraintStart_toEndOf="@+id/radio_free"
+                    app:layout_constraintTop_toTopOf="@+id/radio_free"/>
 
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/input_free_price"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginTop="8dp"
+                    android:hint="total"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/input_free_x"
+                    app:layout_constraintStart_toStartOf="@+id/free_label"
+                    app:layout_constraintTop_toBottomOf="@+id/free_label">
 
-        <RadioButton
-            android:id="@+id/radio_free"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            app:layout_constraintBottom_toBottomOf="@+id/input_free_price"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/input_free_price" />
+                    <android.support.design.widget.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:enabled="@{priceType == Price.TYPE_BUY_X_GET_Y_FREE}"
+                        android:focusable="@{priceType == Price.TYPE_BUY_X_GET_Y_FREE}"
+                        android:focusableInTouchMode="@{priceType == Price.TYPE_BUY_X_GET_Y_FREE}"/>
+                </android.support.design.widget.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/input_free_price"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginStart="8dp"
-            app:layout_constraintEnd_toStartOf="@+id/input_free_x"
-            app:layout_constraintStart_toEndOf="@+id/radio_free"
-            app:layout_constraintTop_toTopOf="@+id/input_free_x"
-            android:hint="total">
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/input_free_x"
+                    android:layout_width="96dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    app:layout_constraintEnd_toStartOf="@+id/input_free_y"
+                    app:layout_constraintTop_toTopOf="@+id/input_free_price"
+                    app:layout_constraintBottom_toBottomOf="@+id/input_free_price"
+                    android:hint="quantity">
 
-            <android.support.design.widget.TextInputEditText
+                    <android.support.design.widget.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:enabled="@{priceType == Price.TYPE_BUY_X_GET_Y_FREE}"
+                        android:focusable="@{priceType == Price.TYPE_BUY_X_GET_Y_FREE}"
+                        android:focusableInTouchMode="@{priceType == Price.TYPE_BUY_X_GET_Y_FREE}"/>
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/input_free_y"
+                    android:layout_width="64dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:hint="get"
+                    app:layout_constraintBottom_toBottomOf="@+id/input_free_x"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/input_free_x">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:enabled="@{priceType == Price.TYPE_BUY_X_GET_Y_FREE}"
+                        android:focusable="@{priceType == Price.TYPE_BUY_X_GET_Y_FREE}"
+                        android:focusableInTouchMode="@{priceType == Price.TYPE_BUY_X_GET_Y_FREE}"/>
+                </android.support.design.widget.TextInputLayout>
+
+            </android.support.constraint.ConstraintLayout>
+
+            <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="numberDecimal" />
-        </android.support.design.widget.TextInputLayout>
+                android:layout_height="wrap_content">
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/input_free_x"
-            android:layout_width="96dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintEnd_toStartOf="@+id/input_free_y"
-            app:layout_constraintTop_toTopOf="@+id/input_free_y">
+                <RadioButton
+                    android:id="@+id/radio_discount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.0"
+                    android:checked="@{priceType == Price.TYPE_DISCOUNT_FOR_X}"
+                    android:tag="@{Price.TYPE_DISCOUNT_FOR_X}"
+                    android:onClick="@{v -> onRadioButtonClickListener.onClick((RadioButton) v)}"/>
 
-            <android.support.design.widget.TextInputEditText
+                <TextView
+                    android:id="@+id/discount_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Buy X and get discount"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                    app:layout_constraintBottom_toBottomOf="@+id/radio_discount"
+                    app:layout_constraintStart_toEndOf="@id/radio_discount"
+                    app:layout_constraintTop_toTopOf="@+id/radio_discount"/>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/input_discount_price"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginTop="8dp"
+                    android:hint="total"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/input_discount_quantity"
+                    app:layout_constraintStart_toStartOf="@+id/discount_label"
+                    app:layout_constraintTop_toBottomOf="@+id/discount_label">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="numberDecimal"
+                        android:enabled="@{priceType == Price.TYPE_DISCOUNT_FOR_X}"
+                        android:focusable="@{priceType == Price.TYPE_DISCOUNT_FOR_X}"
+                        android:focusableInTouchMode="@{priceType == Price.TYPE_DISCOUNT_FOR_X}"/>
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/input_discount_quantity"
+                    android:layout_width="96dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    app:layout_constraintEnd_toStartOf="@+id/input_discount_percentage"
+                    app:layout_constraintTop_toTopOf="@+id/input_discount_price"
+                    app:layout_constraintBottom_toBottomOf="@id/input_discount_price"
+                    android:hint="quantity">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:enabled="@{priceType == Price.TYPE_DISCOUNT_FOR_X}"
+                        android:focusable="@{priceType == Price.TYPE_DISCOUNT_FOR_X}"
+                        android:focusableInTouchMode="@{priceType == Price.TYPE_DISCOUNT_FOR_X}"/>
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/input_discount_percentage"
+                    android:layout_width="96dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/input_discount_quantity"
+                    app:layout_constraintBottom_toBottomOf="@+id/input_discount_quantity"
+                    android:hint="discount">
+
+                    <android.support.design.widget.TextInputEditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="number"
+                        android:enabled="@{priceType == Price.TYPE_DISCOUNT_FOR_X}"
+                        android:focusable="@{priceType == Price.TYPE_DISCOUNT_FOR_X}"
+                        android:focusableInTouchMode="@{priceType == Price.TYPE_DISCOUNT_FOR_X}"/>
+                </android.support.design.widget.TextInputLayout>
+
+            </android.support.constraint.ConstraintLayout>
+
+            <View
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="quantity"
-                android:inputType="number" />
-        </android.support.design.widget.TextInputLayout>
+                android:layout_height="1dp"
+                android:background="?android:attr/listDivider"/>
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/input_free_y"
-            android:layout_width="96dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/input_multiple_quantity"
-            android:hint="free">
-
-            <android.support.design.widget.TextInputEditText
+            <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number" />
-        </android.support.design.widget.TextInputLayout>
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/storeNameTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginEnd="8dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:text="@{storeName ?? `Please pick a place`, default=`Please plick a place`}"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/button_pick_place"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <Button
+                    android:id="@+id/button_pick_place"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="16dp"
+                    android:onClick="@{onPickPlaceButtonClickListener}"
+                    android:text="Pick place"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
 
 
+            </android.support.constraint.ConstraintLayout>
 
-        <RadioButton
-            android:id="@+id/radio_discount"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            app:layout_constraintBottom_toBottomOf="@+id/input_discount_price"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/input_discount_price" />
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/input_discount_price"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintStart_toEndOf="@+id/radio_discount"
-            app:layout_constraintEnd_toStartOf="@+id/input_discount_quantity"
-            app:layout_constraintTop_toTopOf="@+id/input_discount_quantity"
-            tools:layout_editor_absoluteY="195dp"
-            android:hint="total">
 
-            <android.support.design.widget.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="numberDecimal" />
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/input_discount_quantity"
-            android:layout_width="96dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            app:layout_constraintEnd_toStartOf="@+id/input_discount_percentage"
-            app:layout_constraintTop_toTopOf="@+id/input_discount_percentage"
-            tools:layout_editor_absoluteX="8dp"
-            tools:layout_editor_absoluteY="331dp"
-            android:hint="quantity">
-
-            <android.support.design.widget.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number" />
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/input_discount_percentage"
-            android:layout_width="96dp"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
-            android:layout_marginTop="8dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/input_free_y"
-            android:hint="discount %">
-
-            <android.support.design.widget.TextInputEditText
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="number" />
-        </android.support.design.widget.TextInputLayout>
-
-        <Button
-            android:id="@+id/button_pick_place"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="32dp"
-            android:onClick="@{onPickPlaceButtonClickListener}"
-            android:text="Pick a place"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/input_discount_price"/>
-
-    </android.support.constraint.ConstraintLayout>
 
 </layout>

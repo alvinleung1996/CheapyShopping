@@ -73,7 +73,6 @@ public class AddProductPriceFragment extends Fragment {
 
     private InteractionListener mInteractionListener;
 
-    private RadioButton[] radioButtons;
     private Integer mChoice;
 
     private boolean mStoreSelected;
@@ -104,31 +103,9 @@ public class AddProductPriceFragment extends Fragment {
         // Inflate the layout for this fragment
         this.mBinding = AddProductPriceFragmentBinding.inflate(inflater, container, false);
 
-        this.mBinding.radioSinglePrice.setTag(Price.TYPE_SINGLE);
-        this.mBinding.radioMultiplePrice.setTag(Price.TYPE_MULTIPLE);
-        this.mBinding.radioFree.setTag(Price.TYPE_BUY_X_GET_Y_FREE);
-        this.mBinding.radioDiscount.setTag(Price.TYPE_DISCOUNT_FOR_X);
-        this.radioButtons = new RadioButton[] {
-                this.mBinding.radioSinglePrice,
-                this.mBinding.radioMultiplePrice,
-                this.mBinding.radioFree,
-                this.mBinding.radioDiscount
-        };
-        for (RadioButton button : this.radioButtons) {
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    AddProductPriceFragment.this.onRadioButtonClick(view);
-                }
-            });
-        }
+        mBinding.setOnRadioButtonClickListener(this::onRadioButtonClick);
 
-        this.mBinding.setOnPickPlaceButtonClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                AddProductPriceFragment.this.onPickPlaceButtonClick((Button) view);
-            }
-        });
+        this.mBinding.setOnPickPlaceButtonClickListener(view -> AddProductPriceFragment.this.onPickPlaceButtonClick((Button) view));
 
         return this.mBinding.getRoot();
     }
@@ -139,25 +116,25 @@ public class AddProductPriceFragment extends Fragment {
 
         this.mViewModel = ViewModelProviders.of(this).get(AddProductPriceFragmentViewModel.class);
 
+        getActivity().setTitle("Add Price");
+
         // If store already exist
         if(this.mStoreId != null){
-            this.mViewModel.findStoreByStoreId(mStoreId).observe(this, new Observer<Store>() {
-                @Override
-                public void onChanged(@Nullable Store store) {
-                    if (store != null){
-                        Log.d("Debug: ", "Store_" + store.getName() + " detected");
-                        // Disable the place pick button
-                        AddProductPriceFragment.this.mBinding.buttonPickPlace.setVisibility(View.GONE);
+            this.mViewModel.findStoreByStoreId(mStoreId).observe(this, store -> {
+                if (store != null){
+                    Log.d("Debug: ", "Store_" + store.getName() + " detected");
+                    // Disable the place pick button
+                    AddProductPriceFragment.this.mBinding.buttonPickPlace.setVisibility(View.GONE);
 
-                        // Setup store information for save
-                        AddProductPriceFragment.this.mStoreSelected = true;
-                        AddProductPriceFragment.this.mStoreId = store.getStoreId();
-                        AddProductPriceFragment.this.mStoreName = store.getName();
-                        AddProductPriceFragment.this.mStoreAddress = store.getAddress();
-                        AddProductPriceFragment.this.mStoreLongitude = store.getLongitude();
-                        AddProductPriceFragment.this.mStoreLatitude = store.getLatitude();
+                    // Setup store information for save
+                    AddProductPriceFragment.this.mStoreSelected = true;
+                    AddProductPriceFragment.this.mStoreId = store.getStoreId();
+                    AddProductPriceFragment.this.mStoreName = store.getName();
+                    AddProductPriceFragment.this.mStoreAddress = store.getAddress();
+                    AddProductPriceFragment.this.mStoreLongitude = store.getLongitude();
+                    AddProductPriceFragment.this.mStoreLatitude = store.getLatitude();
 
-                    }
+                    updateStoreDisplay();
                 }
             });
         }
@@ -188,6 +165,7 @@ public class AddProductPriceFragment extends Fragment {
                         this.mStoreLongitude = -1;
                         this.mStoreLatitude = -1;
                     }
+                    updateStoreDisplay();
                 }
         }
     }
@@ -234,10 +212,10 @@ public class AddProductPriceFragment extends Fragment {
 
 
 
-    private void onRadioButtonClick(View view) {
-        this.mChoice = (Integer) view.getTag();
-        for (RadioButton button : this.radioButtons) {
-            button.setChecked(button.getTag().equals(this.mChoice));
+    private void onRadioButtonClick(RadioButton radio) {
+        this.mChoice = (Integer) radio.getTag();
+        if (mChoice != null) {
+            mBinding.setPriceType(mChoice);
         }
     }
 
@@ -249,6 +227,11 @@ public class AddProductPriceFragment extends Fragment {
                 | GooglePlayServicesRepairableException e) {
             Log.e("map", "Cannot start place picker", e);
         }
+    }
+
+
+    private void updateStoreDisplay() {
+        mBinding.setStoreName(mStoreName);
     }
 
 
