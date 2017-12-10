@@ -37,7 +37,7 @@
         <activity android:name=".AddProductPriceActivity"/>
         <activity
             android:name=".AddShoppingListProductRelationActivity"
-            android:label="Add Product"/>
+            android:label="Add Product To Shopping List"/>
         <activity
             android:name=".ProductActivity"
             android:theme="@style/AppTheme.NoActionBar"/>
