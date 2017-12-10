@@ -263,7 +263,7 @@ public class MainActivity extends BaseActivity {
      */
 
     private boolean onDrawerMenuItemSelected(MenuItem item) {
-        Toast.makeText(this, item.getTitle()+" Clicked", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, item.getTitle()+" Clicked", Toast.LENGTH_SHORT).show();
         switch (item.getItemId()) {
             case R.id.item_home:
                 return this.onShoppingListDrawerMenuItemSelected(item);
