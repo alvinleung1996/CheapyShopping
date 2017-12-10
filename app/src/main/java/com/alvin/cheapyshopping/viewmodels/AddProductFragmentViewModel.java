@@ -33,12 +33,13 @@ public class AddProductFragmentViewModel extends AndroidViewModel {
     ************************************************************************************************
      */
 
-    public void addProduct(String name, String description,Boolean imageIsSet, Function<String, Void> callback) {
+    public void addProduct(String name, String description, double rating ,boolean imageIsSet, Function<String, Void> callback) {
         Product product = new Product();
         product.setProductId(UUID.randomUUID().toString());
         product.setName(name);
         product.setDescription(description);
         product.setImageExist(imageIsSet);
+        product.setRating(rating);
         new InsertProductTask(this.getApplication(), product, callback).execute();
     }
 

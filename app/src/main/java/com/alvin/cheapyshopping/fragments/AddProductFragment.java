@@ -163,6 +163,7 @@ public class AddProductFragment extends Fragment {
     public void saveInput() {
         String productName = this.mBinding.inputLayoutProductName.getEditText().getText().toString();
         String productDescription = this.mBinding.inputLayoutProductDescription.getEditText().getText().toString();
+        double productRating = this.mBinding.ratingBar.getRating();
 
         boolean error = false;
 
@@ -183,7 +184,7 @@ public class AddProductFragment extends Fragment {
             return;
         }
 
-        this.mViewModel.addProduct(productName, productDescription, mProductImageIsSet, new Function<String, Void>() {
+        this.mViewModel.addProduct(productName, productDescription, productRating ,mProductImageIsSet, new Function<String, Void>() {
             @Override
             public Void apply(String productId) {
                 if (AddProductFragment.this.mInteractionListener != null) {

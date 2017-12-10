@@ -83,6 +83,22 @@
 
             </android.support.design.widget.TextInputLayout>
 
+            <RatingBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style= "@style/CustomRatingBar"
+                android:id="@+id/ratingBar"
+                android:numStars="5"
+                android:rating="0"
+                android:stepSize="0.01"
+                android:elevation="4dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="5dp"
+                android:isIndicator="false"
+                app:layout_constraintTop_toBottomOf="@id/input_layout_product_description"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
         </android.support.constraint.ConstraintLayout>
 
     </ScrollView>
