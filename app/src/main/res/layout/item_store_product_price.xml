@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data class="StoreProductPriceItemBinding">
+        <variable
+            name="productPrice"
+            type="com.alvin.cheapyshopping.db.entities.pseudo.ProductPrice"/>
+        <variable
+            name="creationTimeFormatter"
+            type="java.text.Format"/>
+        <variable
+            name="onClickListener"
+            type="android.view.View.OnClickListener"/>
+        <variable
+            name="onLongClickListener"
+            type="android.view.View.OnLongClickListener"/>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/list_item_background"
+        android:elevation="2dp"
+        android:layout_marginTop="3dp">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider">
+        </View>
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{onClickListener::onClick}"
+            android:onLongClick="@{onLongClickListener}">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/layout_store_info"
+                android:paddingBottom="5dp">
+                <ImageView
+                    android:id="@+id/image_product_photo"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="16dp"
+                    android:contentDescription="Product photo"
+                    android:src="@drawable/ic_product_black_24dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+                <TextView
+                    android:id="@+id/text_product_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginStart="16dp"
+                    android:text="@{productPrice.product.name}"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                    app:layout_constraintStart_toEndOf="@+id/image_product_photo"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"/>
+
+
+            </android.support.constraint.ConstraintLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="?android:attr/listDivider"
+                app:layout_constraintTop_toBottomOf="@id/layout_store_info">
+            </View>
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/layout_store_product_price_info"
+                android:layout_marginTop="5dp"
+                android:padding="4dp"
+                app:layout_constraintTop_toBottomOf="@id/layout_store_info">
+
+                <TextView
+                    android:id="@+id/text_price_prefix"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginStart="5dp"
+                    android:text="Price: $"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/text_store_price"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:text="@{Double.toString(productPrice.total), default=`Price`}"
+                    app:layout_constraintBaseline_toBaselineOf="@+id/text_price_prefix"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/text_price_prefix" />
+
+
+                <ImageView
+                    android:id="@+id/image_price_update"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_update_time_black_24dp"
+                    android:padding="3dp"
+                    android:layout_marginStart="2dp"
+                    android:tint="@color/grey"
+                    app:layout_constraintTop_toBottomOf="@id/text_price_prefix"
+                    app:layout_constraintStart_toStartOf="parent"/>
+
+                <TextView
+                    android:id="@+id/text_price_date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@{creationTimeFormatter.format(productPrice.creationTime.time), default=`creationTime`}"
+                    android:textStyle="italic"
+                    app:layout_constraintStart_toEndOf="@id/image_price_update"
+                    app:layout_constraintTop_toBottomOf="@id/text_store_price"/>
+
+            </android.support.constraint.ConstraintLayout>
+
+
+        </android.support.constraint.ConstraintLayout>
+
+    </LinearLayout>
+
+</layout>

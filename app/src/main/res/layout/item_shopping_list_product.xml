@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data class="ShoppingListProductItemBinding">
+        <import type="android.view.View"/>
+        <import type="com.alvin.cheapyshopping.db.entities.Price"/>
+        <variable
+            name="shoppingListProduct"
+            type="com.alvin.cheapyshopping.db.entities.pseudo.ShoppingListProduct"/>
+        <variable
+            name="onClickListener"
+            type="android.view.View.OnClickListener"/>
+        <variable
+            name="onLongClickListener"
+            type="android.view.View.OnLongClickListener"/>
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/list_item_background"
+        android:elevation="2dp"
+        android:onClick="@{onClickListener}"
+        android:onLongClick="@{onLongClickListener}">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider">
+        </View>
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/image_product_photo"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginBottom="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:contentDescription="Product photo"
+                android:src="@drawable/ic_product_black_24dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0"/>
+
+            <TextView
+                android:id="@+id/text_product_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="@{shoppingListProduct.name, default=`Product name`}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                app:layout_constraintEnd_toStartOf="@+id/quantity_text"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/image_product_photo"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <TextView
+                android:id="@+id/quantity_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="@{`x`+shoppingListProduct.quantity, default=`x1`}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                app:layout_constraintBaseline_toBaselineOf="@+id/text_product_name"
+                app:layout_constraintEnd_toStartOf="@+id/text_product_best_price"/>
+
+            <TextView
+                android:id="@+id/text_product_best_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="16dp"
+                android:text="@{`$`+(shoppingListProduct.bestPriceValue??`N/A`), default=`$BP`}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0"/>
+
+            <TextView
+                android:id="@+id/single_price_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:text="@{shoppingListProduct.bestStorePrices[0].toDisplayText, default=`Buy 1 for $10.0`}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                android:visibility="@{shoppingListProduct.bestStorePrices[0] != null ? View.VISIBLE : View.GONE}"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintEnd_toEndOf="@+id/quantity_text"
+                app:layout_constraintLeft_toLeftOf="@+id/text_product_name"
+                app:layout_constraintTop_toBottomOf="@+id/text_product_name"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+        </android.support.constraint.ConstraintLayout>
+
+    </LinearLayout>
+
+</layout>

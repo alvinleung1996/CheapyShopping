@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- android:dimen/status_bar_height is private so I have to manually copy it -->
+    <dimen name="status_bar_height">24dp</dimen>
+
+    <!-- For Account Fragment -->
+    <dimen name="account_fragment_box_distance">5dp</dimen>
+    <dimen name="account_fragment_box_padding_inner">10dp</dimen>
+</resources>

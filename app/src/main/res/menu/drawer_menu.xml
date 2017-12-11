@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:id="@+id/nav_group1"
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/item_home"
+            android:title="Home"
+            android:icon="@drawable/ic_home_black_24dp" />
+
+        <item
+            android:id="@+id/item_store_list"
+            android:title="Stores"
+            android:icon="@drawable/ic_store_black_24dp" />
+
+        <item
+            android:id="@+id/item_product_list"
+            android:title="Products"
+            android:icon="@drawable/ic_product_black_24dp"/>
+
+        <item
+            android:id="@+id/item_account"
+            android:title="My Account"
+            android:icon="@drawable/ic_account_box_black_24dp" />
+
+        <!--<item
+            android:id="@+id/nav_mapsearch"
+            android:title="Search in map"
+            android:icon="@drawable/ic_map_black_24dp" />
+
+        <item
+            android:id="@+id/nav_shoppingList"
+            android:title="Shopping list"
+            android:icon="@drawable/ic_shopping_list_black_24dp" />-->
+
+
+
+    </group>
+
+    <!--<group
+        android:id="@+id/nav_group2"
+        android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_settings"
+            android:title="Settings"
+            android:icon="@drawable/ic_settings_black_24dp" />
+
+        <item
+            android:id="@+id/nav_logout"
+            android:title="Logout"
+            android:icon="@drawable/ic_log_out_black_24dp" />
+    </group>-->
+</menu>

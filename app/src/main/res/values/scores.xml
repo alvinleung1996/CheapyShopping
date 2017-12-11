@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="add_new_product">300</integer>
+    <integer name="add_new_store">300</integer>
+    <integer name="add_product_to_shopping_list">100</integer>
+    <integer name="add_price">300</integer>
+    <integer name="add_shopping_list">200</integer>
+</resources>

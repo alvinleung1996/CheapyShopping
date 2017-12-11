@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data class="DetailProductItemBinding">
+        <variable
+            name="product"
+            type="com.alvin.cheapyshopping.db.entities.Product"/>
+        <variable
+            name="onClickListener"
+            type="android.view.View.OnClickListener"/>
+    </data>
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/list_item_background"
+        android:elevation="4dp"
+        android:onClick="@{onClickListener::onClick}">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider">
+        </View>
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/image_product"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginBottom="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.0"
+                app:srcCompat="@drawable/ic_product_black_24dp"/>
+
+            <TextView
+                android:id="@+id/text_product_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="@{product.name, default=`name`}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/image_product"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <RatingBar
+                android:id="@+id/ratingBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style= "@style/CustomRatingBarSmall"
+                android:numStars="5"
+                android:rating="@{(float)product.rating, default=`0`}"
+                android:stepSize="0.01"
+                android:elevation="4dp"
+                android:layout_marginEnd="10dp"
+                android:isIndicator="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/text_product_name"
+                />
+
+            <TextView
+                android:id="@+id/text_product_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="8dp"
+                android:text="@{product.description, default=`description`}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/text_product_name"
+                app:layout_constraintTop_toBottomOf="@+id/text_product_name"/>
+        </android.support.constraint.ConstraintLayout>
+
+    </LinearLayout>
+
+</layout>

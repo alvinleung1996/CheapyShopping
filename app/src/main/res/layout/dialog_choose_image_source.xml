@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data class="ChooseImageSourceDialogBinding"/>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="150dp">
+
+        <TextView
+            android:id="@+id/text_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Edit image"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/black"
+            android:layout_marginTop="10dp"
+            android:layout_marginStart="20dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/container_camera"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:padding="10dp"
+            app:layout_constraintStart_toStartOf="@id/text_title"
+            app:layout_constraintTop_toBottomOf="@id/text_title">
+
+            <ImageView
+                android:id="@+id/image_camera"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:padding="5dp"
+                android:elevation="5dp"
+                android:src="@drawable/icon_camera"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <TextView
+                android:id="@+id/text_camera"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Camera"
+                android:gravity="center"
+                app:layout_constraintTop_toBottomOf="@id/image_camera"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/container_gallery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:padding="10dp"
+            app:layout_constraintStart_toEndOf="@id/container_camera"
+            app:layout_constraintTop_toTopOf="@id/container_camera">
+
+            <ImageView
+                android:id="@+id/image_gallery"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/icon_gallery"
+                android:padding="5dp"
+                android:elevation="5dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <TextView
+                android:id="@+id/text_gallery"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Gallery"
+                android:gravity="center"
+                app:layout_constraintTop_toBottomOf="@id/image_gallery"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/container_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:padding="10dp"
+            app:layout_constraintStart_toEndOf="@id/container_gallery"
+            app:layout_constraintTop_toTopOf="@id/container_gallery">
+
+            <ImageView
+                android:id="@+id/image_delete"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/icon_delete"
+                    android:padding="5dp"
+                    android:elevation="5dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <TextView
+                    android:id="@+id/text_delete"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Delete"
+                    android:gravity="center"
+                    app:layout_constraintTop_toBottomOf="@id/image_delete"
+                    app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+         </android.support.constraint.ConstraintLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:background="@color/white"
+            app:layout_constraintTop_toBottomOf="@id/container_camera"
+            />
+
+
+    </android.support.constraint.ConstraintLayout>
+
+</layout>

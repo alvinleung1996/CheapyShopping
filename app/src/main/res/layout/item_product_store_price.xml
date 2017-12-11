@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data class="ProductStorePriceItemBinding">
+        <import type="java.util.Calendar"/>
+        <variable
+            name="storePrice"
+            type="com.alvin.cheapyshopping.db.entities.pseudo.StorePrice"/>
+        <variable
+            name="onClickListener"
+            type="android.view.View.OnClickListener"/>
+        <variable
+            name="creationTimeFormatter"
+            type="java.text.Format"/>
+        <variable
+            name="onLongClickListener"
+            type="android.view.View.OnLongClickListener"/>
+    </data>
+
+    <LinearLayout
+        android:id="@+id/container_store_price"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/list_item_background"
+        android:elevation="2dp"
+        android:onClick="@{onClickListener}"
+        android:onLongClick="@{onLongClickListener}">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider">
+        </View>
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/text_price"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="@{storePrice.toDisplayText, default=`Buy 1 for $10`}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"/>
+
+            <ImageView
+                android:id="@+id/image_time"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                app:layout_constraintStart_toStartOf="@+id/text_price"
+                app:layout_constraintTop_toTopOf="@+id/text_time"
+                app:layout_constraintBottom_toBottomOf="@+id/text_time"
+                android:src="@drawable/ic_update_time_black_24dp"/>
+
+            <TextView
+                android:id="@+id/text_time"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="@{creationTimeFormatter.format(storePrice.creationTime.time), default=`creationTime`}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                app:layout_constraintEnd_toEndOf="@+id/text_price"
+                app:layout_constraintStart_toEndOf="@+id/image_time"
+                app:layout_constraintTop_toBottomOf="@+id/text_price"/>
+
+            <ImageView
+                android:id="@+id/image_location"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                app:layout_constraintStart_toStartOf="@+id/image_time"
+                app:layout_constraintTop_toTopOf="@+id/text_store_name"
+                app:layout_constraintBottom_toBottomOf="@+id/text_store_name"
+                android:src="@drawable/ic_location_on_black_24dp"/>
+
+            <TextView
+                android:id="@+id/text_store_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="@{storePrice.store.name, default=`location`}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/image_verified_store"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintHorizontal_chainStyle="packed"
+                app:layout_constraintStart_toEndOf="@+id/image_location"
+                app:layout_constraintTop_toBottomOf="@+id/text_time"/>
+
+            <ImageView
+                android:id="@+id/image_verified_store"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginStart="8dp"
+                app:layout_constraintStart_toEndOf="@+id/text_store_name"
+                app:layout_constraintEnd_toEndOf="@+id/text_time"
+                app:layout_constraintTop_toTopOf="@+id/text_store_name"
+                app:layout_constraintBottom_toBottomOf="@+id/text_store_name"
+                android:src="@drawable/ic_verified_store_black_24dp"
+                android:tint="@color/lightBlue"/>
+
+        </android.support.constraint.ConstraintLayout>
+
+    </LinearLayout>
+
+</layout>

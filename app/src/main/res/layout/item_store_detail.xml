@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data class="DetailStoreItemBinding">
+        <variable
+            name="store"
+            type="com.alvin.cheapyshopping.db.entities.Store"/>
+        <variable
+            name="onClickListener"
+            type="android.view.View.OnClickListener"/>
+    </data>
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/list_item_background"
+        android:elevation="4dp"
+        android:onClick="@{onClickListener::onClick}">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="?android:attr/listDivider">
+        </View>
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="72dp">
+
+            <ImageView
+                android:id="@+id/image_store"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_store_black_24dp" />
+
+            <TextView
+                android:id="@+id/text_store_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:text="@{store.name, default=`name`}"
+                android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/image_store"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <RatingBar
+                android:id="@+id/ratingBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style= "@style/CustomRatingBarSmall"
+                android:numStars="5"
+                android:rating="@{(float)store.rating, default=`0`}"
+                android:stepSize="0.01"
+                android:elevation="4dp"
+                android:layout_marginEnd="10dp"
+                android:isIndicator="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/text_store_name"
+                />
+
+            <ImageView
+                android:id="@+id/image_store_location"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:padding="2dp"
+                android:layout_marginTop="7dp"
+                android:tint="@color/grey"
+                android:src="@drawable/ic_location_on_black_24dp"
+                app:layout_constraintStart_toStartOf="@+id/text_store_name"
+                app:layout_constraintTop_toBottomOf="@+id/text_store_name"  />
+
+            <TextView
+                android:id="@+id/text_store_location"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginTop="8dp"
+                android:text="@{store.address, default=`address`}"
+                android:textSize="12sp"
+                android:textAppearance="@style/TextAppearance.AppCompat.SearchResult.Subtitle"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/image_store_location"
+                app:layout_constraintTop_toBottomOf="@+id/text_store_name" />
+        </android.support.constraint.ConstraintLayout>
+
+    </LinearLayout>
+
+</layout>
