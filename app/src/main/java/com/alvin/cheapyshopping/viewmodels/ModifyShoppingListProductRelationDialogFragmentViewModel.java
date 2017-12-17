@@ -203,14 +203,12 @@ public class ModifyShoppingListProductRelationDialogFragmentViewModel extends An
         return new Promise<>(handler -> {
             ShoppingListProductRelation relation = this.getShoppingListProductRelation().getValue();
             if (relation == null) {
-                handler.reject(null);
-                return;
+                throw new IllegalStateException();
             }
 
             Integer quantity = this.getQuantity().getValue();
             if (quantity == null) {
-                handler.reject(null);
-                return;
+                throw new IllegalStateException();
             } else if (quantity == relation.getQuantity()) {
                 handler.resolve(0);
                 return;

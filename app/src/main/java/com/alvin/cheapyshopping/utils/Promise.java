@@ -14,6 +14,8 @@ import android.util.Log;
 public class Promise<X> {
     
     public class Handler {
+
+        private Handler() {}
         
         public void resolve(@Nullable X value) {
             if (!mConsumed) {
@@ -33,7 +35,7 @@ public class Promise<X> {
 
     public interface Executor<X> {
 
-        void exec(Promise<X>.Handler handler);
+        void exec(@NonNull Promise<X>.Handler handler) throws Throwable;
 
     }
 
@@ -69,33 +71,38 @@ public class Promise<X> {
 
 
     public Promise(Executor<X> executor) {
-        executor.exec(new Handler());
+        Handler handler = new Handler();
+        try {
+            executor.exec(handler);
+        } catch (Throwable e) {
+            handler.reject(e);
+        }
     }
 
     @NonNull
     public <Y> Promise<Y> onFulfill(@NonNull LifecycleOwner owner,
-                                        @NonNull OnFulfilledHandler<X, Y> onFulfilledHandler) {
+                                    @NonNull OnFulfilledHandler<X, Y> onFulfilledHandler) {
         return onResult(owner, onFulfilledHandler, null, e -> { throw e; });
     }
 
     @NonNull
     public Promise<X> onReject(@NonNull LifecycleOwner owner,
-                                   @NonNull OnRejectedHandler<X> onRejectedHandler) {
+                               @NonNull OnRejectedHandler<X> onRejectedHandler) {
         return onResult(null, Promise::resolve, owner, onRejectedHandler);
     }
 
     @NonNull
     public <Y> Promise<Y> onResult(@NonNull LifecycleOwner owner,
-                                       @NonNull OnFulfilledHandler<X, Y> onFulfilledHandler,
-                                       @NonNull OnRejectedHandler<Y> onRejectedHandler) {
+                                   @NonNull OnFulfilledHandler<X, Y> onFulfilledHandler,
+                                   @NonNull OnRejectedHandler<Y> onRejectedHandler) {
         return onResult(owner, onFulfilledHandler, owner, onRejectedHandler);
     }
 
     @NonNull
     private <Y> Promise<Y> onResult(@Nullable LifecycleOwner fulfillOwner,
-                                        @NonNull OnFulfilledHandler<X, Y> onFulfilledHandler,
-                                        @Nullable LifecycleOwner rejectOwner,
-                                        @NonNull OnRejectedHandler<Y> onRejectedHandler) {
+                                    @NonNull OnFulfilledHandler<X, Y> onFulfilledHandler,
+                                    @Nullable LifecycleOwner rejectOwner,
+                                    @NonNull OnRejectedHandler<Y> onRejectedHandler) {
         return new Promise<>(new Executor<Y>() {
 
             private Observer<X> mResolveObserver;
