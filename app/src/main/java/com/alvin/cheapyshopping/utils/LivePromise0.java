@@ -8,14 +8,14 @@ import android.arch.lifecycle.Observer;
  * Created by Alvin on 1/12/2017.
  */
 
-public class LivePromise<X, Y> {
+public class LivePromise0<X, Y> {
 
     private final MutableLiveData<X> mResolveData;
 
     private final MutableLiveData<Y> mRejectData;
 
     @SuppressWarnings("WeakerAccess")
-    protected LivePromise() {
+    protected LivePromise0() {
         this.mResolveData = new MutableLiveData<>();
         this.mRejectData = new MutableLiveData<>();
     }

@@ -1,7 +1,6 @@
 package com.alvin.cheapyshopping.utils;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.content.Context;
@@ -24,7 +23,6 @@ import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.Task;
 
 import com.google.android.gms.common.api.CommonStatusCodes;
-import com.google.android.gms.location.LocationSettingsStatusCodes;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
@@ -81,7 +79,7 @@ public class LocationManager {
      * @param activity
      * @return
      */
-    public LivePromise<Location, Void> updateLocation(BaseActivity activity) {
+    public LivePromise0<Location, Void> updateLocation(BaseActivity activity) {
         if (this.mLiveLocation == null) {
             this.mLiveLocation = new LiveLocation();
         }
@@ -115,19 +113,19 @@ public class LocationManager {
         private FusedLocationProviderClient mLocationProviderClient;
         private LocationCallback mLocationCallback;
 
-        private MutableLivePromise<Location, Void> mPromise;
+        private MutableLivePromise0<Location, Void> mPromise;
 
         private LiveLocation() {
             this.mState = STATE_IDLE;
         }
 
-        private LivePromise<Location, Void> update(BaseActivity activity) {
+        private LivePromise0<Location, Void> update(BaseActivity activity) {
 
             if (this.mState == STATE_IDLE) {
                 this.mState = STATE_REQUESTING_PERMISSION;
-                this.mPromise = new MutableLivePromise<>();
+                this.mPromise = new MutableLivePromise0<>();
 
-                LivePromise<Void, Void> promise = PermissionHelper.getsInstance(LocationManager.this.mContext)
+                LivePromise0<Void, Void> promise = PermissionHelper.getsInstance(LocationManager.this.mContext)
                         .requestLocationPermission(activity);
                 promise.observeReject(activity, v -> this.onLocationPermissionNotOk());
                 promise.observeResolve(activity, v -> this.onLoationPermissionOk(activity));

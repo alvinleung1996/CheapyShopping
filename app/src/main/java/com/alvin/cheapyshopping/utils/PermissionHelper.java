@@ -9,7 +9,6 @@ import android.support.v4.content.ContextCompat;
 import com.alvin.cheapyshopping.BaseActivity;
 import com.alvin.cheapyshopping.fragments.BaseFragment;
 
-import static android.content.pm.PackageManager.PERMISSION_DENIED;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 /**
@@ -56,15 +55,15 @@ public class PermissionHelper {
 
     private LocationPermissionRequester mLocationPermissionRequester;
 
-    public LivePromise<Void, Void> requestLocationPermission(BaseActivity activity) {
+    public LivePromise0<Void, Void> requestLocationPermission(BaseActivity activity) {
         return this.requestLocationPermission(activity, null);
     }
 
-    public LivePromise<Void, Void> requestLocationPermission(BaseFragment fragment) {
+    public LivePromise0<Void, Void> requestLocationPermission(BaseFragment fragment) {
         return this.requestLocationPermission(null, fragment);
     }
 
-    private LivePromise<Void, Void> requestLocationPermission(BaseActivity activity, BaseFragment fragment) {
+    private LivePromise0<Void, Void> requestLocationPermission(BaseActivity activity, BaseFragment fragment) {
         if (this.mLocationPermissionRequester == null) {
             this.mLocationPermissionRequester = new LocationPermissionRequester();
         }
@@ -79,14 +78,14 @@ public class PermissionHelper {
 
     private class LocationPermissionRequester {
 
-        private MutableLivePromise<Void, Void> mPromise;
+        private MutableLivePromise0<Void, Void> mPromise;
 
-        private LivePromise<Void, Void> request(BaseActivity activity, BaseFragment fragment) {
+        private LivePromise0<Void, Void> request(BaseActivity activity, BaseFragment fragment) {
             if (this.mPromise != null) {
                 return this.mPromise;
             }
 
-            LivePromise<Void, Void> promise = this.mPromise = new MutableLivePromise<>();
+            LivePromise0<Void, Void> promise = this.mPromise = new MutableLivePromise0<>();
 
             if (ContextCompat.checkSelfPermission(PermissionHelper.this.mContext, Manifest.permission.ACCESS_FINE_LOCATION)
                     == PERMISSION_GRANTED) {

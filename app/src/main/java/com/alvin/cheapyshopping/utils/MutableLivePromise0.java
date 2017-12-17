@@ -4,9 +4,9 @@ package com.alvin.cheapyshopping.utils;
  * Created by Alvin on 1/12/2017.
  */
 
-public class MutableLivePromise<X, Y> extends LivePromise<X, Y> {
+public class MutableLivePromise0<X, Y> extends LivePromise0<X, Y> {
 
-    public MutableLivePromise() {
+    public MutableLivePromise0() {
         super();
     }
 

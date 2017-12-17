@@ -14,8 +14,7 @@ import com.alvin.cheapyshopping.db.entities.ShoppingListProductRelation;
 import com.alvin.cheapyshopping.repositories.BestPriceRelationRepository;
 import com.alvin.cheapyshopping.repositories.ProductRepository;
 import com.alvin.cheapyshopping.repositories.ShoppingListProductRelationRepository;
-import com.alvin.cheapyshopping.utils.LivePromise;
-import com.alvin.cheapyshopping.utils.MutableLivePromise;
+import com.alvin.cheapyshopping.utils.Promise;
 
 /**
  * Created by Alvin on 3/12/2017.
@@ -200,40 +199,39 @@ public class ModifyShoppingListProductRelationDialogFragmentViewModel extends An
     ************************************************************************************************
      */
 
-    public LivePromise<Integer, Void> updateShoppingListProductRelation() {
-        MutableLivePromise<Integer, Void> promise = new MutableLivePromise<>();
+    public Promise<Integer> updateShoppingListProductRelation() {
+        return new Promise<>(handler -> {
+            ShoppingListProductRelation relation = this.getShoppingListProductRelation().getValue();
+            if (relation == null) {
+                handler.reject(null);
+                return;
+            }
 
-        ShoppingListProductRelation relation = this.getShoppingListProductRelation().getValue();
-        if (relation == null) {
-            promise.setRejectValue(null);
-            return promise;
-        }
+            Integer quantity = this.getQuantity().getValue();
+            if (quantity == null) {
+                handler.reject(null);
+                return;
+            } else if (quantity == relation.getQuantity()) {
+                handler.resolve(0);
+                return;
+            }
 
-        Integer quantity = this.getQuantity().getValue();
-        if (quantity == null) {
-            promise.setRejectValue(null);
-            return promise;
-        } else if (quantity == relation.getQuantity()) {
-            promise.setResolveValue(0);
-            return promise;
-        }
-
-        // Copy in order to changing the original one
-        relation = new ShoppingListProductRelation(relation);
-        relation.setQuantity(quantity);
-        new ShoppingListProductRelationUpdater(relation, promise).execute();
-        return promise;
+            // Copy in order to changing the original one
+            relation = new ShoppingListProductRelation(relation);
+            relation.setQuantity(quantity);
+            new ShoppingListProductRelationUpdater(relation, handler).execute();
+        });
     }
 
     @SuppressLint("StaticFieldLeak")
     private class ShoppingListProductRelationUpdater extends AsyncTask<Void, Void, Void> {
 
         private final ShoppingListProductRelation mRelation;
-        private final MutableLivePromise<Integer, Void> mPromise;
+        private final Promise<Integer>.Handler mPromiseHandler;
 
-        private ShoppingListProductRelationUpdater(ShoppingListProductRelation relation, MutableLivePromise<Integer, Void> promise) {
+        private ShoppingListProductRelationUpdater(ShoppingListProductRelation relation, Promise<Integer>.Handler promiseHandler) {
             this.mRelation = relation;
-            this.mPromise = promise;
+            this.mPromiseHandler = promiseHandler;
         }
 
         @Override
@@ -247,7 +245,7 @@ public class ModifyShoppingListProductRelationDialogFragmentViewModel extends An
                     .getShoppingListProductRelationRepository()
                     .updateShoppingListProductRelation(this.mRelation);
 
-            this.mPromise.postResolveValue(affected);
+            this.mPromiseHandler.resolve(affected);
 
             return null;
         }
@@ -260,15 +258,15 @@ public class ModifyShoppingListProductRelationDialogFragmentViewModel extends An
     ************************************************************************************************
      */
 
-    public LivePromise<Integer, Void> deleteShoppingListProductRelation() {
-        String shoppingListId = this.mShoppingListId.getValue();
-        String productId = this.mProductId.getValue();
-        if (shoppingListId == null || productId == null) {
-            throw new RuntimeException("Shopping list id or product id is not set");
-        }
-        MutableLivePromise<Integer, Void> promise = new MutableLivePromise<>();
-        new ShoppingListProductRelationRemover(shoppingListId, productId, promise).execute();
-        return promise;
+    public Promise<Integer> deleteShoppingListProductRelation() {
+        return new Promise<>(handler -> {
+            String shoppingListId = this.mShoppingListId.getValue();
+            String productId = this.mProductId.getValue();
+            if (shoppingListId == null || productId == null) {
+                throw new RuntimeException("Shopping list id or product id is not set");
+            }
+            new ShoppingListProductRelationRemover(shoppingListId, productId, handler).execute();
+        });
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -276,13 +274,13 @@ public class ModifyShoppingListProductRelationDialogFragmentViewModel extends An
 
         private final String shoppingListId;
         private final String productId;
-        private final MutableLivePromise<Integer, Void> mPromise;
+        private final Promise<Integer>.Handler mPromiseHandler;
 
         private ShoppingListProductRelationRemover(String shoppingListId, String productId,
-                                                   MutableLivePromise<Integer, Void> promise) {
+                                                   Promise<Integer>.Handler promiseHandler) {
             this.shoppingListId = shoppingListId;
             this.productId = productId;
-            this.mPromise = promise;
+            this.mPromiseHandler = promiseHandler;
         }
 
         @Override
@@ -291,7 +289,7 @@ public class ModifyShoppingListProductRelationDialogFragmentViewModel extends An
                     .getShoppingListProductRelationRepository()
                     .deleteShoppingListProductRelation(this.shoppingListId, this.productId);
 
-            this.mPromise.postResolveValue(affected);
+            this.mPromiseHandler.resolve(affected);
 
             return null;
         }

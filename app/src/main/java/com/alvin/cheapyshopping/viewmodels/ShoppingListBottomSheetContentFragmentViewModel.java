@@ -15,8 +15,8 @@ import com.alvin.cheapyshopping.repositories.AccountRepository;
 import com.alvin.cheapyshopping.repositories.BestPriceRelationRepository;
 import com.alvin.cheapyshopping.repositories.ShoppingListProductRepository;
 import com.alvin.cheapyshopping.repositories.ShoppingListRepository;
-import com.alvin.cheapyshopping.utils.LivePromise;
-import com.alvin.cheapyshopping.utils.MutableLivePromise;
+import com.alvin.cheapyshopping.utils.LivePromise0;
+import com.alvin.cheapyshopping.utils.MutableLivePromise0;
 import com.alvin.cheapyshopping.utils.SettableLiveData;
 
 import java.util.List;
@@ -222,7 +222,7 @@ public class ShoppingListBottomSheetContentFragmentViewModel extends AndroidView
      */
 
     private ShoppingListBestPriceRelationsUpdater mUpdater;
-    public LivePromise<Integer, Void> updateBestPriceRelations() {
+    public LivePromise0<Integer, Void> updateBestPriceRelations() {
         ShoppingList shoppingList = findCurrentAccountActiveShoppingList().getValue();
         Double centerLongitude = getCurrentAccountActiveShoppingListCenterLongitude().getValue();
         Double centerLatitude = getCurrentAccountActiveShoppingListCenterLatitude().getValue();
@@ -230,7 +230,7 @@ public class ShoppingListBottomSheetContentFragmentViewModel extends AndroidView
         Double centerLatitudeRange = getCurrentAccountActiveShoppingListCenterLatitudeRange().getValue();
 
         if (shoppingList == null || centerLongitude == null || centerLatitude == null || centerLongitudeRange == null || centerLatitudeRange == null) {
-            MutableLivePromise<Integer, Void> promise = new MutableLivePromise<>();
+            MutableLivePromise0<Integer, Void> promise = new MutableLivePromise0<>();
             promise.setRejectValue(null);
             return promise;
         }
@@ -253,14 +253,14 @@ public class ShoppingListBottomSheetContentFragmentViewModel extends AndroidView
     private class ShoppingListBestPriceRelationsUpdater extends AsyncTask<Void, Void, Void> {
 
         private final ShoppingList mShoppingList;
-        private final MutableLivePromise<Integer, Void> mPromise;
+        private final MutableLivePromise0<Integer, Void> mPromise;
 
         private ShoppingListBestPriceRelationsUpdater(ShoppingList shoppingList) {
             mShoppingList = shoppingList;
-            mPromise = new MutableLivePromise<>();
+            mPromise = new MutableLivePromise0<>();
         }
 
-        private LivePromise<Integer, Void> getPromise() {
+        private LivePromise0<Integer, Void> getPromise() {
             return mPromise;
         }
 
@@ -281,9 +281,9 @@ public class ShoppingListBottomSheetContentFragmentViewModel extends AndroidView
 //    private class ShoppingListBestPriceRelationsUpdater {
 //
 //        private Set<String> mShoppingListIds;
-//        private MutableLivePromise<Integer, Void> mPromise;
+//        private MutableLivePromise0<Integer, Void> mPromise;
 //
-//        private LivePromise<Integer, Void> update(BaseActivity activity, String shoppingListId) {
+//        private LivePromise0<Integer, Void> update(BaseActivity activity, String shoppingListId) {
 //            if (mShoppingListIds == null) {
 //                mShoppingListIds = new ArraySet<>();
 //            }
@@ -291,9 +291,9 @@ public class ShoppingListBottomSheetContentFragmentViewModel extends AndroidView
 //            mShoppingListIds.add(shoppingListId);
 //
 //            if (mPromise == null) {
-//                mPromise = new MutableLivePromise<>();
+//                mPromise = new MutableLivePromise0<>();
 //
-//                LivePromise<Location, Void> promise = LocationManager.getInstance(getApplication())
+//                LivePromise0<Location, Void> promise = LocationManager.getInstance(getApplication())
 //                        .updateLocation(activity);
 //                promise.observeResolve(activity, this::onLocationUpdated);
 //                promise.observeReject(activity, v -> onLocationUpdateFailed());

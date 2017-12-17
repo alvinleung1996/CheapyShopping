@@ -9,7 +9,6 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.CoordinatorLayout;
 import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,7 +16,8 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 
 import com.alvin.cheapyshopping.databinding.ModifyShoppingListProductRelationDialogBinding;
-import com.alvin.cheapyshopping.utils.LivePromise;
+import com.alvin.cheapyshopping.utils.LivePromise0;
+import com.alvin.cheapyshopping.utils.Promise;
 import com.alvin.cheapyshopping.viewmodels.ModifyShoppingListProductRelationDialogFragmentViewModel;
 
 /**
@@ -170,18 +170,18 @@ public class ModifyShoppingListProductRelationDialogFragment extends BottomSheet
     }
 
     private void onOkButtonClick(Button button) {
-        LivePromise<?, ?> promise = this.mViewModel.updateShoppingListProductRelation();
-        promise.observeResolve(this, v -> {
+        this.mViewModel.updateShoppingListProductRelation().onFulfill(this, v -> {
             this.notifyInteractionListenerModified();
             this.getDialog().dismiss();
+            return Promise.resolve(null);
         });
     }
 
     private void onRemoveButtonClick(Button button) {
-        LivePromise<?, ?> promise = this.mViewModel.deleteShoppingListProductRelation();
-        promise.observeResolve(this, v -> {
+        this.mViewModel.deleteShoppingListProductRelation().onFulfill(this, v -> {
             this.notifyInteractionListenerRemoved();
             this.getDialog().dismiss();
+            return Promise.resolve(null);
         });
     }
 
