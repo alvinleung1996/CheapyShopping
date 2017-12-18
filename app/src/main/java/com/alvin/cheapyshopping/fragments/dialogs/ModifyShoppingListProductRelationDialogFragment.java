@@ -16,7 +16,6 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 
 import com.alvin.cheapyshopping.databinding.ModifyShoppingListProductRelationDialogBinding;
-import com.alvin.cheapyshopping.utils.LivePromise0;
 import com.alvin.cheapyshopping.utils.Promise;
 import com.alvin.cheapyshopping.viewmodels.ModifyShoppingListProductRelationDialogFragmentViewModel;
 
@@ -170,18 +169,18 @@ public class ModifyShoppingListProductRelationDialogFragment extends BottomSheet
     }
 
     private void onOkButtonClick(Button button) {
-        this.mViewModel.updateShoppingListProductRelation().onFulfill(this, v -> {
+        this.mViewModel.updateShoppingListProductRelation().onResolved(this, v -> {
             this.notifyInteractionListenerModified();
             this.getDialog().dismiss();
-            return Promise.resolve(null);
+            return null;
         });
     }
 
     private void onRemoveButtonClick(Button button) {
-        this.mViewModel.deleteShoppingListProductRelation().onFulfill(this, v -> {
+        this.mViewModel.deleteShoppingListProductRelation().onResolved(this, v -> {
             this.notifyInteractionListenerRemoved();
             this.getDialog().dismiss();
-            return Promise.resolve(null);
+            return null;
         });
     }
 
