@@ -35,7 +35,7 @@ public class Promise<T> {
 
     @FunctionalInterface
     public interface Executor<T> {
-        void exec(@NonNull Promise<T>.Handler handler) throws Throwable;
+        void exec(@NonNull Promise<? super T>.Handler handler) throws Throwable;
     }
 
     @FunctionalInterface
@@ -51,15 +51,15 @@ public class Promise<T> {
     }
 
     @FunctionalInterface
-    public interface OnRejectedHandler<R> {
+    public interface OnRejectedHandler<T, R> {
         @Nullable
-        R onRejected(@NonNull Throwable exception) throws Throwable;
+        R onRejected(@NonNull T exception) throws Throwable;
     }
 
     @FunctionalInterface
-    public interface OnRejectedPromiseHandler<R> {
+    public interface OnRejectedPromiseHandler<T, R> {
         @NonNull
-        Promise<R> onRejectedPromise(@NonNull Throwable exception) throws Throwable;
+        Promise<R> onRejectedPromise(@NonNull T exception) throws Throwable;
     }
 
     @FunctionalInterface
@@ -84,7 +84,7 @@ public class Promise<T> {
     private boolean mConsumed = false;
 
 
-    public Promise(Executor<T> executor) {
+    public Promise(Executor<? extends T> executor) {
         Handler handler = new Handler();
         try {
             executor.exec(handler);
@@ -95,25 +95,25 @@ public class Promise<T> {
 
     @NonNull
     public <R> Promise<R> onResolved(@NonNull LifecycleOwner owner,
-                                     @NonNull OnResolvedHandler<T, R> onResolvedHandler) {
+                                     @NonNull OnResolvedHandler<? super T, ? extends R> onResolvedHandler) {
         return onResolvedPromise(owner, v -> Promise.resolve(onResolvedHandler.onResolved(v)));
     }
 
     @NonNull
     public <R> Promise<R> onResolvedPromise(@NonNull LifecycleOwner owner,
-                                            @NonNull OnResolvedPromiseHandler<T, R> onResolvedHandler) {
+                                            @NonNull OnResolvedPromiseHandler<? super T, ? extends R> onResolvedHandler) {
         return onResultPromise(owner, onResolvedHandler, null, e -> { throw e; });
     }
 
     @NonNull
     public Promise<T> onRejected(@NonNull LifecycleOwner owner,
-                                 @NonNull OnRejectedHandler<T> onRejectedHandler) {
+                                 @NonNull OnRejectedHandler<? super Throwable, ? extends T> onRejectedHandler) {
         return onRejectedPromise(owner, v -> Promise.resolve(onRejectedHandler.onRejected(v)));
     }
 
     @NonNull
     public Promise<T> onRejectedPromise(@NonNull LifecycleOwner owner,
-                                        @NonNull OnRejectedPromiseHandler<T> onRejectedHandler) {
+                                        @NonNull OnRejectedPromiseHandler<? super Throwable, ? extends T> onRejectedHandler) {
         return onResultPromise(null, Promise::resolve, owner, onRejectedHandler);
     }
 
@@ -131,8 +131,8 @@ public class Promise<T> {
 
     @NonNull
     public <R> Promise<R> onResult(@NonNull LifecycleOwner owner,
-                                   @NonNull OnResolvedHandler<T, R> onResolvedHandler,
-                                   @NonNull OnRejectedHandler<R> onRejectedHandler) {
+                                   @NonNull OnResolvedHandler<? super T, ? extends R> onResolvedHandler,
+                                   @NonNull OnRejectedHandler<? super Throwable, ? extends R> onRejectedHandler) {
         return onResultPromise(owner,
                 v -> Promise.resolve(onResolvedHandler.onResolved(v)),
                 v -> Promise.resolve(onRejectedHandler.onRejected(v)));
@@ -140,28 +140,29 @@ public class Promise<T> {
 
     @NonNull
     public <R> Promise<R> onResultPromise(@NonNull LifecycleOwner owner,
-                                           @NonNull OnResolvedPromiseHandler<T, R> onResolvedHandler,
-                                           @NonNull OnRejectedPromiseHandler<R> onRejectedHandler) {
+                                           @NonNull OnResolvedPromiseHandler<? super T, ? extends R> onResolvedHandler,
+                                           @NonNull OnRejectedPromiseHandler<? super Throwable, ? extends R> onRejectedHandler) {
         return onResultPromise(owner, onResolvedHandler, owner, onRejectedHandler);
     }
 
 
     @NonNull
-    private <R> Promise<R> onResultPromise(@Nullable LifecycleOwner fulfillOwner,
-                                           @NonNull OnResolvedPromiseHandler<T, R> onResolvedHandler,
-                                           @Nullable LifecycleOwner rejectOwner,
-                                           @NonNull OnRejectedPromiseHandler<R> onRejectedHandler) {
+    private <R, Rs extends R, Rj extends R> Promise<R> onResultPromise(
+            @Nullable LifecycleOwner fulfillOwner,
+            @NonNull OnResolvedPromiseHandler<? super T, Rs> onResolvedHandler,
+            @Nullable LifecycleOwner rejectOwner,
+            @NonNull OnRejectedPromiseHandler<? super Throwable, Rj> onRejectedHandler) {
         return new Promise<>(new Executor<R>() {
 
             private Observer<T> mResolveObserver;
             private Observer<Throwable> mRejectObserver;
 
             @Override
-            public void exec(@NonNull Promise<R>.Handler handler) {
+            public void exec(@NonNull Promise<? super R>.Handler handler) {
 
                 mResolveObserver = new Observer<T>() {
 
-                    private Observer<R> mmResolveObserver;
+                    private Observer<Rs> mmResolveObserver;
                     private Observer<Throwable> mmRejectObserver;
 
                     @Override
@@ -170,7 +171,7 @@ public class Promise<T> {
                         mRejectValue.removeObserver(mRejectObserver);
 
                         try {
-                            Promise<R> next = onResolvedHandler.onResolvedPromise(v);
+                            Promise<Rs> next = onResolvedHandler.onResolvedPromise(v);
 
                             next.mResolveValue.observeForever(mmResolveObserver = value -> {
                                 next.mResolveValue.removeObserver(mmResolveObserver);
@@ -196,7 +197,7 @@ public class Promise<T> {
 
                 mRejectObserver = new Observer<Throwable>() {
 
-                    private Observer<R> mmResolveObserver;
+                    private Observer<Rj> mmResolveObserver;
                     private Observer<Throwable> mmRejectObserver;
 
                     @Override
@@ -209,7 +210,7 @@ public class Promise<T> {
                         mRejectValue.removeObserver(mRejectObserver);
 
                         try {
-                            Promise<R> next = onRejectedHandler.onRejectedPromise(v);
+                            Promise<Rj> next = onRejectedHandler.onRejectedPromise(v);
 
                             next.mResolveValue.observeForever(mmResolveObserver = value -> {
                                 next.mResolveValue.removeObserver(mmResolveObserver);

@@ -225,9 +225,9 @@ public class ModifyShoppingListProductRelationDialogFragmentViewModel extends An
     private class ShoppingListProductRelationUpdater extends AsyncTask<Void, Void, Void> {
 
         private final ShoppingListProductRelation mRelation;
-        private final Promise<Integer>.Handler mPromiseHandler;
+        private final Promise<? super Integer>.Handler mPromiseHandler;
 
-        private ShoppingListProductRelationUpdater(ShoppingListProductRelation relation, Promise<Integer>.Handler promiseHandler) {
+        private ShoppingListProductRelationUpdater(ShoppingListProductRelation relation, Promise<? super Integer>.Handler promiseHandler) {
             this.mRelation = relation;
             this.mPromiseHandler = promiseHandler;
         }
@@ -272,10 +272,10 @@ public class ModifyShoppingListProductRelationDialogFragmentViewModel extends An
 
         private final String shoppingListId;
         private final String productId;
-        private final Promise<Integer>.Handler mPromiseHandler;
+        private final Promise<? super Integer>.Handler mPromiseHandler;
 
         private ShoppingListProductRelationRemover(String shoppingListId, String productId,
-                                                   Promise<Integer>.Handler promiseHandler) {
+                                                   Promise<? super Integer>.Handler promiseHandler) {
             this.shoppingListId = shoppingListId;
             this.productId = productId;
             this.mPromiseHandler = promiseHandler;
